@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚽ 点球大战 - 2026世界杯</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a1628; color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+
+/* 主菜单 */
+.menu { position: fixed; inset: 0; background: linear-gradient(135deg, #0a1628 0%, #1a2a4a 50%, #0d1f3c 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
+.menu h1 { font-size: 3.5rem; margin-bottom: 0.5rem; background: linear-gradient(90deg, #ffd700, #ff6b35, #ffd700); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: none; }
+.menu .subtitle { color: #88aacc; margin-bottom: 2rem; font-size: 1.1rem; }
+.menu-btn { display: block; width: 280px; padding: 15px; margin: 8px; background: linear-gradient(135deg, #1e3a5f, #2a4a6f); border: 2px solid #3a6a9f; border-radius: 12px; color: #fff; font-size: 1.1rem; cursor: pointer; transition: all 0.3s; text-align: center; }
+.menu-btn:hover { background: linear-gradient(135deg, #2a5a8f, #3a7abf); border-color: #5a9adf; transform: translateY(-2px); box-shadow: 0 5px 20px rgba(90,154,223,0.3); }
+.team-select { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; max-width: 600px; margin: 15px 0; }
+.team-card { padding: 12px 20px; background: rgba(255,255,255,0.05); border: 2px solid transparent; border-radius: 10px; cursor: pointer; transition: all 0.3s; text-align: center; min-width: 100px; }
+.team-card:hover, .team-card.selected { border-color: #ffd700; background: rgba(255,215,0,0.1); }
+.team-card .flag { font-size: 2.5rem; }
+.team-card .name { font-size: 0.85rem; margin-top: 5px; color: #aac; }
+
+/* 游戏界面 */
+.game { display: none; position: fixed; inset: 0; }
+canvas { display: block; width: 100%; height: 100%; }
+
+/* HUD */
+.hud { position: fixed; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background: rgba(0,0,0,0.5); z-index: 10; }
+.score-board { display: flex; align-items: center; gap: 20px; font-size: 1.5rem; font-weight: bold; }
+.score-board .team { display: flex; align-items: center; gap: 8px; }
+.score-board .score { font-size: 2.5rem; color: #ffd700; min-width: 40px; text-align: center; }
+.score-board .vs { color: #666; font-size: 1rem; }
+.round-info { color: #88aacc; font-size: 1rem; }
+
+/* 提示 */
+.controls-hint { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); padding: 10px 25px; border-radius: 25px; color: #aac; font-size: 0.9rem; z-index: 10; pointer-events: none; transition: opacity 0.5s; }
+
+/* 结果弹窗 */
+.result-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 50; }
+.result-box { background: linear-gradient(135deg, #1a2a4a, #0d1f3c); border: 2px solid #3a6a9f; border-radius: 20px; padding: 40px; text-align: center; max-width: 450px; }
+.result-box h2 { font-size: 2.5rem; margin-bottom: 10px; }
+.result-box .final-score { font-size: 4rem; color: #ffd700; margin: 15px 0; }
+.result-box .result-detail { color: #88aacc; margin-bottom: 20px; }
+</style>
+</head>
+<body>
+
+<!-- 主菜单 -->
+<div class="menu" id="menu">
+  <h1>⚽ 点球大战</h1>
+  <p class="subtitle">2026 FIFA 世界杯 点球决胜</p>
+
+  <p style="color:#aac; margin: 10px 0 5px;">选择你的球队：</p>
+  <div class="team-select" id="playerTeamSelect"></div>
+
+  <p style="color:#aac; margin: 10px 0 5px;">选择对手：</p>
+  <div class="team-select" id="opponentTeamSelect"></div>
+
+  <p style="color:#aac; margin: 15px 0 5px;">难度：</p>
+  <div style="display:flex; gap:10px; margin-bottom:20px;">
+    <button class="menu-btn" style="width:auto; padding:10px 25px;" onclick="setDifficulty('easy')" id="diffEasy">简单</button>
+    <button class="menu-btn" style="width:auto; padding:10px 25px;" onclick="setDifficulty('normal')" id="diffNormal">普通</button>
+    <button class="menu-btn" style="width:auto; padding:10px 25px;" onclick="setDifficulty('hard')" id="diffHard">困难</button>
+  </div>
+
+  <button class="menu-btn" onclick="startGame()" style="background:linear-gradient(135deg,#2a6a3f,#3a8a5f); border-color:#4aaa6f;">开始比赛</button>
+</div>
+
+<!-- 游戏 -->
+<div class="game" id="game">
+  <canvas id="canvas"></canvas>
+  <div class="hud">
+    <div class="score-board">
+      <div class="team"><span id="pFlag"></span> <span id="pName"></span></div>
+      <span class="score" id="pScore">0</span>
+      <span class="vs">-</span>
+      <span class="score" id="oScore">0</span>
+      <div class="team"><span id="oName"></span> <span id="oFlag"></span></div>
+    </div>
+    <div class="round-info" id="roundInfo">第 1 轮</div>
+  </div>
+  <div class="controls-hint" id="controlsHint">点击球门区域射门 | 按方向键扑救</div>
+</div>
+
+<!-- 结果 -->
+<div class="result-overlay" id="resultOverlay">
+  <div class="result-box">
+    <h2 id="resultTitle"></h2>
+    <div class="final-score" id="resultScore"></div>
+    <div class="result-detail" id="resultDetail"></div>
+    <button class="menu-btn" onclick="backToMenu()" style="margin:10px auto;">返回菜单</button>
+    <button class="menu-btn" onclick="restartGame()" style="margin:0 auto; background:linear-gradient(135deg,#2a6a3f,#3a8a5f); border-color:#4aaa6f;">再来一局</button>
+  </div>
+</div>
+
+<script>
+// 球队数据
+const TEAMS = [
+  { id:'br', name:'巴西', flag:'🇧🇷', color:'#009c3b', gkColor:'#ffdf1b' },
+  { id:'ar', name:'阿根廷', flag:'🇦🇷', color:'#75aadb', gkColor:'#ffdf1b' },
+  { id:'de', name:'德国', flag:'🇩🇪', color:'#000000', gkColor:'#e30613' },
+  { id:'fr', name:'法国', flag:'🇫🇷', color:'#002654', gkColor:'#ef4135' },
+  { id:'es', name:'西班牙', flag:'🇪🇸', color:'#c60b1e', gkColor:'#ffc400' },
+  { id:'gb', name:'英格兰', flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', color:'#cf081f', gkColor:'#fff' },
+  { id:'it', name:'意大利', flag:'🇮🇹', color:'#008c45', gkColor:'#fff' },
+  { id:'pt', name:'葡萄牙', flag:'🇵🇹', color:'#006600', gkColor:'#ff0000' },
+  { id:'nl', name:'荷兰', flag:'🇳🇱', color:'#ff6600', gkColor:'#fff' },
+  { id:'be', name:'比利时', flag:'🇧🇪', color:'#000000', gkColor:'#fa0000' },
+  { id:'jp', name:'日本', flag:'🇯🇵', color:'#bc002d', gkColor:'#fff' },
+  { id:'kr', name:'韩国', flag:'🇰🇷', color:'#003478', gkColor:'#cd2e3a' },
+  { id:'mx', name:'墨西哥', flag:'🇲🇽', color:'#006341', gkColor:'#fff' },
+  { id:'us', name:'美国', flag:'🇺🇸', color:'#3c3b6e', gkColor:'#b22234' },
+  { id:'cn', name:'中国', flag:'🇨🇳', color:'#de2910', gkColor:'#ffde00' },
+  { id:'au', name:'澳大利亚', flag:'🇦🇺', color:'#00008b', gkColor:'#ffd700' },
+];
+
+let playerTeam = TEAMS[0];
+let opponentTeam = TEAMS[1];
+let difficulty = 'normal';
+let canvas, ctx;
+let W, H;
+let gameState = 'waiting'; // waiting, aiming, shooting, gk_saving, goal, miss, result
+let round = 0;
+let maxRounds = 5;
+let playerScore = 0;
+let opponentScore = 0;
+let isPlayerTurn = true;
+let shots = []; // 记录每次射门结果
+
+// 球状态
+let ball = { x:0, y:0, vx:0, vy:0, radius:12, visible:true };
+// 球员状态
+let shooter = { x:0, y:0, kickFrame:0 };
+let goalkeeper = { x:0, y:0, targetX:0, diveDir:0, diveFrame:0, diving:false };
+
+// 球门
+let goal = { x:0, y:0, width:0, height:0, postWidth:8 };
+
+// 射门瞄准
+let aimX = 0.5, aimY = 0.5;
+let power = 0.7;
+let aimActive = false;
+
+// 动画
+let particles = [];
+let screenShake = 0;
+let flashAlpha = 0;
+let flashColor = '#fff';
+let messageText = '';
+let messageTimer = 0;
+let messageColor = '#ffd700';
+
+// AI 扑救反应
+const GK_REACTION = { easy: 0.3, normal: 0.55, hard: 0.8 };
+const GK_SPEED = { easy: 3, normal: 5, hard: 7 };
+
+// 选择队伍
+function buildTeamSelectors() {
+  const pDiv = document.getElementById('playerTeamSelect');
+  const oDiv = document.getElementById('opponentTeamSelect');
+  pDiv.innerHTML = '';
+  oDiv.innerHTML = '';
+  TEAMS.forEach(t => {
+    const pCard = document.createElement('div');
+    pCard.className = 'team-card' + (t.id === playerTeam.id ? ' selected' : '');
+    pCard.innerHTML = `<div class="flag">${t.flag}</div><div class="name">${t.name}</div>`;
+    pCard.onclick = () => { playerTeam = t; buildTeamSelectors(); };
+    pDiv.appendChild(pCard);
+
+    const oCard = document.createElement('div');
+    oCard.className = 'team-card' + (t.id === opponentTeam.id ? ' selected' : '');
+    oCard.innerHTML = `<div class="flag">${t.flag}</div><div class="name">${t.name}</div>`;
+    oCard.onclick = () => { opponentTeam = t; buildTeamSelectors(); };
+    oDiv.appendChild(oCard);
+  });
+}
+
+function setDifficulty(d) {
+  difficulty = d;
+  document.getElementById('diffEasy').style.borderColor = d === 'easy' ? '#ffd700' : '#3a6a9f';
+  document.getElementById('diffNormal').style.borderColor = d === 'normal' ? '#ffd700' : '#3a6a9f';
+  document.getElementById('diffHard').style.borderColor = d === 'hard' ? '#ffd700' : '#3a6a9f';
+}
+
+function startGame() {
+  document.getElementById('menu').style.display = 'none';
+  document.getElementById('game').style.display = 'block';
+  document.getElementById('resultOverlay').style.display = 'none';
+
+  document.getElementById('pFlag').textContent = playerTeam.flag;
+  document.getElementById('pName').textContent = playerTeam.name;
+  document.getElementById('oFlag').textContent = opponentTeam.flag;
+  document.getElementById('oName').textContent = opponentTeam.name;
+
+  canvas = document.getElementById('canvas');
+  ctx = canvas.getContext('2d');
+  resize();
+  window.addEventListener('resize', resize);
+
+  round = 0;
+  playerScore = 0;
+  opponentScore = 0;
+  shots = [];
+  updateScore();
+
+  canvas.addEventListener('click', onCanvasClick);
+  canvas.addEventListener('mousemove', onCanvasMove);
+  window.addEventListener('keydown', onKeyDown);
+
+  startRound();
+}
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  goal.x = W / 2;
+  goal.y = H * 0.22;
+  goal.width = W * 0.4;
+  goal.height = H * 0.22;
+}
+
+function startRound() {
+  if (round >= maxRounds * 2) {
+    // 检查是否可以提前结束
+    if (canEndEarly()) { endGame(); return; }
+    // 如果平局，加时
+    maxRounds++;
+  }
+  if (round >= maxRounds * 2 && playerScore !== opponentScore) {
+    endGame();
+    return;
+  }
+
+  isPlayerTurn = (round % 2 === 0);
+  round++;
+  updateRoundInfo();
+
+  // 重置球和球员
+  const shootFromY = isPlayerTurn ? H * 0.75 : H * 0.65;
+  ball.x = W / 2;
+  ball.y = isPlayerTurn ? H * 0.7 : H * 0.6;
+  ball.vx = 0;
+  ball.vy = 0;
+  ball.visible = true;
+
+  shooter.x = W / 2;
+  shooter.y = shootFromY;
+  shooter.kickFrame = 0;
+
+  goalkeeper.x = W / 2;
+  goalkeeper.y = goal.y + goal.height - 30;
+  goalkeeper.diving = false;
+  goalkeeper.diveFrame = 0;
+
+  aimX = 0.5;
+  aimY = 0.5;
+  power = 0.7;
+  gameState = 'waiting';
+  aimActive = isPlayerTurn;
+
+  showMessage(isPlayerTurn ? '点击球门射门！' : '按 ← → 扑救！', '#fff', 120);
+
+  document.getElementById('controlsHint').textContent = isPlayerTurn
+    ? '点击球门区域射门 | 滑鼠移动瞄准'
+    : '按 ← → 方向键扑救 | 时机很关键！';
+}
+
+function canEndEarly() {
+  const remaining = maxRounds * 2 - round;
+  const half = remaining / 2;
+  if (playerScore > opponentScore + half) return true;
+  if (opponentScore > playerScore + half) return true;
+  return false;
+}
+
+function updateScore() {
+  document.getElementById('pScore').textContent = playerScore;
+  document.getElementById('oScore').textContent = opponentScore;
+}
+
+function updateRoundInfo() {
+  const shotRound = Math.ceil(round / 2);
+  document.getElementById('roundInfo').textContent = `第 ${shotRound} 轮 ${isPlayerTurn ? '(你射)' : '(对手射)'}`;
+}
+
+function showMessage(text, color, duration) {
+  messageText = text;
+  messageColor = color || '#ffd700';
+  messageTimer = duration || 90;
+}
+
+// 输入处理
+function onCanvasClick(e) {
+  if (gameState === 'waiting' && isPlayerTurn) {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+
+    // 检查点击是否在球门区域附近
+    const gx = goal.x - goal.width / 2;
+    const gy = goal.y;
+    if (mx >= gx - 50 && mx <= gx + goal.width + 50 && my >= gy - 50 && my <= gy + goal.height + 50) {
+      aimX = (mx - gx) / goal.width;
+      aimY = (my - gy) / goal.height;
+      aimX = Math.max(0.05, Math.min(0.95, aimX));
+      aimY = Math.max(0.05, Math.min(0.95, aimY));
+      playerShoot();
+    }
+  }
+}
+
+function onCanvasMove(e) {
+  if (gameState === 'waiting' && isPlayerTurn) {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const gx = goal.x - goal.width / 2;
+    const gy = goal.y;
+    aimX = Math.max(0.05, Math.min(0.95, (mx - gx) / goal.width));
+    aimY = Math.max(0.05, Math.min(0.95, (my - gy) / goal.height));
+  }
+}
+
+function onKeyDown(e) {
+  if (gameState === 'waiting' && !isPlayerTurn) {
+    if (e.key === 'ArrowLeft') { gkDive(-1); }
+    else if (e.key === 'ArrowRight') { gkDive(1); }
+    else if (e.key === 'ArrowUp') { gkDive(0); } // 中路站位
+  }
+}
+
+// 射门
+function playerShoot() {
+  gameState = 'shooting';
+  const targetX = goal.x - goal.width / 2 + aimX * goal.width;
+  const targetY = goal.y + aimY * goal.height;
+  const speed = 12 + power * 8;
+
+  const dx = targetX - ball.x;
+  const dy = targetY - ball.y;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  ball.vx = (dx / dist) * speed;
+  ball.vy = (dy / dist) * speed;
+
+  shooter.kickFrame = 10;
+
+  // AI 门将扑救
+  setTimeout(() => {
+    if (gameState === 'shooting') {
+      const reaction = GK_REACTION[difficulty];
+      if (Math.random() < reaction) {
+        // 扑对方向
+        const dir = aimX < 0.4 ? -1 : aimX > 0.6 ? 1 : 0;
+        gkDive(dir);
+      } else {
+        // 扑错方向
+        gkDive(Math.random() < 0.5 ? -1 : 1);
+      }
+    }
+  }, 200 + Math.random() * 300);
+}
+
+function aiShoot() {
+  gameState = 'shooting';
+  // AI 随机选择射门位置
+  const aiAimX = 0.15 + Math.random() * 0.7;
+  const aiAimY = 0.2 + Math.random() * 0.6;
+
+  const targetX = goal.x - goal.width / 2 + aiAimX * goal.width;
+  const targetY = goal.y + aiAimY * goal.height;
+  const speed = 10 + Math.random() * 6;
+
+  const dx = targetX - ball.x;
+  const dy = targetY - ball.y;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  ball.vx = (dx / dist) * speed;
+  ball.vy = (dy / dist) * speed;
+
+  shooter.kickFrame = 10;
+
+  // 存储 AI 射门位置供扑救判断
+  ball._aiTarget = { x: aiAimX, y: aiAimY };
+}
+
+function gkDive(dir) {
+  if (gameState !== 'waiting' && gameState !== 'shooting') return;
+  goalkeeper.diving = true;
+  goalkeeper.diveDir = dir;
+  goalkeeper.diveFrame = 0;
+  const speed = GK_SPEED[difficulty];
+  goalkeeper.targetX = goalkeeper.x + dir * (goal.width * 0.4);
+}
+
+// 碰撞检测
+function checkGoal() {
+  const gx = goal.x - goal.width / 2;
+  const gy = goal.y;
+  const r = ball.radius;
+
+  // 检查是否在球门范围内
+  if (ball.x - r > gx && ball.x + r < gx + goal.width &&
+      ball.y - r > gy && ball.y + r < gy + goal.height) {
+    // 检查是否被门将扑到
+    const gkDist = Math.sqrt((ball.x - goalkeeper.x) ** 2 + (ball.y - goalkeeper.y) ** 2);
+    if (gkDist < 40 + r && goalkeeper.diving) {
+      return 'saved';
+    }
+    return 'goal';
+  }
+
+  // 检查门柱
+  const postR = goal.postWidth / 2;
+  // 左门柱
+  if (Math.sqrt((ball.x - gx) ** 2 + (ball.y - (gy + goal.height / 2)) ** 2) < r + postR) {
+    return 'post';
+  }
+  // 右门柱
+  if (Math.sqrt((ball.x - (gx + goal.width)) ** 2 + (ball.y - (gy + goal.height / 2)) ** 2) < r + postR) {
+    return 'post';
+  }
+  // 横梁
+  if (ball.x > gx && ball.x < gx + goal.width && Math.abs(ball.y - gy) < r + postR) {
+    return 'crossbar';
+  }
+
+  // 球飞过球门线
+  if (ball.y < gy - 50 || ball.x < gx - 100 || ball.x > gx + goal.width + 100) {
+    return 'miss';
+  }
+
+  return 'flying';
+}
+
+// 粒子
+function spawnParticles(x, y, color, count, speed) {
+  for (let i = 0; i < count; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const spd = Math.random() * speed + speed * 0.3;
+    particles.push({
+      x, y,
+      vx: Math.cos(angle) * spd,
+      vy: Math.sin(angle) * spd,
+      life: 30 + Math.random() * 30,
+      maxLife: 60,
+      color: color,
+      size: 2 + Math.random() * 4
+    });
+  }
+}
+
+function updateParticles() {
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.15;
+    p.life--;
+    if (p.life <= 0) particles.splice(i, 1);
+  }
+}
+
+// 主循环
+function gameLoop() {
+  update();
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+
+function update() {
+  if (messageTimer > 0) messageTimer--;
+  if (screenShake > 0) screenShake *= 0.85;
+  if (flashAlpha > 0) flashAlpha -= 0.03;
+  updateParticles();
+
+  if (gameState === 'shooting') {
+    ball.x += ball.vx;
+    ball.y += ball.vy;
+    ball.vy += 0.15; // 重力
+
+    // 门将移动
+    if (goalkeeper.diving) {
+      goalkeeper.diveFrame++;
+      const t = Math.min(goalkeeper.diveFrame / 12, 1);
+      goalkeeper.x += (goalkeeper.targetX - goalkeeper.x) * 0.15;
+      goalkeeper.y += (goalkeeper.diveDir !== 0 ? -2 : 0) * t;
+    }
+
+    // 射门者动画
+    if (shooter.kickFrame > 0) shooter.kickFrame--;
+
+    const result = checkGoal();
+    if (result !== 'flying') {
+      handleShotResult(result);
+    }
+  }
+
+  if (gameState === 'goal' || gameState === 'miss' || gameState === 'saved' || gameState === 'post') {
+    // 球减速
+    ball.vx *= 0.92;
+    ball.vy *= 0.92;
+    ball.x += ball.vx;
+    ball.y += ball.vy;
+    ball.vy += 0.1;
+  }
+}
+
+function handleShotResult(result) {
+  if (result === 'goal') {
+    gameState = 'goal';
+    if (isPlayerTurn) playerScore++; else opponentScore++;
+    updateScore();
+    shots.push({ round, isPlayerTurn, result: 'goal' });
+    showMessage('⚽ 进球！', '#ffd700', 100);
+    spawnParticles(ball.x, ball.y, '#ffd700', 30, 5);
+    flashAlpha = 0.4;
+    flashColor = '#ffd700';
+    screenShake = 10;
+  } else if (result === 'saved') {
+    gameState = 'miss';
+    shots.push({ round, isPlayerTurn, result: 'saved' });
+    showMessage('🧤 被扑出！', '#ff4444', 100);
+    spawnParticles(ball.x, ball.y, '#ff4444', 15, 3);
+    ball.vx = (Math.random() - 0.5) * 6;
+    ball.vy = -4;
+  } else if (result === 'post' || result === 'crossbar') {
+    gameState = 'post';
+    shots.push({ round, isPlayerTurn, result: 'post' });
+    showMessage('🔔 门柱！', '#ff8800', 100);
+    spawnParticles(ball.x, ball.y, '#ff8800', 20, 4);
+    ball.vx *= -0.6;
+    ball.vy *= -0.6;
+    screenShake = 8;
+  } else {
+    gameState = 'miss';
+    shots.push({ round, isPlayerTurn, result: 'miss' });
+    showMessage('💨 打飞了！', '#888', 100);
+  }
+
+  // 下一轮
+  setTimeout(() => {
+    if (canEndEarly() || round >= maxRounds * 2) {
+      endGame();
+    } else {
+      startRound();
+    }
+  }, 1500);
+}
+
+function endGame() {
+  gameState = 'result';
+  const overlay = document.getElementById('resultOverlay');
+  overlay.style.display = 'flex';
+
+  const title = document.getElementById('resultTitle');
+  const score = document.getElementById('resultScore');
+  const detail = document.getElementById('resultDetail');
+
+  score.textContent = `${playerScore} - ${opponentScore}`;
+
+  if (playerScore > opponentScore) {
+    title.textContent = '🎉 你赢了！';
+    title.style.color = '#ffd700';
+    detail.textContent = `${playerTeam.name} 在点球大战中战胜了 ${opponentTeam.name}！`;
+  } else if (opponentScore > playerScore) {
+    title.textContent = '😢 你输了';
+    title.style.color = '#ff4444';
+    detail.textContent = `${opponentTeam.name} 在点球大战中战胜了 ${playerTeam.name}。`;
+  } else {
+    title.textContent = '🤝 平局';
+    title.style.color = '#88aacc';
+    detail.textContent = '点球大战平局！';
+  }
+
+  // 显示射门记录
+  const shotHistory = shots.map(s => {
+    const icon = s.result === 'goal' ? '⚽' : s.result === 'saved' ? '🧤' : s.result === 'post' ? '🔔' : '💨';
+    return `${s.isPlayerTurn ? '你' : 'AI'}: ${icon}`;
+  }).join(' | ');
+  detail.innerHTML += `<br><br><span style="font-size:0.85rem;color:#6688aa;">${shotHistory}</span>`;
+}
+
+function backToMenu() {
+  document.getElementById('menu').style.display = 'flex';
+  document.getElementById('game').style.display = 'none';
+  document.getElementById('resultOverlay').style.display = 'none';
+  canvas.removeEventListener('click', onCanvasClick);
+  canvas.removeEventListener('mousemove', onCanvasMove);
+  window.removeEventListener('keydown', onKeyDown);
+}
+
+function restartGame() {
+  document.getElementById('resultOverlay').style.display = 'none';
+  round = 0;
+  playerScore = 0;
+  opponentScore = 0;
+  shots = [];
+  maxRounds = 5;
+  updateScore();
+  startRound();
+}
+
+// 绘制
+function draw() {
+  ctx.save();
+
+  // 屏幕震动
+  if (screenShake > 0.5) {
+    ctx.translate(
+      (Math.random() - 0.5) * screenShake,
+      (Math.random() - 0.5) * screenShake
+    );
+  }
+
+  // 背景 - 球场
+  drawField();
+
+  // 球门
+  drawGoal();
+
+  // 门将
+  drawGoalkeeper();
+
+  // 射门者
+  drawShooter();
+
+  // 球
+  if (ball.visible) drawBall();
+
+  // 瞄准指示器
+  if (gameState === 'waiting' && isPlayerTurn) drawAimIndicator();
+
+  // 粒子
+  drawParticles();
+
+  // 闪光
+  if (flashAlpha > 0) {
+    ctx.fillStyle = flashColor;
+    ctx.globalAlpha = flashAlpha;
+    ctx.fillRect(0, 0, W, H);
+    ctx.globalAlpha = 1;
+  }
+
+  // 消息
+  if (messageTimer > 0) {
+    ctx.save();
+    ctx.font = `bold ${48 + Math.sin(messageTimer * 0.2) * 5}px 'Segoe UI'`;
+    ctx.textAlign = 'center';
+    ctx.fillStyle = messageColor;
+    ctx.shadowColor = 'rgba(0,0,0,0.8)';
+    ctx.shadowBlur = 10;
+    ctx.fillText(messageText, W / 2, H / 2);
+    ctx.restore();
+  }
+
+  // 射门记录
+  drawShotRecord();
+
+  ctx.restore();
+}
+
+function drawField() {
+  // 天空
+  const skyGrad = ctx.createLinearGradient(0, 0, 0, H);
+  skyGrad.addColorStop(0, '#0a1a3a');
+  skyGrad.addColorStop(0.5, '#1a3a5a');
+  skyGrad.addColorStop(1, '#2a5a3a');
+  ctx.fillStyle = skyGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // 草地
+  ctx.fillStyle = '#1a5a2a';
+  ctx.fillRect(0, H * 0.55, W, H * 0.45);
+
+  // 草地条纹
+  for (let i = 0; i < 10; i++) {
+    ctx.fillStyle = i % 2 ? '#1d6a2d' : '#1a5a2a';
+    ctx.fillRect(0, H * 0.55 + i * (H * 0.045), W, H * 0.045);
+  }
+
+  // 禁区线
+  ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+  ctx.lineWidth = 2;
+  const boxW = goal.width * 1.5;
+  const boxH = goal.height * 2;
+  ctx.strokeRect(goal.x - boxW / 2, goal.y + goal.height, boxW, boxH);
+
+  // 罚球点
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.beginPath();
+  ctx.arc(goal.x, H * 0.7, 5, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawGoal() {
+  const gx = goal.x - goal.width / 2;
+  const gy = goal.y;
+
+  // 球门网
+  ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 10; i++) {
+    const x = gx + (goal.width / 10) * i;
+    ctx.beginPath();
+    ctx.moveTo(x, gy);
+    ctx.lineTo(x, gy + goal.height);
+    ctx.stroke();
+  }
+  for (let i = 0; i <= 5; i++) {
+    const y = gy + (goal.height / 5) * i;
+    ctx.beginPath();
+    ctx.moveTo(gx, y);
+    ctx.lineTo(gx + goal.width, y);
+    ctx.stroke();
+  }
+
+  // 球门框
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = goal.postWidth;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(gx, gy + goal.height);
+  ctx.lineTo(gx, gy);
+  ctx.lineTo(gx + goal.width, gy);
+  ctx.lineTo(gx + goal.width, gy + goal.height);
+  ctx.stroke();
+}
+
+function drawGoalkeeper() {
+  const gk = goalkeeper;
+  const team = isPlayerTurn ? opponentTeam : playerTeam;
+
+  ctx.save();
+  ctx.translate(gk.x, gk.y);
+
+  if (gk.diving) {
+    const t = Math.min(gk.diveFrame / 12, 1);
+    ctx.rotate(gk.diveDir * t * 1.2);
+  }
+
+  // 身体
+  ctx.fillStyle = team.gkColor;
+  ctx.fillRect(-12, -30, 24, 30);
+
+  // 头（大头风格）
+  ctx.fillStyle = '#ffd4a8';
+  ctx.beginPath();
+  ctx.arc(0, -45, 20, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 手套
+  ctx.fillStyle = '#ff4444';
+  if (gk.diving) {
+    ctx.fillRect(-30, -25, 15, 10);
+    ctx.fillRect(15, -25, 15, 10);
+  } else {
+    ctx.fillRect(-25, -20, 12, 8);
+    ctx.fillRect(13, -20, 12, 8);
+  }
+
+  // 眼睛
+  ctx.fillStyle = '#000';
+  ctx.beginPath();
+  ctx.arc(-7, -48, 3, 0, Math.PI * 2);
+  ctx.arc(7, -48, 3, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+}
+
+function drawShooter() {
+  const team = isPlayerTurn ? playerTeam : opponentTeam;
+  const s = shooter;
+
+  ctx.save();
+  ctx.translate(s.x, s.y);
+
+  // 踢球动画
+  if (s.kickFrame > 0) {
+    ctx.rotate(-0.3 * (s.kickFrame / 10));
+  }
+
+  // 身体
+  ctx.fillStyle = team.color;
+  ctx.fillRect(-12, -30, 24, 30);
+
+  // 头
+  ctx.fillStyle = '#ffd4a8';
+  ctx.beginPath();
+  ctx.arc(0, -45, 20, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 腿
+  ctx.fillStyle = '#222';
+  ctx.fillRect(-10, 0, 8, 15);
+  ctx.fillRect(2, 0, 8, 15);
+
+  // 眼睛
+  ctx.fillStyle = '#000';
+  ctx.beginPath();
+  ctx.arc(-7, -48, 3, 0, Math.PI * 2);
+  ctx.arc(7, -48, 3, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+}
+
+function drawBall() {
+  ctx.save();
+  ctx.translate(ball.x, ball.y);
+
+  // 球阴影
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.beginPath();
+  ctx.ellipse(3, 3, ball.radius, ball.radius * 0.6, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 球体
+  const grad = ctx.createRadialGradient(-3, -3, 1, 0, 0, ball.radius);
+  grad.addColorStop(0, '#fff');
+  grad.addColorStop(1, '#ddd');
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.arc(0, 0, ball.radius, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 五边形纹理
+  ctx.strokeStyle = '#333';
+  ctx.lineWidth = 1;
+  for (let i = 0; i < 5; i++) {
+    const angle = (i * Math.PI * 2) / 5 - Math.PI / 2;
+    const px = Math.cos(angle) * ball.radius * 0.5;
+    const py = Math.sin(angle) * ball.radius * 0.5;
+    ctx.beginPath();
+    ctx.arc(px, py, 3, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+function drawAimIndicator() {
+  const gx = goal.x - goal.width / 2;
+  const gy = goal.y;
+  const tx = gx + aimX * goal.width;
+  const ty = gy + aimY * goal.height;
+
+  // 十字准星
+  ctx.strokeStyle = 'rgba(255,255,0,0.8)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(tx - 15, ty);
+  ctx.lineTo(tx + 15, ty);
+  ctx.moveTo(tx, ty - 15);
+  ctx.lineTo(tx, ty + 15);
+  ctx.stroke();
+
+  // 圆圈
+  ctx.beginPath();
+  ctx.arc(tx, ty, 12, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // 瞄准线
+  ctx.strokeStyle = 'rgba(255,255,0,0.2)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([5, 5]);
+  ctx.beginPath();
+  ctx.moveTo(ball.x, ball.y);
+  ctx.lineTo(tx, ty);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function drawParticles() {
+  particles.forEach(p => {
+    ctx.globalAlpha = p.life / p.maxLife;
+    ctx.fillStyle = p.color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size * (p.life / p.maxLife), 0, Math.PI * 2);
+    ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+}
+
+function drawShotRecord() {
+  const startX = 20;
+  const startY = H - 50;
+  ctx.font = '14px "Segoe UI"';
+  ctx.textAlign = 'left';
+
+  shots.forEach((s, i) => {
+    const x = startX + i * 35;
+    const icon = s.result === 'goal' ? '⚽' : s.result === 'saved' ? '🧤' : s.result === 'post' ? '🔔' : '💨';
+    ctx.fillStyle = s.isPlayerTurn ? playerTeam.color : opponentTeam.color;
+    ctx.globalAlpha = 0.8;
+    ctx.fillText(icon, x, startY);
+    ctx.font = '10px "Segoe UI"';
+    ctx.fillStyle = '#888';
+    ctx.fillText(s.isPlayerTurn ? '你' : 'AI', x, startY + 15);
+    ctx.font = '14px "Segoe UI"';
+  });
+  ctx.globalAlpha = 1;
+}
+
+// 初始化
+buildTeamSelectors();
+setDifficulty('normal');
+requestAnimationFrame(gameLoop);
+</script>
+</body>
+</html>

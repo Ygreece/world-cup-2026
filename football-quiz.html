@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚽ 足球知识问答 - 2026世界杯</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0a1628; color:#fff; font-family:'Segoe UI',sans-serif; min-height:100vh; }
+
+.app { max-width:700px; margin:0 auto; padding:20px; }
+
+/* 头部 */
+.header { text-align:center; padding:30px 0; }
+.header h1 { font-size:2.5rem; background:linear-gradient(90deg,#ffd700,#ff6b35); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.header p { color:#88aacc; margin-top:8px; }
+
+/* 菜单 */
+.menu { text-align:center; }
+.menu-btn { display:inline-block; padding:15px 40px; margin:10px; background:linear-gradient(135deg,#1e3a5f,#2a4a6f); border:2px solid #3a6a9f; border-radius:12px; color:#fff; font-size:1.1rem; cursor:pointer; transition:all 0.3s; }
+.menu-btn:hover { background:linear-gradient(135deg,#2a5a8f,#3a7abf); border-color:#5a9adf; transform:translateY(-2px); }
+.menu-btn.active { border-color:#ffd700; background:rgba(255,215,0,0.15); }
+
+/* 进度条 */
+.progress { display:flex; align-items:center; gap:10px; margin:20px 0; }
+.progress-bar { flex:1; height:8px; background:rgba(255,255,255,0.1); border-radius:4px; overflow:hidden; }
+.progress-fill { height:100%; background:linear-gradient(90deg,#ffd700,#ff6b35); border-radius:4px; transition:width 0.5s; }
+.progress-text { color:#88aacc; font-size:0.85rem; min-width:60px; text-align:right; }
+
+/* 题目卡片 */
+.question-card { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:30px; margin:20px 0; }
+.question-num { color:#ffd700; font-size:0.9rem; margin-bottom:10px; }
+.question-text { font-size:1.3rem; line-height:1.6; margin-bottom:25px; }
+.question-hint { color:#88aacc; font-size:0.85rem; margin-bottom:15px; font-style:italic; }
+
+/* 选项 */
+.options { display:flex; flex-direction:column; gap:10px; }
+.option { display:flex; align-items:center; gap:15px; padding:15px 20px; background:rgba(255,255,255,0.03); border:2px solid rgba(255,255,255,0.1); border-radius:12px; cursor:pointer; transition:all 0.3s; }
+.option:hover { border-color:#3a6a9f; background:rgba(58,106,159,0.1); }
+.option.selected { border-color:#ffd700; background:rgba(255,215,0,0.1); }
+.option.correct { border-color:#4aaa6f; background:rgba(74,170,111,0.15); }
+.option.wrong { border-color:#ff4444; background:rgba(255,68,68,0.15); }
+.option-letter { width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.9rem; }
+.option.correct .option-letter { background:#4aaa6f; }
+.option.wrong .option-letter { background:#ff4444; }
+.option-text { flex:1; font-size:1rem; }
+
+/* 解析 */
+.explanation { margin-top:20px; padding:15px 20px; background:rgba(74,170,111,0.1); border-left:4px solid #4aaa6f; border-radius:0 8px 8px 0; display:none; }
+.explanation.show { display:block; }
+.explanation h4 { color:#4aaa6f; margin-bottom:5px; }
+.explanation p { color:#aac; font-size:0.95rem; line-height:1.5; }
+
+/* 按钮 */
+.btn-row { display:flex; justify-content:center; gap:15px; margin-top:20px; }
+.btn { padding:12px 30px; border:none; border-radius:10px; font-size:1rem; cursor:pointer; transition:all 0.3s; }
+.btn-primary { background:linear-gradient(135deg,#ffd700,#ff6b35); color:#000; font-weight:bold; }
+.btn-primary:hover { transform:translateY(-2px); box-shadow:0 5px 20px rgba(255,215,0,0.3); }
+.btn-secondary { background:rgba(255,255,255,0.1); color:#fff; border:1px solid rgba(255,255,255,0.2); }
+.btn-secondary:hover { background:rgba(255,255,255,0.15); }
+
+/* 计时器 */
+.timer { text-align:center; font-size:1.5rem; color:#ffd700; margin:10px 0; }
+.timer.warning { color:#ff4444; animation:pulse 0.5s infinite; }
+@keyframes pulse { 50% { opacity:0.5; } }
+
+/* 结果 */
+.result { text-align:center; padding:40px 20px; }
+.result h2 { font-size:2.5rem; margin-bottom:10px; }
+.result .score { font-size:5rem; color:#ffd700; margin:20px 0; }
+.result .detail { color:#88aacc; font-size:1.1rem; margin-bottom:10px; }
+.result .grade { font-size:1.5rem; margin:15px 0; }
+.result .stats { display:flex; justify-content:center; gap:30px; margin:25px 0; flex-wrap:wrap; }
+.stat { text-align:center; }
+.stat .num { font-size:2rem; color:#ffd700; }
+.stat .label { color:#88aacc; font-size:0.85rem; }
+
+/* 分类 */
+.categories { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin:20px 0; }
+.cat-btn { padding:15px; background:rgba(255,255,255,0.05); border:2px solid rgba(255,255,255,0.1); border-radius:10px; cursor:pointer; transition:all 0.3s; text-align:center; }
+.cat-btn:hover { border-color:#3a6a9f; }
+.cat-btn.selected { border-color:#ffd700; background:rgba(255,215,0,0.1); }
+.cat-btn .emoji { font-size:2rem; }
+.cat-btn .name { font-size:0.9rem; margin-top:5px; color:#aac; }
+
+/* 排行榜 */
+.leaderboard { margin:20px 0; }
+.lb-row { display:flex; align-items:center; gap:15px; padding:12px 15px; background:rgba(255,255,255,0.03); border-radius:8px; margin-bottom:5px; }
+.lb-rank { width:30px; font-weight:bold; color:#ffd700; }
+.lb-score { margin-left:auto; color:#ffd700; }
+.lb-time { color:#88aacc; font-size:0.85rem; }
+
+.hidden { display:none !important; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="header">
+    <h1>⚽ 足球知识问答</h1>
+    <p>2026 FIFA 世界杯 知识挑战</p>
+  </div>
+
+  <!-- 主菜单 -->
+  <div id="menuView">
+    <div class="menu">
+      <button class="menu-btn" onclick="startQuick()">快速挑战 (10题)</button>
+      <button class="menu-btn" onclick="showCategorySelect()">分类挑战</button>
+      <button class="menu-btn" onclick="showLeaderboard()">排行榜</button>
+    </div>
+  </div>
+
+  <!-- 分类选择 -->
+  <div id="categoryView" class="hidden">
+    <h3 style="text-align:center;color:#aac;margin-bottom:15px;">选择题目分类</h3>
+    <div class="categories" id="catGrid"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="startCategory()">开始挑战</button>
+      <button class="btn btn-secondary" onclick="showMenu()">返回</button>
+    </div>
+  </div>
+
+  <!-- 答题界面 -->
+  <div id="quizView" class="hidden">
+    <div class="progress">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-text" id="progressText">1/10</div>
+    </div>
+    <div class="timer" id="timer">30</div>
+    <div class="question-card">
+      <div class="question-num" id="qNum">第 1 题</div>
+      <div class="question-text" id="qText"></div>
+      <div class="question-hint" id="qHint"></div>
+      <div class="options" id="options"></div>
+      <div class="explanation" id="explanation">
+        <h4>📖 解析</h4>
+        <p id="explainText"></p>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary hidden" id="nextBtn" onclick="nextQuestion()">下一题</button>
+    </div>
+  </div>
+
+  <!-- 结果 -->
+  <div id="resultView" class="hidden">
+    <div class="result">
+      <h2 id="resultTitle"></h2>
+      <div class="score" id="resultScore"></div>
+      <div class="grade" id="resultGrade"></div>
+      <div class="detail" id="resultDetail"></div>
+      <div class="stats">
+        <div class="stat"><div class="num" id="statCorrect">0</div><div class="label">答对</div></div>
+        <div class="stat"><div class="num" id="statWrong">0</div><div class="label">答错</div></div>
+        <div class="stat"><div class="num" id="statTime">0s</div><div class="label">用时</div></div>
+        <div class="stat"><div class="num" id="statStreak">0</div><div class="label">最长连对</div></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="restart()">再来一次</button>
+        <button class="btn btn-secondary" onclick="showMenu()">返回菜单</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 排行榜 -->
+  <div id="leaderView" class="hidden">
+    <h3 style="text-align:center;color:#ffd700;margin-bottom:20px;">🏆 排行榜</h3>
+    <div class="leaderboard" id="lbList"></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="showMenu()">返回</button>
+      <button class="btn btn-secondary" onclick="clearLeaderboard()">清空记录</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// 题库
+const QUESTIONS = [
+  // 世界杯历史
+  { cat:'history', q:'第一届世界杯在哪一年举办？', opts:['1930年','1928年','1932年','1926年'], ans:0, explain:'第一届世界杯于1930年在乌拉圭举办，东道主乌拉圭队最终夺冠。' },
+  { cat:'history', q:'哪支球队获得世界杯冠军次数最多？', opts:['巴西','德国','意大利','阿根廷'], ans:0, explain:'巴西队共获得5次世界杯冠军（1958、1962、1970、1994、2002），是夺冠次数最多的球队。' },
+  { cat:'history', q:'2026年世界杯将在哪三个国家联合举办？', opts:['美国、加拿大、墨西哥','美国、墨西哥、巴西','加拿大、美国、英国','墨西哥、巴西、阿根廷'], ans:0, explain:'2026年世界杯由美国、加拿大和墨西哥三国联合举办，这是历史上首次由三个国家联合举办。' },
+  { cat:'history', q:'哪位球员在世界杯历史上进球最多？', opts:['克洛泽(16球)','罗纳尔多(15球)','盖德·穆勒(14球)','方丹(13球)'], ans:0, explain:'德国球员克洛泽在世界杯决赛圈共打入16球，是世界杯历史最佳射手。' },
+  { cat:'history', q:'2026年世界杯决赛圈将有多少支球队参加？', opts:['48支','36支','40支','32支'], ans:0, explain:'2026年世界杯将首次扩军至48支球队，比之前的32支增加了16支。' },
+  { cat:'history', q:'哪一届世界杯首次使用VAR技术？', opts:['2018年俄罗斯','2014年巴西','2022年卡塔尔','2010年南非'], ans:0, explain:'2018年俄罗斯世界杯首次在世界杯赛场上使用VAR（视频助理裁判）技术。' },
+  { cat:'history', q:'世界杯历史上最快的进球记录是多少秒？', opts:['10.8秒','11.2秒','12.5秒','8.9秒'], ans:0, explain:'2002年世界杯土耳其球员哈坎·苏克对阵韩国时打入，仅用时10.8秒。' },
+
+  // 球队与球员
+  { cat:'players', q:'梅西在2022年世界杯决赛中打入几球？', opts:['2球','3球','1球','0球'], ans:0, explain:'梅西在2022年卡塔尔世界杯决赛中打入2球（包括加时赛进球），帮助阿根廷夺冠。' },
+  { cat:'players', q:'C罗的全名是什么？', opts:['克里斯蒂亚诺·罗纳尔多·多斯·桑托斯·阿维罗','克里斯蒂亚诺·罗纳尔多·达·席尔瓦','克里斯蒂亚诺·罗纳尔多·桑托斯','克里斯蒂亚诺·罗纳尔多·费雷拉'], ans:0, explain:'C罗全名Cristiano Ronaldo dos Santos Aveiro，出生于葡萄牙马德拉岛。' },
+  { cat:'players', q:'贝利获得过几次世界杯冠军？', opts:['3次','2次','4次','1次'], ans:0, explain:'贝利在1958、1962和1970年三届世界杯中帮助巴西夺冠，是唯一一位三次获得世界杯的球员。' },
+  { cat:'players', q:'哪位球员被称为"外星人"？', opts:['罗纳尔多(大罗)','齐达内','小罗','亨利'], ans:0, explain:'巴西球员罗纳尔多·纳扎里奥因其超凡的足球天赋被称为"外星人"(O Fenômeno)。' },
+  { cat:'players', q:'姆巴佩在2018年世界杯决赛中打入几球？', opts:['2球','1球','3球','0球'], ans:0, explain:'姆巴佩在2018年世界杯决赛中打入2球，成为继贝利之后第二位在世界杯决赛进球的青少年。' },
+  { cat:'players', q:'2022年世界杯金球奖得主是谁？', opts:['梅西','姆巴佩','莫德里奇','格列兹曼'], ans:0, explain:'梅西在2022年卡塔尔世界杯中表现出色，获得金球奖，同时阿根廷夺冠。' },
+
+  // 规则
+  { cat:'rules', q:'足球比赛中标准场地的长度范围是多少？', opts:['100-110米','90-100米','110-120米','80-90米'], ans:0, explain:'根据FIFA规定，标准足球场地长度为100-110米（国际比赛），宽度为64-75米。' },
+  { cat:'rules', q:'一场标准足球比赛的时间是多少分钟？', opts:['90分钟','80分钟','100分钟','70分钟'], ans:0, explain:'一场标准足球比赛分为上下两个半场，各45分钟，共90分钟（不含补时）。' },
+  { cat:'rules', q:'越位规则中，球员处于越位位置的判定标准是？', opts:['比球和倒数第二名防守球员更靠近对方球门线','比球更靠近对方球门线','比最后一名防守球员更靠近对方球门线','在对方半场即可'], ans:0, explain:'越位判定：进攻球员比球和倒数第二名防守球员更靠近对方球门线时处于越位位置。' },
+  { cat:'rules', q:'一名球员在一场比赛中得到几张黄牌会被罚下？', opts:['2张','3张','1张','4张'], ans:0, explain:'一名球员在同一场比赛中得到2张黄牌将被红牌罚下场。' },
+  { cat:'rules', q:'点球点距离球门线多远？', opts:['11米(12码)','9米','12米','10米'], ans:0, explain:'罚球点（点球点）距离球门线11米（12码），这也是"12码球"名称的由来。' },
+  { cat:'rules', q:'角球弧的半径是多少？', opts:['1米','0.5米','1.5米','2米'], ans:0, explain:'角球弧是以角旗杆为圆心、半径为1米的四分之一圆弧。' },
+
+  // 战术
+  { cat:'tactics', q:'4-3-3阵型中有几名中场球员？', opts:['3名','4名','2名','5名'], ans:0, explain:'4-3-3阵型由4名后卫、3名中场和3名前锋组成，是一种攻守平衡的阵型。' },
+  { cat:'tactics', q:'"全攻全守"战术最早由哪支球队发扬光大？', opts:['荷兰(1974年)','巴西(1970年)','德国(1972年)','意大利(1982年)'], ans:0, explain:'全攻全守(Total Football)战术由荷兰队在1970年代发扬，教练米歇尔斯和核心克鲁伊夫是关键人物。' },
+  { cat:'tactics', q:'Tiki-taka战术以哪支球队为代表？', opts:['巴塞罗那/西班牙','AC米兰','曼联','拜仁慕尼黑'], ans:0, explain:'Tiki-taka短传配合战术以巴塞罗那和西班牙国家队为代表，强调控球和短传。' },
+  { cat:'tactics', q:'"摆大巴"(Park the Bus)战术的核心思想是？', opts:['全力防守，密集防守','全攻全守','快速反击','高位逼抢'], ans:0, explain:'"摆大巴"指全队退守、密集防守的战术，该词由穆里尼奥推广使用。' },
+  { cat:'tactics', q:'高位逼抢(Pressing)战术要求球员在何处开始防守？', opts:['对方半场','本方半场','中场','球门附近'], ans:0, explain:'高位逼抢要求球员在对方半场就开始积极抢断，压缩对手传球空间，克洛普的球队是典型代表。' },
+];
+
+const CATEGORIES = [
+  { id:'history', name:'世界杯历史', emoji:'🏆' },
+  { id:'players', name:'球星传奇', emoji:'⭐' },
+  { id:'rules', name:'比赛规则', emoji:'📋' },
+  { id:'tactics', name:'战术阵型', emoji:'♟️' },
+];
+
+let currentQuestions = [];
+let currentIdx = 0;
+let score = 0;
+let correctCount = 0;
+let wrongCount = 0;
+let streak = 0;
+let maxStreak = 0;
+let startTime = 0;
+let timerInterval = null;
+let timeLeft = 30;
+let answered = false;
+let selectedCat = null;
+
+// 菜单
+function showMenu() {
+  hideAll();
+  document.getElementById('menuView').classList.remove('hidden');
+}
+function showCategorySelect() {
+  hideAll();
+  document.getElementById('categoryView').classList.remove('hidden');
+  buildCatGrid();
+}
+function showLeaderboard() {
+  hideAll();
+  document.getElementById('leaderView').classList.remove('hidden');
+  renderLeaderboard();
+}
+function hideAll() {
+  ['menuView','categoryView','quizView','resultView','leaderView'].forEach(id => {
+    document.getElementById(id).classList.add('hidden');
+  });
+  clearInterval(timerInterval);
+}
+
+function buildCatGrid() {
+  const grid = document.getElementById('catGrid');
+  grid.innerHTML = '';
+  CATEGORIES.forEach(c => {
+    const count = QUESTIONS.filter(q => q.cat === c.id).length;
+    const btn = document.createElement('div');
+    btn.className = 'cat-btn' + (selectedCat === c.id ? ' selected' : '');
+    btn.innerHTML = `<div class="emoji">${c.emoji}</div><div class="name">${c.name}</div><div style="color:#668;font-size:0.8rem;">${count}题</div>`;
+    btn.onclick = () => { selectedCat = c.id; buildCatGrid(); };
+    grid.appendChild(btn);
+  });
+}
+
+// 开始
+function startQuick() {
+  selectedCat = null;
+  startQuiz(shuffle([...QUESTIONS]).slice(0, 10));
+}
+
+function startCategory() {
+  if (!selectedCat) { alert('请选择一个分类'); return; }
+  const qs = QUESTIONS.filter(q => q.cat === selectedCat);
+  startQuiz(shuffle([...qs]));
+}
+
+function startQuiz(questions) {
+  currentQuestions = questions;
+  currentIdx = 0;
+  score = 0;
+  correctCount = 0;
+  wrongCount = 0;
+  streak = 0;
+  maxStreak = 0;
+  startTime = Date.now();
+
+  hideAll();
+  document.getElementById('quizView').classList.remove('hidden');
+  showQuestion();
+}
+
+function showQuestion() {
+  const q = currentQuestions[currentIdx];
+  answered = false;
+
+  // 更新进度
+  const pct = ((currentIdx) / currentQuestions.length * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `${currentIdx + 1}/${currentQuestions.length}`;
+  document.getElementById('qNum').textContent = `第 ${currentIdx + 1} 题`;
+  document.getElementById('qText').textContent = q.q;
+
+  // 提示
+  const catInfo = CATEGORIES.find(c => c.id === q.cat);
+  document.getElementById('qHint').textContent = catInfo ? `分类：${catInfo.emoji} ${catInfo.name}` : '';
+
+  // 选项
+  const optDiv = document.getElementById('options');
+  optDiv.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+  q.opts.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'option';
+    div.innerHTML = `<div class="option-letter">${letters[i]}</div><div class="option-text">${opt}</div>`;
+    div.onclick = () => selectOption(i);
+    optDiv.appendChild(div);
+  });
+
+  // 隐藏解析和下一题按钮
+  document.getElementById('explanation').classList.remove('show');
+  document.getElementById('nextBtn').classList.add('hidden');
+
+  // 计时器
+  timeLeft = 30;
+  document.getElementById('timer').textContent = timeLeft;
+  document.getElementById('timer').classList.remove('warning');
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    document.getElementById('timer').textContent = timeLeft;
+    if (timeLeft <= 10) document.getElementById('timer').classList.add('warning');
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      timeUp();
+    }
+  }, 1000);
+}
+
+function selectOption(idx) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timerInterval);
+
+  const q = currentQuestions[currentIdx];
+  const options = document.querySelectorAll('.option');
+  const isCorrect = idx === q.ans;
+
+  // 标记答案
+  options.forEach((opt, i) => {
+    opt.style.pointerEvents = 'none';
+    if (i === q.ans) opt.classList.add('correct');
+    if (i === idx && !isCorrect) opt.classList.add('wrong');
+  });
+
+  if (isCorrect) {
+    correctCount++;
+    streak++;
+    maxStreak = Math.max(maxStreak, streak);
+    // 时间加分
+    const timeBonus = Math.floor(timeLeft * 2);
+    score += 100 + timeBonus;
+  } else {
+    wrongCount++;
+    streak = 0;
+  }
+
+  // 显示解析
+  document.getElementById('explainText').textContent = q.explain;
+  document.getElementById('explanation').classList.add('show');
+  document.getElementById('nextBtn').classList.remove('hidden');
+  document.getElementById('nextBtn').textContent = currentIdx < currentQuestions.length - 1 ? '下一题' : '查看结果';
+}
+
+function timeUp() {
+  if (answered) return;
+  answered = true;
+  wrongCount++;
+  streak = 0;
+
+  const q = currentQuestions[currentIdx];
+  const options = document.querySelectorAll('.option');
+  options.forEach((opt, i) => {
+    opt.style.pointerEvents = 'none';
+    if (i === q.ans) opt.classList.add('correct');
+  });
+
+  document.getElementById('explainText').textContent = '⏰ 时间到！' + q.explain;
+  document.getElementById('explanation').classList.add('show');
+  document.getElementById('nextBtn').classList.remove('hidden');
+  document.getElementById('nextBtn').textContent = currentIdx < currentQuestions.length - 1 ? '下一题' : '查看结果';
+}
+
+function nextQuestion() {
+  currentIdx++;
+  if (currentIdx >= currentQuestions.length) {
+    showResult();
+  } else {
+    showQuestion();
+  }
+}
+
+function showResult() {
+  hideAll();
+  document.getElementById('resultView').classList.remove('hidden');
+
+  const total = currentQuestions.length;
+  const pct = Math.round((correctCount / total) * 100);
+  const elapsed = Math.round((Date.now() - startTime) / 1000);
+
+  document.getElementById('resultScore').textContent = score;
+  document.getElementById('statCorrect').textContent = correctCount;
+  document.getElementById('statWrong').textContent = wrongCount;
+  document.getElementById('statTime').textContent = elapsed + 's';
+  document.getElementById('statStreak').textContent = maxStreak;
+
+  let title, grade, detail;
+  if (pct >= 90) { title='🏆 足球大师！'; grade='S'; detail='你的足球知识令人惊叹！'; }
+  else if (pct >= 70) { title='⭐ 资深球迷'; grade='A'; detail='你对足球非常了解！'; }
+  else if (pct >= 50) { title='👍 足球爱好者'; grade='B'; detail='继续学习，你会更强！'; }
+  else if (pct >= 30) { title='📚 初学者'; grade='C'; detail='多看看比赛，积累知识！'; }
+  else { title='🌱 足球萌新'; grade='D'; detail:'没关系，每个人都有开始！'; }
+
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultGrade').textContent = `评级：${grade} (${pct}%)`;
+  document.getElementById('resultDetail').textContent = detail;
+
+  // 保存记录
+  saveRecord({ score, correct:correctCount, total, time:elapsed, date:new Date().toLocaleDateString() });
+}
+
+function restart() {
+  if (selectedCat) startCategory();
+  else startQuick();
+}
+
+// 排行榜
+function getRecords() {
+  try { return JSON.parse(localStorage.getItem('football_quiz_records') || '[]'); }
+  catch { return []; }
+}
+
+function saveRecord(record) {
+  const records = getRecords();
+  records.push(record);
+  records.sort((a, b) => b.score - a.score);
+  localStorage.setItem('football_quiz_records', JSON.stringify(records.slice(0, 20)));
+}
+
+function renderLeaderboard() {
+  const records = getRecords();
+  const list = document.getElementById('lbList');
+  if (records.length === 0) {
+    list.innerHTML = '<p style="text-align:center;color:#668;">暂无记录</p>';
+    return;
+  }
+  list.innerHTML = records.slice(0, 10).map((r, i) => `
+    <div class="lb-row">
+      <div class="lb-rank">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i+1}</div>
+      <div>${r.correct}/${r.total}题</div>
+      <div class="lb-time">${r.time}s</div>
+      <div class="lb-score">${r.score}分</div>
+    </div>
+  `).join('');
+}
+
+function clearLeaderboard() {
+  if (confirm('确定要清空所有记录吗？')) {
+    localStorage.removeItem('football_quiz_records');
+    renderLeaderboard();
+  }
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+</script>
+</body>
+</html>
