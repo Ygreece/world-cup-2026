@@ -40,6 +40,8 @@ xdg-open index.html
 | Football Legends | `football-legends.html` | 大头卡通风格 2D 足球对战，支持 AI 对手 |
 | 点球大战 | `penalty-shootout.html` | 点球决胜，16 支球队可选，3 档难度 |
 | 足球知识问答 | `football-quiz.html` | 30+ 道题目，4 个分类，计时挑战 |
+| 记忆翻牌 | `memory-game.html` | 国旗配对记忆游戏，4 种棋盘尺寸 |
+| 世界杯预测器 | `predictor.html` | 预测 48 队小组赛和淘汰赛结果 |
 
 ## 技术栈
 
@@ -53,9 +55,11 @@ xdg-open index.html
 
 ```
 world-cup-2026/
-├── index.html              # 主页
-├── football-legends.html   # Football Legends 2D 游戏
+├── index.html              # 主页（倒计时、小组赛、模拟器、历史等）
+├── football-legends.html   # Football Legends 2D 对战游戏
 ├── penalty-shootout.html   # 点球大战
 ├── football-quiz.html      # 足球知识问答
+├── memory-game.html        # 记忆翻牌游戏
+├── predictor.html          # 世界杯预测器
 └── README.md
 ```

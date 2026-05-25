@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔮 世界杯预测器 - 2026世界杯</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a1628;color:#fff;font-family:'Segoe UI',sans-serif;min-height:100vh}
+
+.app{max-width:800px;margin:0 auto;padding:20px}
+
+.header{text-align:center;padding:25px 0 15px}
+.header h1{font-size:2.2rem;background:linear-gradient(90deg,#ffd700,#ff6b35);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header p{color:#88aacc;margin-top:5px}
+
+.tabs{display:flex;justify-content:center;gap:8px;margin:20px 0;flex-wrap:wrap}
+.tab{padding:10px 20px;background:rgba(255,255,255,0.05);border:2px solid rgba(255,255,255,0.1);border-radius:10px;cursor:pointer;transition:all 0.3s;font-size:0.95rem;color:#aac}
+.tab.active{border-color:#ffd700;background:rgba(255,215,0,0.1);color:#fff}
+.tab:hover{border-color:#3a6a9f}
+
+.section{display:none}
+.section.active{display:block}
+
+/* 小组赛预测 */
+.group-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:15px}
+.group-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;overflow:hidden}
+.group-header{background:linear-gradient(135deg,#1a3a5f,#2a4a6f);padding:12px 15px;font-weight:bold;display:flex;align-items:center;gap:8px}
+.group-matches{padding:10px}
+.match-row{display:flex;align-items:center;gap:8px;padding:8px 5px;border-bottom:1px solid rgba(255,255,255,0.05)}
+.match-row:last-child{border-bottom:none}
+.match-team{flex:1;font-size:0.85rem;display:flex;align-items:center;gap:5px}
+.match-team.home{justify-content:flex-end}
+.match-input{width:45px;height:35px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:#ffd700;font-size:1rem;text-align:center;font-weight:bold}
+.match-input:focus{outline:none;border-color:#ffd700;background:rgba(255,215,0,0.1)}
+.match-vs{color:#666;font-size:0.8rem;min-width:20px;text-align:center}
+.group-standings{padding:10px 15px;border-top:1px solid rgba(255,255,255,0.08)}
+.standing-row{display:flex;align-items:center;gap:10px;padding:5px 0;font-size:0.85rem}
+.standing-pos{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:bold}
+.pos-1{background:#4aaa6f}
+.pos-2{background:#3a7abf}
+.pos-3{background:#886a00}
+.pos-4{background:#555}
+.standing-pts{margin-left:auto;color:#ffd700;font-weight:bold}
+
+/* 淘汰赛预测 */
+.bracket{overflow-x:auto;padding:10px 0}
+.bracket-round{display:inline-block;vertical-align:top;margin-right:30px;min-width:180px}
+.round-title{text-align:center;color:#ffd700;font-weight:bold;margin-bottom:10px;font-size:0.9rem}
+.bracket-match{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;margin-bottom:12px;overflow:hidden}
+.bracket-team{display:flex;align-items:center;gap:8px;padding:8px 10px;cursor:pointer;transition:all 0.2s;font-size:0.85rem}
+.bracket-team:hover{background:rgba(255,255,255,0.05)}
+.bracket-team.selected{background:rgba(255,215,0,0.1);border-left:3px solid #ffd700}
+.bracket-team .score-input{width:30px;height:25px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:4px;color:#ffd700;font-size:0.85rem;text-align:center}
+.bracket-team .score-input:focus{outline:none;border-color:#ffd700}
+.bracket-divider{height:1px;background:rgba(255,255,255,0.1)}
+
+/* 冠军展示 */
+.champion-pick{text-align:center;padding:30px;margin:20px 0;background:linear-gradient(135deg,rgba(255,215,0,0.05),rgba(255,107,53,0.05));border:1px solid rgba(255,215,0,0.2);border-radius:16px}
+.champion-pick h3{color:#ffd700;margin-bottom:15px}
+.champion-select{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;max-width:600px;margin:0 auto}
+.champ-btn{padding:10px 18px;background:rgba(255,255,255,0.05);border:2px solid rgba(255,255,255,0.1);border-radius:10px;cursor:pointer;transition:all 0.3s;font-size:0.9rem}
+.champ-btn:hover{border-color:#3a6a9f}
+.champ-btn.selected{border-color:#ffd700;background:rgba(255,215,0,0.15);color:#ffd700}
+
+/* 总结 */
+.summary{text-align:center;padding:30px;margin:20px 0;background:rgba(255,255,255,0.03);border-radius:16px}
+.summary h3{color:#ffd700;margin-bottom:15px;font-size:1.3rem}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px;max-width:500px;margin:20px auto}
+.summary-item{text-align:center}
+.summary-item .num{font-size:2rem;color:#ffd700}
+.summary-item .lbl{font-size:0.8rem;color:#88aacc}
+
+.btn-row{display:flex;justify-content:center;gap:10px;margin:20px 0;flex-wrap:wrap}
+.btn{padding:12px 28px;border:none;border-radius:10px;font-size:1rem;cursor:pointer;transition:all 0.3s;font-weight:600}
+.btn-gold{background:linear-gradient(135deg,#ffd700,#ff6b35);color:#000}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(255,215,0,0.3)}
+.btn-outline{background:transparent;border:2px solid rgba(255,255,255,0.2);color:#fff}
+.btn-outline:hover{border-color:#3a6a9f}
+
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#4aaa6f;padding:12px 25px;border-radius:10px;font-weight:600;z-index:100;opacity:0;transition:opacity 0.3s}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="header">
+    <h1>🔮 世界杯预测器</h1>
+    <p>预测 2026 世界杯每场比赛的结果，看看谁是预言帝！</p>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="showSection('groups')">📋 小组赛</div>
+    <div class="tab" onclick="showSection('knockout')">🏆 淘汰赛</div>
+    <div class="tab" onclick="showSection('champion')">👑 冠军</div>
+    <div class="tab" onclick="showSection('summary')">📊 总结</div>
+  </div>
+
+  <!-- 小组赛 -->
+  <div class="section active" id="groups-section">
+    <div class="group-grid" id="groupGrid"></div>
+    <div class="btn-row">
+      <button class="btn btn-gold" onclick="showSection('knockout')">下一步：淘汰赛 →</button>
+    </div>
+  </div>
+
+  <!-- 淘汰赛 -->
+  <div class="section" id="knockout-section">
+    <div class="bracket" id="bracket"></div>
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="showSection('groups')">← 小组赛</button>
+      <button class="btn btn-gold" onclick="showSection('champion')">下一步：冠军 →</button>
+    </div>
+  </div>
+
+  <!-- 冠军 -->
+  <div class="section" id="champion-section">
+    <div class="champion-pick">
+      <h3>👑 选择你的冠军</h3>
+      <div class="champion-select" id="champSelect"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="showSection('knockout')">← 淘汰赛</button>
+      <button class="btn btn-gold" onclick="showSection('summary')">查看总结 →</button>
+    </div>
+  </div>
+
+  <!-- 总结 -->
+  <div class="section" id="summary-section">
+    <div class="summary" id="summaryContent"></div>
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="showSection('champion')">← 修改</button>
+      <button class="btn btn-gold" onclick="savePrediction()">💾 保存预测</button>
+      <button class="btn btn-outline" onclick="sharePrediction()">📤 分享</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// 48 队数据 (2026 世界杯)
+const TEAMS = {
+  A:['美国','牙买加','厄瓜多尔','塞内加尔'],
+  B:['英格兰','苏格兰','突尼斯','巴拿马'],
+  C:['墨西哥','摩洛哥','新西兰','洪都拉斯'],
+  D:['法国','澳大利亚','秘鲁','科特迪瓦'],
+  E:['西班牙','日本','巴拉圭','哥斯达黎加'],
+  F:['巴西','瑞士','喀麦隆','海地'],
+  G:['阿根廷','沙特','埃及','萨尔瓦多'],
+  H:['德国','韩国','哥伦比亚','阿联酋'],
+  I:['葡萄牙','塞尔维亚','加纳','乌兹别克斯坦'],
+  J:['荷兰','阿尔及利亚','加拿大','库拉索'],
+  K:['比利时','乌拉圭','中国','刚果'],
+  L:['克罗地亚','伊朗','尼日利亚','危地马拉'],
+};
+
+const FLAG_MAP = {
+  '美国':'🇺🇸','牙买加':'🇯🇲','厄瓜多尔':'🇪🇨','塞内加尔':'🇸🇳',
+  '英格兰':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','苏格兰':'🏴󠁧󠁢󠁳󠁣󠁴󠁿','突尼斯':'🇹🇳','巴拿马':'🇵🇦',
+  '墨西哥':'🇲🇽','摩洛哥':'🇲🇦','新西兰':'🇳🇿','洪都拉斯':'🇭🇳',
+  '法国':'🇫🇷','澳大利亚':'🇦🇺','秘鲁':'🇵🇪','科特迪瓦':'🇨🇮',
+  '西班牙':'🇪🇸','日本':'🇯🇵','巴拉圭':'🇵🇾','哥斯达黎加':'🇨🇷',
+  '巴西':'🇧🇷','瑞士':'🇨🇭','喀麦隆':'🇨🇲','海地':'🇭🇹',
+  '阿根廷':'🇦🇷','沙特':'🇸🇦','埃及':'🇪🇬','萨尔瓦多':'🇸🇻',
+  '德国':'🇩🇪','韩国':'🇰🇷','哥伦比亚':'🇨🇴','阿联酋':'🇦🇪',
+  '葡萄牙':'🇵🇹','塞尔维亚':'🇷🇸','加纳':'🇬🇭','乌兹别克斯坦':'🇺🇿',
+  '荷兰':'🇳🇱','阿尔及利亚':'🇩🇿','加拿大':'🇨🇦','库拉索':'🇨🇼',
+  '比利时':'🇧🇪','乌拉圭':'🇺🇾','中国':'🇨🇳','刚果':'🇨🇬',
+  '克罗地亚':'🇭🇷','伊朗':'🇮🇷','尼日利亚':'🇳🇬','危地马拉':'🇬🇹',
+};
+
+const GROUP_NAMES = Object.keys(TEAMS);
+let predictions = {};
+let selectedChamp = null;
+
+function init() {
+  // 初始化预测数据
+  GROUP_NAMES.forEach(g => {
+    if (!predictions[g]) {
+      predictions[g] = { matches: [], standings: [] };
+      const teams = TEAMS[g];
+      for (let i = 0; i < teams.length; i++) {
+        for (let j = i + 1; j < teams.length; j++) {
+          predictions[g].matches.push({ home: teams[i], away: teams[j], homeGoals: '', awayGoals: '' });
+        }
+      }
+    }
+  });
+  if (!predictions.knockout) predictions.knockout = {};
+  if (!predictions.champion) predictions.champion = null;
+
+  renderGroups();
+  renderBracket();
+  renderChampion();
+}
+
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(name + '-section').classList.add('active');
+  document.querySelectorAll('.tab')[['groups','knockout','champion','summary'].indexOf(name)].classList.add('active');
+
+  if (name === 'knockout') renderBracket();
+  if (name === 'summary') renderSummary();
+  if (name === 'champion') renderChampion();
+}
+
+function renderGroups() {
+  const grid = document.getElementById('groupGrid');
+  grid.innerHTML = '';
+  GROUP_NAMES.forEach(g => {
+    const card = document.createElement('div');
+    card.className = 'group-card';
+    const pred = predictions[g];
+    const standings = calcStandings(g);
+
+    let matchesHtml = pred.matches.map((m, i) => {
+      const fH = FLAG_MAP[m.home] || '🏳️';
+      const fA = FLAG_MAP[m.away] || '🏳️';
+      return `<div class="match-row">
+        <div class="match-team home">${m.home} ${fH}</div>
+        <input class="match-input" type="number" min="0" max="20" value="${m.homeGoals}" onchange="setScore('${g}',${i},'home',this.value)">
+        <div class="match-vs">-</div>
+        <input class="match-input" type="number" min="0" max="20" value="${m.awayGoals}" onchange="setScore('${g}',${i},'away',this.value)">
+        <div class="match-team">${fA} ${m.away}</div>
+      </div>`;
+    }).join('');
+
+    let standHtml = standings.map((s, i) => {
+      const f = FLAG_MAP[s.name] || '🏳️';
+      return `<div class="standing-row">
+        <div class="standing-pos pos-${Math.min(i+1,4)}">${i+1}</div>
+        <span>${f}</span>
+        <span>${s.name}</span>
+        <span style="color:#888;font-size:0.8rem">${s.wins}胜${s.draws}平${s.losses}负 ${s.gf}:${s.ga}</span>
+        <div class="standing-pts">${s.pts}分</div>
+      </div>`;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="group-header">📋 小组 ${g}</div>
+      <div class="group-matches">${matchesHtml}</div>
+      <div class="group-standings">${standHtml}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function setScore(group, idx, side, val) {
+  predictions[group].matches[idx][side + 'Goals'] = val === '' ? '' : parseInt(val) || 0;
+  renderGroups();
+}
+
+function calcStandings(group) {
+  const teams = {};
+  TEAMS[group].forEach(t => { teams[t] = { name:t, wins:0, draws:0, losses:0, gf:0, ga:0, pts:0, gd:0 }; });
+  predictions[group].matches.forEach(m => {
+    if (m.homeGoals === '' || m.awayGoals === '') return;
+    const hg = parseInt(m.homeGoals), ag = parseInt(m.awayGoals);
+    const h = teams[m.home], a = teams[m.away];
+    h.gf += hg; h.ga += ag;
+    a.gf += ag; a.ga += hg;
+    if (hg > ag) { h.wins++; h.pts+=3; a.losses++; }
+    else if (hg < ag) { a.wins++; a.pts+=3; h.losses++; }
+    else { h.draws++; a.draws++; h.pts++; a.pts++; }
+  });
+  Object.values(teams).forEach(t => t.gd = t.gf - t.ga);
+  return Object.values(teams).sort((a,b) => b.pts-a.pts || b.gd-a.gd || b.gf-a.gf);
+}
+
+function getQualified() {
+  const q = [];
+  GROUP_NAMES.forEach(g => {
+    const s = calcStandings(g);
+    if (s[0]) q.push(s[0].name);
+    if (s[1]) q.push(s[1].name);
+    // 最好的4个第三名
+    if (s[2]) q.push(s[2].name);
+  });
+  return q;
+}
+
+function renderBracket() {
+  const br = document.getElementById('bracket');
+  // 简化：只展示 16 强到决赛
+  const qualified = getQualified();
+  const rounds = ['16强','8强','半决赛','三四名','决赛'];
+  const roundCounts = [16,8,4,2,1]; // 三四名是2队,决赛是2队...简化处理
+
+  let html = '';
+  // 16 强
+  html += `<div class="bracket-round"><div class="round-title">🏆 16 强</div>`;
+  for (let i = 0; i < Math.min(16, qualified.length); i += 2) {
+    const t1 = qualified[i] || '待定';
+    const t2 = qualified[i+1] || '待定';
+    const f1 = FLAG_MAP[t1] || '🏳️';
+    const f2 = FLAG_MAP[t2] || '🏳️';
+    const key = `r16_${i}`;
+    const sel = predictions.knockout[key];
+    html += `<div class="bracket-match">
+      <div class="bracket-team ${sel===t1?'selected':''}" onclick="pickWinner('${key}','${t1}')">
+        <span>${f1} ${t1}</span>
+      </div>
+      <div class="bracket-divider"></div>
+      <div class="bracket-team ${sel===t2?'selected':''}" onclick="pickWinner('${key}','${t2}')">
+        <span>${f2} ${t2}</span>
+      </div>
+    </div>`;
+  }
+  html += `</div>`;
+
+  // 后续轮次占位
+  ['8强','半决赛','决赛'].forEach((name, ri) => {
+    html += `<div class="bracket-round"><div class="round-title">🏆 ${name}</div>`;
+    const count = [8,4,2][ri];
+    for (let i = 0; i < count; i += 2) {
+      const key = `r${ri}_${i}`;
+      const sel = predictions.knockout[key];
+      html += `<div class="bracket-match">
+        <div class="bracket-team ${sel?'selected':''}" onclick="pickWinner('${key}','待定')">
+          <span>${sel ? (FLAG_MAP[sel]||'🏳️')+' '+sel : '待定'}</span>
+        </div>
+        <div class="bracket-divider"></div>
+        <div class="bracket-team" onclick="pickWinner('${key}','待定')">
+          <span>待定</span>
+        </div>
+      </div>`;
+    }
+    html += `</div>`;
+  });
+
+  br.innerHTML = html;
+}
+
+function pickWinner(key, team) {
+  if (team === '待定') return;
+  predictions.knockout[key] = team;
+  renderBracket();
+}
+
+function renderChampion() {
+  const sel = document.getElementById('champSelect');
+  const allTeams = [];
+  GROUP_NAMES.forEach(g => TEAMS[g].forEach(t => allTeams.push(t)));
+
+  sel.innerHTML = allTeams.map(t => {
+    const f = FLAG_MAP[t] || '🏳️';
+    return `<div class="champ-btn ${selectedChamp===t?'selected':''}" onclick="selectChampion('${t}')">${f} ${t}</div>`;
+  }).join('');
+}
+
+function selectChampion(team) {
+  selectedChamp = team;
+  predictions.champion = team;
+  renderChampion();
+}
+
+function renderSummary() {
+  const content = document.getElementById('summaryContent');
+  let totalGoals = 0, totalMatches = 0;
+  GROUP_NAMES.forEach(g => {
+    predictions[g].matches.forEach(m => {
+      if (m.homeGoals !== '' && m.awayGoals !== '') {
+        totalGoals += parseInt(m.homeGoals) + parseInt(m.awayGoals);
+        totalMatches++;
+      }
+    });
+  });
+
+  const knockoutWinners = Object.values(predictions.knockout).filter(v => v && v !== '待定');
+
+  content.innerHTML = `
+    <h3>📊 你的预测总结</h3>
+    <div class="summary-grid">
+      <div class="summary-item"><div class="num">${totalMatches}</div><div class="lbl">已预测比赛</div></div>
+      <div class="summary-item"><div class="num">${totalGoals}</div><div class="lbl">预测总进球</div></div>
+      <div class="summary-item"><div class="num">${knockoutWinners.length}</div><div class="lbl">淘汰赛选择</div></div>
+      <div class="summary-item"><div class="num">${totalMatches>0?(totalGoals/totalMatches).toFixed(1):'0'}</div><div class="lbl">场均进球</div></div>
+    </div>
+    ${selectedChamp ? `<div style="margin-top:20px;font-size:1.2rem;">
+      👑 预测冠军：<span style="color:#ffd700;font-weight:bold;">${FLAG_MAP[selectedChamp]||'🏳️'} ${selectedChamp}</span>
+    </div>` : '<div style="margin-top:20px;color:#ff6b35;">⚠️ 还没选冠军！</div>'}
+  `;
+}
+
+function savePrediction() {
+  localStorage.setItem('wc2026_prediction', JSON.stringify(predictions));
+  showToast('✅ 预测已保存！');
+}
+
+function sharePrediction() {
+  let text = '🔮 我的 2026 世界杯预测：\n';
+  if (selectedChamp) text += `👑 冠军：${selectedChamp}\n`;
+  const totalGoals = GROUP_NAMES.reduce((sum, g) => {
+    return sum + predictions[g].matches.reduce((s, m) => {
+      if (m.homeGoals !== '' && m.awayGoals !== '') return s + parseInt(m.homeGoals) + parseInt(m.awayGoals);
+      return s;
+    }, 0);
+  }, 0);
+  text += `⚽ 预测总进球：${totalGoals}\n`;
+  text += '来挑战我的预测吧！';
+
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => showToast('📋 已复制到剪贴板！'));
+  } else {
+    prompt('复制以下内容分享：', text);
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// 加载已保存的预测
+try {
+  const saved = localStorage.getItem('wc2026_prediction');
+  if (saved) {
+    predictions = JSON.parse(saved);
+    selectedChamp = predictions.champion || null;
+  }
+} catch {}
+
+init();
+</script>
+</body>
+</html>

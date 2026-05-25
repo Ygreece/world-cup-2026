@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🃏 足球记忆翻牌 - 2026世界杯</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a1628;color:#fff;font-family:'Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+
+.header{text-align:center;padding:25px 20px 10px}
+.header h1{font-size:2.2rem;background:linear-gradient(90deg,#ffd700,#ff6b35);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header p{color:#88aacc;margin-top:5px;font-size:0.95rem}
+
+.stats{display:flex;justify-content:center;gap:30px;padding:10px 20px;flex-wrap:wrap}
+.stat{text-align:center}
+.stat .val{font-size:1.8rem;color:#ffd700;font-weight:bold}
+.stat .lbl{font-size:0.8rem;color:#88aacc}
+
+.controls{display:flex;gap:10px;justify-content:center;margin:10px 0;flex-wrap:wrap}
+.btn{padding:10px 22px;border:none;border-radius:10px;font-size:0.95rem;cursor:pointer;transition:all 0.3s;font-weight:600}
+.btn-primary{background:linear-gradient(135deg,#ffd700,#ff6b35);color:#000}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(255,215,0,0.3)}
+.btn-secondary{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2)}
+.btn-secondary:hover{background:rgba(255,255,255,0.15)}
+.btn-size{padding:8px 16px;font-size:0.85rem}
+.btn-size.active{border-color:#ffd700;background:rgba(255,215,0,0.15)}
+
+.board{display:grid;gap:10px;padding:15px;max-width:700px;width:100%;justify-content:center}
+.board-4x3{grid-template-columns:repeat(4,120px)}
+.board-4x4{grid-template-columns:repeat(4,120px)}
+.board-6x4{grid-template-columns:repeat(6,100px)}
+.board-6x6{grid-template-columns:repeat(6,90px)}
+@media(max-width:600px){
+  .board-4x3{grid-template-columns:repeat(4,70px)}
+  .board-4x4{grid-template-columns:repeat(4,70px)}
+  .board-6x4{grid-template-columns:repeat(6,55px)}
+  .board-6x6{grid-template-columns:repeat(6,50px)}
+}
+
+.card{aspect-ratio:3/4;border-radius:10px;cursor:pointer;perspective:600px;position:relative}
+.card-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 0.5s}
+.card.flipped .card-inner{transform:rotateY(180deg)}
+.card.matched .card-inner{transform:rotateY(180deg)}
+.card-front,.card-back{position:absolute;inset:0;backface-visibility:hidden;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.card-back{background:linear-gradient(135deg,#1a3a5f,#2a5a8f);border:2px solid #3a6a9f}
+.card-back::after{content:'⚽';font-size:2rem}
+.card-front{background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.15);transform:rotateY(180deg)}
+.card-front .flag{font-size:2.5rem;line-height:1}
+.card-front .name{font-size:0.7rem;color:#aac;margin-top:4px;text-align:center}
+.card.matched .card-front{border-color:#4aaa6f;background:rgba(74,170,111,0.1)}
+.card.matched::after{content:'✓';position:absolute;top:5px;right:5px;color:#4aaa6f;font-size:1.2rem;z-index:5}
+.card.shake{animation:shake 0.4s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+/* 完成弹窗 */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);display:none;align-items:center;justify-content:center;z-index:50}
+.overlay.show{display:flex}
+.result-box{background:linear-gradient(135deg,#1a2a4a,#0d1f3c);border:2px solid #3a6a9f;border-radius:20px;padding:35px;text-align:center;max-width:400px}
+.result-box h2{font-size:2rem;margin-bottom:10px}
+.result-box .stars{font-size:3rem;margin:15px 0}
+.result-box .detail{color:#88aacc;margin-bottom:20px;line-height:1.6}
+
+.combo{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:3rem;color:#ffd700;font-weight:bold;pointer-events:none;opacity:0;transition:all 0.5s;z-index:20}
+.combo.show{opacity:1;top:40%}
+
+.best-time{color:#4aaa6f;font-size:0.85rem;margin-top:3px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🃏 足球记忆翻牌</h1>
+  <p>翻开卡牌，找到所有配对的球队国旗！</p>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="val" id="moves">0</div><div class="lbl">步数</div></div>
+  <div class="stat"><div class="val" id="pairs">0</div><div class="lbl">配对</div></div>
+  <div class="stat"><div class="val" id="timer">0:00</div><div class="lbl">时间</div></div>
+  <div class="stat"><div class="val" id="combo">0</div><div class="lbl">连击</div></div>
+</div>
+
+<div class="controls">
+  <button class="btn btn-secondary btn-size" onclick="setGrid(4,3)">4×3</button>
+  <button class="btn btn-secondary btn-size active" onclick="setGrid(4,4)">4×4</button>
+  <button class="btn btn-secondary btn-size" onclick="setGrid(6,4)">6×4</button>
+  <button class="btn btn-secondary btn-size" onclick="setGrid(6,6)">6×6</button>
+  <button class="btn btn-primary" onclick="newGame()">新游戏</button>
+</div>
+<div class="best-time" id="bestTime"></div>
+
+<div class="board" id="board"></div>
+
+<div class="combo" id="comboText"></div>
+
+<div class="overlay" id="overlay">
+  <div class="result-box">
+    <h2 id="resultTitle">🎉 恭喜完成！</h2>
+    <div class="stars" id="stars">⭐⭐⭐</div>
+    <div class="detail" id="resultDetail"></div>
+    <button class="btn btn-primary" onclick="newGame();document.getElementById('overlay').classList.remove('show')">再来一局</button>
+  </div>
+</div>
+
+<script>
+const ALL_TEAMS = [
+  {id:'br',flag:'🇧🇷',name:'巴西'},{id:'ar',flag:'🇦🇷',name:'阿根廷'},
+  {id:'de',flag:'🇩🇪',name:'德国'},{id:'fr',flag:'🇫🇷',name:'法国'},
+  {id:'es',flag:'🇪🇸',name:'西班牙'},{id:'gb',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',name:'英格兰'},
+  {id:'it',flag:'🇮🇹',name:'意大利'},{id:'pt',flag:'🇵🇹',name:'葡萄牙'},
+  {id:'nl',flag:'🇳🇱',name:'荷兰'},{id:'be',flag:'🇧🇪',name:'比利时'},
+  {id:'jp',flag:'🇯🇵',name:'日本'},{id:'kr',flag:'🇰🇷',name:'韩国'},
+  {id:'mx',flag:'🇲🇽',name:'墨西哥'},{id:'us',flag:'🇺🇸',name:'美国'},
+  {id:'cn',flag:'🇨🇳',name:'中国'},{id:'au',flag:'🇦🇺',name:'澳大利亚'},
+  {id:'ar2',flag:'🇦🇷',name:'阿根廷2'},{id:'uy',flag:'🇺🇾',name:'乌拉圭'},
+  {id:'hr',flag:'🇭🇷',name:'克罗地亚'},{id:'sn',flag:'🇸🇳',name:'塞内加尔'},
+  {id:'ma',flag:'🇲🇦',name:'摩洛哥'},{id:'ng',flag:'🇳🇬',name:'尼日利亚'},
+  {id:'cl',flag:'🇨🇱',name:'智利'},{id:'co',flag:'🇨🇴',name:'哥伦比亚'},
+  {id:'se',flag:'🇸🇪',name:'瑞典'},{id:'ch',flag:'🇨🇭',name:'瑞士'},
+  {id:'dk',flag:'🇩🇰',name:'丹麦'},{id:'pl',flag:'🇵🇱',name:'波兰'},
+  {id:'wa',flag:'🏴󠁧󠁢󠁷󠁬󠁳󠁿',name:'威尔士'},{id:'rs',flag:'🇷🇸',name:'塞尔维亚'},
+  {id:'ca',flag:'🇨🇦',name:'加拿大'},{id:'cm',flag:'🇨🇲',name:'喀麦隆'},
+  {id:'gh',flag:'🇬🇭',name:'加纳'},{id:'ec',flag:'🇪🇨',name:'厄瓜多尔'},
+  {id:'ir',flag:'🇮🇷',name:'伊朗'},{id:'sa',flag:'🇸🇦',name:'沙特'},
+];
+
+let cols=4, rows=4;
+let cards=[], flipped=[], matched=new Set();
+let moveCount=0, pairCount=0, totalPairs=0;
+let comboCount=0, maxCombo=0;
+let timerStart=0, timerInterval=null, elapsed=0;
+let locked=false;
+let bestTimes={};
+
+function loadBest(){
+  try{bestTimes=JSON.parse(localStorage.getItem('memory_best')||'{}')}catch{bestTimes={}}
+}
+function saveBest(key,time){
+  if(!bestTimes[key]||time<bestTimes[key]){bestTimes[key]=time;localStorage.setItem('memory_best',JSON.stringify(bestTimes))}
+}
+function showBest(){
+  const key=cols+'x'+rows;
+  const el=document.getElementById('bestTime');
+  el.textContent=bestTimes[key]?`最佳成绩 (${key}): ${fmtTime(bestTimes[key])}`:'';
+}
+
+function setGrid(c,r){
+  cols=c;rows=r;
+  document.querySelectorAll('.btn-size').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  newGame();
+}
+
+function newGame(){
+  document.getElementById('overlay').classList.remove('show');
+  clearInterval(timerInterval);
+  locked=false;
+  moveCount=0;pairCount=0;comboCount=0;maxCombo=0;elapsed=0;
+  flipped=[];matched=new Set();
+
+  totalPairs=(cols*rows)/2;
+  const teams=shuffle([...ALL_TEAMS]).slice(0,totalPairs);
+  const deck=shuffle([...teams,...teams].map((t,i)=>({...t,idx:i})));
+  cards=deck;
+
+  updateStats();
+  showBest();
+  renderBoard();
+  timerStart=Date.now();
+  timerInterval=setInterval(()=>{
+    elapsed=Math.floor((Date.now()-timerStart)/1000);
+    document.getElementById('timer').textContent=fmtTime(elapsed);
+  },1000);
+}
+
+function renderBoard(){
+  const board=document.getElementById('board');
+  board.className=`board board-${cols}x${rows}`;
+  board.innerHTML='';
+  cards.forEach((card,i)=>{
+    const el=document.createElement('div');
+    el.className='card';
+    el.dataset.idx=i;
+    el.innerHTML=`<div class="card-inner"><div class="card-back"></div><div class="card-front"><div class="flag">${card.flag}</div><div class="name">${card.name}</div></div></div>`;
+    el.onclick=()=>flipCard(i);
+    board.appendChild(el);
+  });
+}
+
+function flipCard(idx){
+  if(locked)return;
+  if(matched.has(idx))return;
+  if(flipped.includes(idx))return;
+  if(flipped.length>=2)return;
+
+  flipped.push(idx);
+  const el=document.querySelectorAll('.card')[idx];
+  el.classList.add('flipped');
+
+  if(flipped.length===2){
+    moveCount++;
+    document.getElementById('moves').textContent=moveCount;
+    checkMatch();
+  }
+}
+
+function checkMatch(){
+  const[a,b]=flipped;
+  const ca=cards[a],cb=cards[b];
+  const elA=document.querySelectorAll('.card')[a];
+  const elB=document.querySelectorAll('.card')[b];
+
+  if(ca.id===cb.id){
+    // 匹配成功
+    matched.add(a);matched.add(b);
+    pairCount++;
+    comboCount++;
+    maxCombo=Math.max(maxCombo,comboCount);
+
+    setTimeout(()=>{
+      elA.classList.add('matched');
+      elB.classList.add('matched');
+      updateStats();
+      showCombo(comboCount);
+
+      if(pairCount===totalPairs){
+        clearInterval(timerInterval);
+        setTimeout(showResult,500);
+      }
+    },300);
+
+    flipped=[];
+  }else{
+    // 不匹配
+    comboCount=0;
+    locked=true;
+    setTimeout(()=>{
+      elA.classList.add('shake');
+      elB.classList.add('shake');
+    },200);
+    setTimeout(()=>{
+      elA.classList.remove('flipped','shake');
+      elB.classList.remove('flipped','shake');
+      flipped=[];
+      locked=false;
+      updateStats();
+    },800);
+  }
+}
+
+function showCombo(n){
+  if(n<2)return;
+  const el=document.getElementById('comboText');
+  el.textContent=`🔥 ${n} 连击！`;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),800);
+}
+
+function updateStats(){
+  document.getElementById('pairs').textContent=`${pairCount}/${totalPairs}`;
+  document.getElementById('combo').textContent=comboCount;
+}
+
+function showResult(){
+  const key=cols+'x'+rows;
+  saveBest(key,elapsed);
+  showBest();
+
+  let stars='⭐';
+  const moveRatio=moveCount/totalPairs;
+  if(moveRatio<=1.3)stars='⭐⭐⭐';
+  else if(moveRatio<=1.8)stars='⭐⭐';
+
+  document.getElementById('stars').textContent=stars;
+  document.getElementById('resultTitle').textContent='🎉 恭喜完成！';
+  document.getElementById('resultDetail').innerHTML=`
+    步数：${moveCount} | 配对：${totalPairs}<br>
+    用时：${fmtTime(elapsed)} | 最高连击：${maxCombo}<br>
+    ${bestTimes[key]===elapsed?'🏆 新纪录！':''}
+  `;
+  document.getElementById('overlay').classList.add('show');
+}
+
+function fmtTime(s){return`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+loadBest();
+newGame();
+</script>
+</body>
+</html>

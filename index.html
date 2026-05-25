@@ -2055,16 +2055,16 @@
                 <span class="logo-text">FIFA <span>World Cup 2026</span></span>
             </a>
             <ul class="nav-links">
-                <li><a href="#" class="active" onclick="showTab('home')">首页</a></li>
-                <li><a href="#" onclick="showTab('groups')">分组</a></li>
-                <li><a href="#" onclick="showTab('matches')">赛程</a></li>
-                <li><a href="#" onclick="showTab('bracket')">对阵图</a></li>
-                <li><a href="#" onclick="showTab('simulate')">模拟器</a></li>
-                <li><a href="#" onclick="showTab('history')">历史回顾</a></li>
-                <li><a href="#" onclick="showTab('compare')">球队对比</a></li>
-                <li><a href="#" onclick="showTab('tournament')">锦标赛</a></li>
-                <li><a href="#" onclick="showTab('schedule')">赛程生成</a></li>
-                <li><a href="#" onclick="showTab('besteleven')">最佳阵容</a></li>
+                <li><a href="#" class="active" onclick="showTab('home', this)">首页</a></li>
+                <li><a href="#" onclick="showTab('groups', this)">分组</a></li>
+                <li><a href="#" onclick="showTab('matches', this)">赛程</a></li>
+                <li><a href="#" onclick="showTab('bracket', this)">对阵图</a></li>
+                <li><a href="#" onclick="showTab('simulate', this)">模拟器</a></li>
+                <li><a href="#" onclick="showTab('history', this)">历史回顾</a></li>
+                <li><a href="#" onclick="showTab('compare', this)">球队对比</a></li>
+                <li><a href="#" onclick="showTab('tournament', this)">锦标赛</a></li>
+                <li><a href="#" onclick="showTab('schedule', this)">赛程生成</a></li>
+                <li><a href="#" onclick="showTab('besteleven', this)">最佳阵容</a></li>
             </ul>
         </div>
     </nav>
@@ -2112,17 +2112,17 @@
 
         <!-- 标签页 -->
         <div class="tabs">
-            <button class="tab-btn active" onclick="showTab('groups')">🏆 小组赛</button>
-            <button class="tab-btn" onclick="showTab('matches')">⚽ 赛程</button>
-            <button class="tab-btn" onclick="showTab('bracket')">🎯 淘汰赛</button>
-            <button class="tab-btn" onclick="showTab('simulate')">🎮 模拟器</button>
-            <button class="tab-btn" onclick="showTab('stats')">📊 统计</button>
-            <button class="tab-btn" onclick="showTab('game')">🎮 足球小游戏</button>
-            <button class="tab-btn" onclick="showTab('history')">📜 历史回顾</button>
-            <button class="tab-btn" onclick="showTab('compare')">⚖️ 球队对比</button>
-            <button class="tab-btn" onclick="showTab('tournament')">🏆 锦标赛</button>
-            <button class="tab-btn" onclick="showTab('schedule')">📋 赛程生成</button>
-            <button class="tab-btn" onclick="showTab('besteleven')">⭐ 最佳阵容</button>
+            <button class="tab-btn active" onclick="showTab('groups', this)">🏆 小组赛</button>
+            <button class="tab-btn" onclick="showTab('matches', this)">⚽ 赛程</button>
+            <button class="tab-btn" onclick="showTab('bracket', this)">🎯 淘汰赛</button>
+            <button class="tab-btn" onclick="showTab('simulate', this)">🎮 模拟器</button>
+            <button class="tab-btn" onclick="showTab('stats', this)">📊 统计</button>
+            <button class="tab-btn" onclick="showTab('game', this)">🎮 足球小游戏</button>
+            <button class="tab-btn" onclick="showTab('history', this)">📜 历史回顾</button>
+            <button class="tab-btn" onclick="showTab('compare', this)">⚖️ 球队对比</button>
+            <button class="tab-btn" onclick="showTab('tournament', this)">🏆 锦标赛</button>
+            <button class="tab-btn" onclick="showTab('schedule', this)">📋 赛程生成</button>
+            <button class="tab-btn" onclick="showTab('besteleven', this)">⭐ 最佳阵容</button>
         </div>
 
         <!-- 小组赛 -->
@@ -2268,6 +2268,12 @@
                 </a>
                 <a href="football-quiz.html" style="display:flex; align-items:center; gap:8px; padding:12px 24px; background:linear-gradient(135deg,#6a3fa0,#8a5fcf); border-radius:12px; color:#fff; text-decoration:none; font-weight:700; transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
                     🧠 足球问答 <span style="font-size:0.8rem; opacity:0.8;">30+题目·计时挑战</span>
+                </a>
+                <a href="memory-game.html" style="display:flex; align-items:center; gap:8px; padding:12px 24px; background:linear-gradient(135deg,#e63988,#ff6b9d); border-radius:12px; color:#fff; text-decoration:none; font-weight:700; transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+                    🃏 记忆翻牌 <span style="font-size:0.8rem; opacity:0.8;">国旗配对·4种难度</span>
+                </a>
+                <a href="predictor.html" style="display:flex; align-items:center; gap:8px; padding:12px 24px; background:linear-gradient(135deg,#0066cc,#0099ff); border-radius:12px; color:#fff; text-decoration:none; font-weight:700; transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+                    🔮 世界杯预测 <span style="font-size:0.8rem; opacity:0.8;">48队·小组赛+淘汰赛</span>
                 </a>
             </div>
 
@@ -2672,19 +2678,35 @@
         // 标签页切换
         // ============================================
 
-        function showTab(tab) {
+        function showTab(tab, el) {
             // 隐藏所有内容
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('active'));
+
+            // 英雄区域处理
+            const hero = document.getElementById('home');
+            if (hero) hero.style.display = tab === 'home' ? '' : 'none';
+
+            // 标签页容器
+            const tabsDiv = document.querySelector('.tabs');
+            if (tabsDiv) tabsDiv.style.display = tab === 'home' ? '' : 'flex';
 
             // 显示选中的内容
-            const section = document.getElementById(tab + '-section');
-            if (section) {
-                section.classList.add('active');
+            if (tab !== 'home') {
+                const section = document.getElementById(tab + '-section');
+                if (section) section.classList.add('active');
             }
 
-            // 高亮按钮
-            event.target.classList.add('active');
+            // 高亮按钮（导航栏 + 标签栏）
+            if (el) {
+                el.classList.add('active');
+            }
+            // 同步导航栏高亮
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+            const navMap = {home:'首页',groups:'分组',matches:'赛程',bracket:'对阵图',simulate:'模拟器',history:'历史回顾',compare:'球队对比',tournament:'锦标赛',schedule:'赛程生成',besteleven:'最佳阵容'};
+            document.querySelectorAll('.nav-links a').forEach(a => {
+                if (a.textContent.trim().includes(navMap[tab] || '')) a.classList.add('active');
+            });
         }
 
         // ============================================
