@@ -919,6 +919,7 @@
             <button class="tab-btn" onclick="showTab('bracket')">🎯 淘汰赛</button>
             <button class="tab-btn" onclick="showTab('simulate')">🎮 模拟器</button>
             <button class="tab-btn" onclick="showTab('stats')">📊 统计</button>
+            <button class="tab-btn" onclick="showTab('game')">🎮 足球小游戏</button>
         </div>
 
         <!-- 小组赛 -->
@@ -1003,6 +1004,32 @@
                         <div class="stat-label">德国/意大利夺冠</div>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- 足球小游戏 -->
+        <section class="tab-content" id="game-section">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">⚽ 足球小游戏</h2>
+                <p style="color: var(--text-muted);">WASD/方向键移动，空格键踢球，把球踢进对方球门！</p>
+                <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                    <div style="background: var(--card-bg); padding: 0.8rem 1.5rem; border-radius: 10px; border: 1px solid var(--border);">
+                        <span style="color: #002b5c; font-weight: 700; font-size: 1.5rem;" id="score-left">0</span>
+                    </div>
+                    <div style="background: var(--card-bg); padding: 0.8rem 1.5rem; border-radius: 10px; border: 1px solid var(--border);">
+                        <span style="color: var(--text-muted);">VS</span>
+                    </div>
+                    <div style="background: var(--card-bg); padding: 0.8rem 1.5rem; border-radius: 10px; border: 1px solid var(--border);">
+                        <span style="color: var(--primary); font-weight: 700; font-size: 1.5rem;" id="score-right">0</span>
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: center;">
+                <canvas id="football-game" width="800" height="500" style="border-radius: 16px; border: 2px solid var(--border); box-shadow: 0 20px 60px rgba(0,0,0,0.5);"></canvas>
+            </div>
+            <div style="text-align: center; margin-top: 1.5rem;">
+                <button onclick="startGame()" style="background: linear-gradient(135deg, var(--primary), #e63950); border: none; color: white; padding: 1rem 3rem; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin: 0 0.5rem;">开始比赛</button>
+                <button onclick="resetGame()" style="background: var(--card-bg); border: 1px solid var(--border); color: var(--text); padding: 1rem 3rem; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin: 0 0.5rem;">重置比分</button>
             </div>
         </section>
     </div>
@@ -1544,6 +1571,518 @@
         });
 
         // ============================================
+        // 足球小游戏
+        // ============================================
+
+        const gameCanvas = document.getElementById('football-game');
+        const gameCtx = gameCanvas.getContext('2d');
+        const W = gameCanvas.width;
+        const H = gameCanvas.height;
+
+        // 游戏常量
+        const GOAL_WIDTH = 15;
+        const GOAL_HEIGHT = 150;
+        const BALL_RADIUS = 12;
+        const PLAYER_RADIUS = 25;
+        const GRAVITY = 0.15;
+        const FRICTION = 0.99;
+        const BOUNCE = 0.7;
+        const KICK_POWER = 15;
+        const PLAYER_SPEED = 5;
+
+        let game = {
+            running: false,
+            scoreLeft: 0,
+            scoreRight: 0,
+            ball: { x: W/2, y: H/2, vx: 0, vy: 0 },
+            player: { x: W/4, y: H/2, vx: 0, vy: 0, facing: 1 },
+            ai: { x: W*3/4, y: H/2, vx: 0, vy: 0, facing: -1 },
+            keys: {},
+            particles: [],
+            shake: 0,
+            goalFlash: 0
+        };
+
+        // 键盘控制
+        document.addEventListener('keydown', (e) => {
+            game.keys[e.key.toLowerCase()] = true;
+            game.keys[e.code] = true;
+        });
+
+        document.addEventListener('keyup', (e) => {
+            game.keys[e.key.toLowerCase()] = false;
+            game.keys[e.code] = false;
+        });
+
+        function startGame() {
+            if (game.running) return;
+            game.running = true;
+            resetPositions();
+            gameLoop();
+        }
+
+        function resetGame() {
+            game.running = false;
+            game.scoreLeft = 0;
+            game.scoreRight = 0;
+            resetPositions();
+            updateScoreDisplay();
+            drawGame();
+        }
+
+        function resetPositions() {
+            game.ball = { x: W/2, y: H/2, vx: 0, vy: 0 };
+            game.player = { x: W/4, y: H/2, vx: 0, vy: 0, facing: 1 };
+            game.ai = { x: W*3/4, y: H/2, vx: 0, vy: 0, facing: -1 };
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('score-left').textContent = game.scoreLeft;
+            document.getElementById('score-right').textContent = game.scoreRight;
+        }
+
+        function addParticles(x, y, count, color) {
+            for (let i = 0; i < count; i++) {
+                game.particles.push({
+                    x, y,
+                    vx: (Math.random() - 0.5) * 10,
+                    vy: (Math.random() - 0.5) * 10,
+                    life: 20 + Math.random() * 20,
+                    color: color || '#d4af37'
+                });
+            }
+        }
+
+        function gameLoop() {
+            if (!game.running) return;
+            update();
+            drawGame();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function circleCollision(a, b, aR, bR) {
+            const dx = a.x - b.x;
+            const dy = a.y - b.y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            return dist < aR + bR;
+        }
+
+        function resolveCircleCollision(a, b, aR, bR, bounceFactor) {
+            const dx = a.x - b.x;
+            const dy = a.y - b.y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist === 0) return;
+
+            const nx = dx / dist;
+            const ny = dy / dist;
+
+            // 分离
+            const overlap = aR + bR - dist;
+            a.x += nx * overlap * 0.5;
+            a.y += ny * overlap * 0.5;
+            b.x -= nx * overlap * 0.5;
+            b.y -= ny * overlap * 0.5;
+
+            // 速度交换
+            const relVx = a.vx - b.vx;
+            const relVy = a.vy - b.vy;
+            const relVn = relVx * nx + relVy * ny;
+
+            if (relVn > 0) return;
+
+            a.vx -= relVn * nx * bounceFactor;
+            a.vy -= relVn * ny * bounceFactor;
+            b.vx += relVn * nx * bounceFactor;
+            b.vy += relVn * ny * bounceFactor;
+        }
+
+        function update() {
+            const { ball, player, ai } = game;
+
+            // 玩家移动
+            player.vx = 0;
+            player.vy = 0;
+            if (game.keys['a'] || game.keys['arrowleft']) { player.vx = -PLAYER_SPEED; player.facing = -1; }
+            if (game.keys['d'] || game.keys['arrowright']) { player.vx = PLAYER_SPEED; player.facing = 1; }
+            if (game.keys['w'] || game.keys['arrowup']) player.vy = -PLAYER_SPEED;
+            if (game.keys['s'] || game.keys['arrowdown']) player.vy = PLAYER_SPEED;
+
+            // 对角线标准化
+            if (player.vx !== 0 && player.vy !== 0) {
+                player.vx *= 0.707;
+                player.vy *= 0.707;
+            }
+
+            player.x += player.vx;
+            player.y += player.vy;
+
+            // 玩家边界
+            player.x = Math.max(PLAYER_RADIUS, Math.min(W - PLAYER_RADIUS, player.x));
+            player.y = Math.max(PLAYER_RADIUS, Math.min(H - PLAYER_RADIUS, player.y));
+
+            // AI 移动
+            const aiTargetY = ball.y;
+            const aiTargetX = ball.x + 100;
+            const aiSpeed = 3.5;
+
+            if (Math.abs(ai.y - aiTargetY) > 10) {
+                ai.vy = ai.y < aiTargetY ? aiSpeed : -aiSpeed;
+            } else {
+                ai.vy = 0;
+            }
+
+            if (Math.abs(ai.x - aiTargetX) > 30) {
+                ai.vx = ai.x < aiTargetX ? aiSpeed * 0.5 : -aiSpeed * 0.5;
+            } else {
+                ai.vx = 0;
+            }
+
+            ai.x += ai.vx;
+            ai.y += ai.vy;
+
+            ai.x = Math.max(W/2, Math.min(W - PLAYER_RADIUS, ai.x));
+            ai.y = Math.max(PLAYER_RADIUS, Math.min(H - PLAYER_RADIUS, ai.y));
+            ai.facing = ai.x < ball.x ? 1 : -1;
+
+            // 球物理
+            ball.vx *= FRICTION;
+            ball.vy *= FRICTION;
+            ball.x += ball.vx;
+            ball.y += ball.vy;
+
+            // 墙壁反弹（上下）
+            if (ball.y - BALL_RADIUS < 0) {
+                ball.y = BALL_RADIUS;
+                ball.vy = -ball.vy * BOUNCE;
+            }
+            if (ball.y + BALL_RADIUS > H) {
+                ball.y = H - BALL_RADIUS;
+                ball.vy = -ball.vy * BOUNCE;
+            }
+
+            // 左右边界 - 检测进球
+            const goalTop = (H - GOAL_HEIGHT) / 2;
+            const goalBottom = (H + GOAL_HEIGHT) / 2;
+
+            // 左球门
+            if (ball.x - BALL_RADIUS < GOAL_WIDTH) {
+                if (ball.y > goalTop && ball.y < goalBottom) {
+                    // 进球！
+                    game.scoreRight++;
+                    updateScoreDisplay();
+                    addParticles(ball.x, ball.y, 30, '#c8102e');
+                    game.goalFlash = 30;
+                    game.shake = 15;
+                    setTimeout(resetPositions, 1000);
+                    return;
+                } else {
+                    ball.x = GOAL_WIDTH + BALL_RADIUS;
+                    ball.vx = -ball.vx * BOUNCE;
+                }
+            }
+
+            // 右球门
+            if (ball.x + BALL_RADIUS > W - GOAL_WIDTH) {
+                if (ball.y > goalTop && ball.y < goalBottom) {
+                    // 进球！
+                    game.scoreLeft++;
+                    updateScoreDisplay();
+                    addParticles(ball.x, ball.y, 30, '#002b5c');
+                    game.goalFlash = 30;
+                    game.shake = 15;
+                    setTimeout(resetPositions, 1000);
+                    return;
+                } else {
+                    ball.x = W - GOAL_WIDTH - BALL_RADIUS;
+                    ball.vx = -ball.vx * BOUNCE;
+                }
+            }
+
+            // 玩家踢球
+            if (game.keys[' '] || game.keys['Space']) {
+                if (circleCollision(player, ball, PLAYER_RADIUS, BALL_RADIUS)) {
+                    const dx = ball.x - player.x;
+                    const dy = ball.y - player.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist > 0) {
+                        ball.vx = (dx / dist) * KICK_POWER + player.facing * 5;
+                        ball.vy = (dy / dist) * KICK_POWER - 3;
+                        addParticles(ball.x, ball.y, 10, '#d4af37');
+                        game.shake = 5;
+                    }
+                }
+            }
+
+            // 球与玩家碰撞
+            if (circleCollision(player, ball, PLAYER_RADIUS, BALL_RADIUS)) {
+                resolveCircleCollision(player, ball, PLAYER_RADIUS, BALL_RADIUS, 0.8);
+                addParticles(ball.x, ball.y, 5, '#ffffff');
+            }
+
+            // 球与AI碰撞
+            if (circleCollision(ai, ball, PLAYER_RADIUS, BALL_RADIUS)) {
+                resolveCircleCollision(ai, ball, PLAYER_RADIUS, BALL_RADIUS, 0.6);
+                // AI 踢球
+                const dx = ball.x - ai.x;
+                const dy = ball.y - ai.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist > 0) {
+                    ball.vx = (dx / dist) * 10;
+                    ball.vy = (dy / dist) * 10 - 2;
+                }
+            }
+
+            // 更新粒子
+            game.particles = game.particles.filter(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vx *= 0.95;
+                p.vy *= 0.95;
+                p.life--;
+                return p.life > 0;
+            });
+
+            // 震动衰减
+            if (game.shake > 0) game.shake *= 0.9;
+            if (game.shake < 0.5) game.shake = 0;
+            if (game.goalFlash > 0) game.goalFlash--;
+        }
+
+        function drawGame() {
+            const ctx = gameCtx;
+            const { ball, player, ai, particles, shake, goalFlash } = game;
+
+            ctx.save();
+            if (shake > 0) {
+                ctx.translate(
+                    (Math.random() - 0.5) * shake,
+                    (Math.random() - 0.5) * shake
+                );
+            }
+
+            // 背景 - 草地
+            ctx.fillStyle = '#1a472a';
+            ctx.fillRect(0, 0, W, H);
+
+            // 草地纹理
+            ctx.fillStyle = '#1e5232';
+            for (let x = 0; x < W; x += 40) {
+                ctx.fillRect(x, 0, 20, H);
+            }
+
+            // 边界线
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(10, 10, W - 20, H - 20);
+
+            // 中线
+            ctx.beginPath();
+            ctx.moveTo(W/2, 10);
+            ctx.lineTo(W/2, H - 10);
+            ctx.stroke();
+
+            // 中圆
+            ctx.beginPath();
+            ctx.arc(W/2, H/2, 60, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // 中点
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.beginPath();
+            ctx.arc(W/2, H/2, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 禁区
+            ctx.strokeRect(10, H/2 - 100, 80, 200);
+            ctx.strokeRect(W - 90, H/2 - 100, 80, 200);
+
+            // 球门
+            const goalTop = (H - GOAL_HEIGHT) / 2;
+            const goalBottom = (H + GOAL_HEIGHT) / 2;
+
+            // 左球门
+            ctx.fillStyle = goalFlash > 0 ? 'rgba(200, 16, 46, 0.5)' : 'rgba(0, 0, 0, 0.7)';
+            ctx.fillRect(0, goalTop, GOAL_WIDTH, GOAL_HEIGHT);
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(0, goalTop, GOAL_WIDTH, GOAL_HEIGHT);
+            // 球网
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 1;
+            for (let y = goalTop; y < goalBottom; y += 15) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(GOAL_WIDTH, y);
+                ctx.stroke();
+            }
+
+            // 右球门
+            ctx.fillStyle = goalFlash > 0 ? 'rgba(0, 43, 92, 0.5)' : 'rgba(0, 0, 0, 0.7)';
+            ctx.fillRect(W - GOAL_WIDTH, goalTop, GOAL_WIDTH, GOAL_HEIGHT);
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(W - GOAL_WIDTH, goalTop, GOAL_WIDTH, GOAL_HEIGHT);
+            // 球网
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 1;
+            for (let y = goalTop; y < goalBottom; y += 15) {
+                ctx.beginPath();
+                ctx.moveTo(W - GOAL_WIDTH, y);
+                ctx.lineTo(W, y);
+                ctx.stroke();
+            }
+
+            // 绘制粒子
+            particles.forEach(p => {
+                ctx.globalAlpha = p.life / 40;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1;
+
+            // 绘制AI
+            drawFootballPlayer(ctx, ai.x, ai.y, ai.facing, '#c8102e', '9');
+
+            // 绘制玩家
+            drawFootballPlayer(ctx, player.x, player.y, player.facing, '#002b5c', '10');
+
+            // 绘制足球
+            drawFootball(ctx, ball.x, ball.y);
+
+            // 进球闪光
+            if (goalFlash > 0) {
+                ctx.fillStyle = `rgba(255, 215, 0, ${goalFlash / 30 * 0.3})`;
+                ctx.fillRect(0, 0, W, H);
+
+                ctx.fillStyle = '#d4af37';
+                ctx.font = 'bold 48px "Segoe UI"';
+                ctx.textAlign = 'center';
+                ctx.fillText('⚽ 进球！', W/2, H/2);
+            }
+
+            // 未开始提示
+            if (!game.running) {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(0, 0, W, H);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 40px "Segoe UI"';
+                ctx.textAlign = 'center';
+                ctx.fillText('⚽ 足球小游戏', W/2, H/2 - 50);
+
+                ctx.font = '20px "Segoe UI"';
+                ctx.fillStyle = '#888888';
+                ctx.fillText('WASD/方向键 移动 | 空格键 踢球', W/2, H/2);
+                ctx.fillText('把球踢进对方球门得分！', W/2, H/2 + 35);
+
+                ctx.font = '16px "Segoe UI"';
+                ctx.fillStyle = '#666666';
+                ctx.fillText('点击「开始比赛」按钮开始', W/2, H/2 + 70);
+            }
+
+            ctx.restore();
+        }
+
+        function drawFootballPlayer(ctx, x, y, facing, color, number) {
+            // 阴影
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.beginPath();
+            ctx.ellipse(x, y + 30, 20, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 身体
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.roundRect(x - 18, y - 25, 36, 45, 5);
+            ctx.fill();
+
+            // 球衣条纹
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.fillRect(x - 18, y - 10, 36, 5);
+            ctx.fillRect(x - 18, y + 5, 36, 5);
+
+            // 号码
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 18px "Segoe UI"';
+            ctx.textAlign = 'center';
+            ctx.fillText(number, x, y + 2);
+
+            // 头部
+            ctx.fillStyle = '#f4c7a0';
+            ctx.beginPath();
+            ctx.arc(x, y - 38, 13, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 头发
+            ctx.fillStyle = '#333333';
+            ctx.beginPath();
+            ctx.arc(x, y - 42, 13, Math.PI, 0);
+            ctx.fill();
+
+            // 眼睛
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.arc(x + facing * 4, y - 40, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 腿
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fillRect(x - 12, y + 20, 10, 18);
+            ctx.fillRect(x + 2, y + 20, 10, 18);
+
+            // 鞋子
+            ctx.fillStyle = '#d4af37';
+            ctx.fillRect(x - 14, y + 36, 14, 6);
+            ctx.fillRect(x, y + 36, 14, 6);
+        }
+
+        function drawFootball(ctx, x, y) {
+            const r = BALL_RADIUS;
+
+            // 阴影
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.beginPath();
+            ctx.ellipse(x + 2, y + 2, r, r * 0.8, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 球体
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 五边形
+            ctx.fillStyle = '#333333';
+            for (let i = 0; i < 5; i++) {
+                const angle = (i / 5) * Math.PI * 2;
+                const px = x + Math.cos(angle) * r * 0.55;
+                const py = y + Math.sin(angle) * r * 0.55;
+
+                ctx.beginPath();
+                for (let j = 0; j < 5; j++) {
+                    const a = angle + (j / 5) * Math.PI * 2;
+                    const dx = px + Math.cos(a) * r * 0.22;
+                    const dy = py + Math.sin(a) * r * 0.22;
+                    if (j === 0) ctx.moveTo(dx, dy);
+                    else ctx.lineTo(dx, dy);
+                }
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            // 高光
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.beginPath();
+            ctx.arc(x - r * 0.3, y - r * 0.3, r * 0.25, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // 初始绘制
+        drawGame();
+
+        // ============================================
         // 初始化
         // ============================================
 
@@ -1552,6 +2091,7 @@
             renderMatches();
             renderBracket();
             initSimulator();
+            drawGame();
         });
     </script>
 </body>
