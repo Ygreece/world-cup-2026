@@ -849,6 +849,1199 @@
             border-radius: 2px;
             transition: width 1s ease;
         }
+
+        /* 历史回顾 */
+        .history-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .history-filter-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .history-filter-btn:hover,
+        .history-filter-btn.active {
+            border-color: var(--primary);
+            color: var(--text);
+            background: rgba(200, 16, 46, 0.15);
+        }
+
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .history-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .history-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-color: var(--gold);
+        }
+
+        .history-card-header {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-card-header .year {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .history-card-header .host {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+        }
+
+        .history-card-body {
+            padding: 1.2rem 1.5rem;
+        }
+
+        .history-row {
+            display: flex;
+            align-items: center;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .history-row:last-child {
+            border-bottom: none;
+        }
+
+        .history-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            min-width: 80px;
+        }
+
+        .history-value {
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .history-value.champion {
+            color: var(--gold);
+        }
+
+        .history-value.runner-up {
+            color: #c0c0c0;
+        }
+
+        /* 球队对比 */
+        .compare-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .compare-select-row {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .compare-select-group {
+            flex: 1;
+            min-width: 200px;
+            max-width: 350px;
+        }
+
+        .compare-select-group label {
+            display: block;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .compare-select-group select {
+            width: 100%;
+            padding: 1rem;
+            background: var(--darker);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 1rem;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .compare-btn {
+            background: linear-gradient(135deg, var(--primary), #e63950);
+            border: none;
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .compare-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(200, 16, 46, 0.4);
+        }
+
+        .compare-result {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .compare-result.show {
+            display: block;
+        }
+
+        .compare-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .compare-team-card {
+            text-align: center;
+            flex: 1;
+        }
+
+        .compare-team-card .flag {
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .compare-team-card .name {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .compare-vs {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--primary);
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .compare-table tr {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .compare-table tr:last-child {
+            border-bottom: none;
+        }
+
+        .compare-table td {
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .compare-table .attr-name {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            min-width: 120px;
+        }
+
+        .compare-table .left-val {
+            text-align: right;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .compare-table .right-val {
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .compare-table .winner {
+            color: var(--gold);
+        }
+
+        .compare-section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .compare-players {
+            display: flex;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .compare-player-list {
+            flex: 1;
+        }
+
+        .compare-player-list h4 {
+            text-align: center;
+            margin-bottom: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .compare-player-item {
+            background: var(--darker);
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .compare-player-item .rank-badge {
+            width: 24px;
+            height: 24px;
+            background: var(--border);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        /* 点球大战 */
+        .game-mode-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .game-mode-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 0.7rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .game-mode-btn:hover {
+            border-color: var(--primary);
+            color: var(--text);
+        }
+
+        .game-mode-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .penalty-info {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .penalty-score-display {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .penalty-team-score {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .penalty-team-score .dots {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        .penalty-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--border);
+            border: 2px solid var(--text-muted);
+            transition: all 0.3s;
+        }
+
+        .penalty-dot.scored {
+            background: #2ecc71;
+            border-color: #2ecc71;
+        }
+
+        .penalty-dot.missed {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .penalty-instructions {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* 比赛动画画布 */
+        .match-animation-area {
+            margin: 2rem auto;
+            display: none;
+            max-width: 600px;
+        }
+
+        .match-animation-area.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .match-canvas-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        #match-canvas {
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 100%;
+        }
+
+        .match-timer-bar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .match-timer-display {
+            background: var(--darker);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--gold);
+            min-width: 70px;
+            text-align: center;
+        }
+
+        .match-timer-progress {
+            flex: 1;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .match-timer-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--gold));
+            border-radius: 3px;
+            transition: width 0.1s linear;
+            width: 0%;
+        }
+
+        .match-live-score {
+            background: var(--darker);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .match-live-score .live-home,
+        .match-live-score .live-away {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .match-live-score .live-score-num {
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .match-live-score .live-vs {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin: 0 0.5rem;
+        }
+
+        /* 实时解说 */
+        .commentary-section {
+            margin-top: 1.5rem;
+            display: none;
+        }
+
+        .commentary-section.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .commentary-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+        }
+
+        .commentary-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .commentary-badge {
+            background: var(--primary);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 10px;
+            font-weight: 600;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .commentary-log {
+            max-height: 280px;
+            overflow-y: auto;
+            padding: 0.5rem;
+            background: var(--darker);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .commentary-entry {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            padding: 0.6rem 0.8rem;
+            border-bottom: 1px solid rgba(34, 34, 34, 0.5);
+            animation: slideIn 0.3s ease;
+        }
+
+        .commentary-entry:last-child {
+            border-bottom: none;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .commentary-minute {
+            background: var(--secondary);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            min-width: 40px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .commentary-icon {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .commentary-text {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .commentary-entry.goal {
+            background: rgba(200, 16, 46, 0.1);
+            border-left: 3px solid var(--primary);
+        }
+
+        .commentary-entry.goal .commentary-text {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .commentary-entry.card {
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .commentary-entry.end {
+            background: rgba(212, 175, 55, 0.1);
+            border-left: 3px solid var(--gold);
+        }
+
+        .commentary-entry.end .commentary-text {
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        /* 音效控制 */
+        .audio-controls {
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .audio-btn {
+            background: var(--darker);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .audio-btn:hover {
+            border-color: var(--primary);
+            color: var(--text);
+        }
+
+        .audio-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        /* 响应式补充 */
+        @media (max-width: 768px) {
+            .history-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .compare-select-row {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .compare-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .compare-players {
+                flex-direction: column;
+            }
+
+            .compare-table .left-val,
+            .compare-table .right-val {
+                font-size: 0.9rem;
+            }
+
+            .tournament-stages {
+                gap: 0.8rem;
+            }
+
+            .teams-checkbox-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+
+            .formation-pitch {
+                height: 400px;
+            }
+
+            .player-circle {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
+
+            .player-marker .player-name {
+                font-size: 0.7rem;
+            }
+
+            .lineup-players,
+            .bench-players {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 锦标赛模式 */
+        .tournament-setup {
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2.5rem;
+        }
+
+        .tournament-setup h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .tournament-setup > p {
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .tournament-stages {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stage-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .stage-item .stage-icon {
+            width: 28px;
+            height: 28px;
+            background: var(--darker);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+
+        .stage-item.active .stage-icon {
+            background: var(--primary);
+            box-shadow: 0 0 12px rgba(200, 16, 46, 0.5);
+        }
+
+        .stage-item.completed .stage-icon {
+            background: #2ecc71;
+        }
+
+        .tournament-progress-section {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .tournament-running {
+            color: var(--text-muted);
+            margin-top: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .tournament-results {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .champion-banner {
+            text-align: center;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(200, 16, 46, 0.1));
+            border: 2px solid var(--gold);
+            border-radius: 20px;
+            padding: 2.5rem;
+            animation: championGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes championGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(212, 175, 55, 0.4); }
+        }
+
+        .champion-banner h2 {
+            font-size: 1.5rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .champion-flag {
+            font-size: 5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .champion-name {
+            font-size: 2.5rem;
+            font-weight: 900;
+        }
+
+        .tournament-phase-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* 赛程生成器 */
+        .schedule-generator {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .schedule-generator h2 {
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .schedule-generator > p {
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .schedule-config {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .config-row {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .config-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .config-group label {
+            display: block;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .config-group select {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--darker);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .team-picker {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .team-picker h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .team-picker > p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .picker-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .picker-action-btn {
+            background: var(--darker);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .picker-action-btn:hover {
+            border-color: var(--primary);
+            color: var(--text);
+        }
+
+        .teams-checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: 0.5rem;
+            max-height: 320px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .team-checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 0.8rem;
+            background: var(--darker);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .team-checkbox-item:hover {
+            border-color: var(--primary);
+        }
+
+        .team-checkbox-item input[type="checkbox"] {
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .schedule-actions {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .schedule-output {
+            animation: fadeIn 0.5s ease;
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .output-header h3 {
+            font-size: 1.3rem;
+        }
+
+        .output-stats {
+            display: flex;
+            gap: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .schedule-groups {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .schedule-group-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .schedule-group-header {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            padding: 1rem 1.5rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .schedule-group-teams {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .schedule-group-teams div {
+            padding: 0.3rem 0;
+            color: var(--text-muted);
+        }
+
+        .schedule-match {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.7rem 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .schedule-match:last-child {
+            border-bottom: none;
+        }
+
+        .schedule-match-day {
+            color: var(--gold);
+            font-weight: 600;
+            font-size: 0.85rem;
+            min-width: 50px;
+        }
+
+        .schedule-match-teams {
+            flex: 1;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .schedule-match-teams span {
+            color: var(--text-muted);
+            margin: 0 0.5rem;
+            font-weight: 700;
+        }
+
+        /* 最佳阵容 */
+        .best-eleven-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .best-eleven-container h2 {
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .best-eleven-container > p {
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .formation-pitch {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            height: 500px;
+            margin: 0 auto 2rem;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.15);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .pitch-bg {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, #1a6b30 0%, #1e7a37 50%, #1a6b30 100%);
+        }
+
+        .pitch-line {
+            position: absolute;
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+
+        .pitch-outline { inset: 15px; }
+        .pitch-center-line { left: 15px; right: 15px; top: 50%; height: 0; }
+        .pitch-center-circle { left: 50%; top: 50%; width: 100px; height: 100px; border-radius: 50%; transform: translate(-50%, -50%); }
+        .pitch-penalty-top { left: 50%; top: 15px; width: 250px; height: 80px; transform: translateX(-50%); }
+        .pitch-penalty-bottom { left: 50%; bottom: 15px; width: 250px; height: 80px; transform: translateX(-50%); }
+        .pitch-goal-top { left: 50%; top: 15px; width: 120px; height: 35px; transform: translateX(-50%); border-radius: 0 0 10px 10px; }
+        .pitch-goal-bottom { left: 50%; bottom: 15px; width: 120px; height: 35px; transform: translateX(-50%); border-radius: 10px 10px 0 0; }
+
+        .pitch-grass-lines {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+
+        .grass-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .player-marker {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 2;
+            cursor: default;
+            transition: transform 0.3s;
+        }
+
+        .player-marker:hover {
+            transform: translate(-50%, -50%) scale(1.15);
+        }
+
+        .player-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), #e63950);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            border: 2px solid rgba(255,255,255,0.5);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            margin: 0 auto;
+        }
+
+        .player-marker .player-name {
+            font-size: 0.78rem;
+            font-weight: 700;
+            white-space: nowrap;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+            margin-top: 3px;
+        }
+
+        .player-marker .player-detail {
+            font-size: 0.68rem;
+            color: rgba(255,255,255,0.7);
+            white-space: nowrap;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+        }
+
+        .lineup-stats {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .lineup-stats h3 {
+            color: var(--gold);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .lineup-players {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .lineup-player-row {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.6rem;
+            background: var(--darker);
+            border-radius: 8px;
+        }
+
+        .lineup-player-pos {
+            background: var(--primary);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            min-width: 28px;
+            text-align: center;
+        }
+
+        .lineup-player-info {
+            flex: 1;
+            font-size: 0.85rem;
+        }
+
+        .lineup-player-rating {
+            font-weight: 700;
+            color: var(--gold);
+            font-size: 0.9rem;
+        }
+
+        .bench-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .bench-section h3 {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .bench-players {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.5rem;
+        }
+
+        @keyframes confettiFall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            top: -10px;
+            z-index: 9999;
+            animation: confettiFall 3s linear forwards;
+        }
     </style>
 </head>
 <body>
@@ -867,6 +2060,11 @@
                 <li><a href="#" onclick="showTab('matches')">赛程</a></li>
                 <li><a href="#" onclick="showTab('bracket')">对阵图</a></li>
                 <li><a href="#" onclick="showTab('simulate')">模拟器</a></li>
+                <li><a href="#" onclick="showTab('history')">历史回顾</a></li>
+                <li><a href="#" onclick="showTab('compare')">球队对比</a></li>
+                <li><a href="#" onclick="showTab('tournament')">锦标赛</a></li>
+                <li><a href="#" onclick="showTab('schedule')">赛程生成</a></li>
+                <li><a href="#" onclick="showTab('besteleven')">最佳阵容</a></li>
             </ul>
         </div>
     </nav>
@@ -920,6 +2118,11 @@
             <button class="tab-btn" onclick="showTab('simulate')">🎮 模拟器</button>
             <button class="tab-btn" onclick="showTab('stats')">📊 统计</button>
             <button class="tab-btn" onclick="showTab('game')">🎮 足球小游戏</button>
+            <button class="tab-btn" onclick="showTab('history')">📜 历史回顾</button>
+            <button class="tab-btn" onclick="showTab('compare')">⚖️ 球队对比</button>
+            <button class="tab-btn" onclick="showTab('tournament')">🏆 锦标赛</button>
+            <button class="tab-btn" onclick="showTab('schedule')">📋 赛程生成</button>
+            <button class="tab-btn" onclick="showTab('besteleven')">⭐ 最佳阵容</button>
         </div>
 
         <!-- 小组赛 -->
@@ -954,7 +2157,48 @@
                         <select id="away-team"></select>
                     </div>
                 </div>
-                <button class="simulate-btn" onclick="simulateMatch()">开始比赛</button>
+                <div class="audio-controls">
+                    <button class="audio-btn active" id="btn-sound" onclick="toggleSound()">🔊 音效</button>
+                </div>
+                <button class="simulate-btn" id="simulate-btn" onclick="startAnimatedMatch()">开始比赛</button>
+
+                <!-- 实时比分 -->
+                <div class="match-live-score" id="live-score-area" style="display:none;">
+                    <div class="live-home">
+                        <span id="live-home-flag"></span>
+                        <span id="live-home-name"></span>
+                    </div>
+                    <span class="live-score-num" id="live-home-goals">0</span>
+                    <span class="live-vs">-</span>
+                    <span class="live-score-num" id="live-away-goals">0</span>
+                    <div class="live-away">
+                        <span id="live-away-name"></span>
+                        <span id="live-away-flag"></span>
+                    </div>
+                </div>
+
+                <!-- 比赛动画画布 -->
+                <div class="match-animation-area" id="match-animation-area">
+                    <div class="match-timer-bar">
+                        <span class="match-timer-display" id="match-timer">0'</span>
+                        <div class="match-timer-progress">
+                            <div class="match-timer-fill" id="match-timer-fill"></div>
+                        </div>
+                    </div>
+                    <div class="match-canvas-wrapper">
+                        <canvas id="match-canvas" width="560" height="360"></canvas>
+                    </div>
+                </div>
+
+                <!-- 实时解说 -->
+                <div class="commentary-section" id="commentary-section">
+                    <div class="commentary-header">
+                        <span class="commentary-title">📝 实时解说</span>
+                        <span class="commentary-badge" id="commentary-badge">直播中</span>
+                    </div>
+                    <div class="commentary-log" id="commentary-log"></div>
+                </div>
+
                 <div class="match-result" id="match-result">
                     <div class="result-teams">
                         <div class="result-team">
@@ -1009,27 +2253,187 @@
 
         <!-- 足球小游戏 -->
         <section class="tab-content" id="game-section">
+            <div class="game-mode-tabs">
+                <button class="game-mode-btn active" onclick="switchGameMode('football')">⚽ 自由对战</button>
+                <button class="game-mode-btn" onclick="switchGameMode('penalty')">🥅 点球大战</button>
+            </div>
+
+            <!-- 自由对战模式 -->
+            <div id="football-mode">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">⚽ 足球小游戏</h2>
+                    <p style="color: var(--text-muted);">WASD/方向键移动，空格键踢球，把球踢进对方球门！</p>
+                    <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                        <div style="background: var(--card-bg); padding: 0.8rem 1.5rem; border-radius: 10px; border: 1px solid var(--border);">
+                            <span style="color: #002b5c; font-weight: 700; font-size: 1.5rem;" id="score-left">0</span>
+                        </div>
+                        <div style="background: var(--card-bg); padding: 0.8rem 1.5rem; border-radius: 10px; border: 1px solid var(--border);">
+                            <span style="color: var(--text-muted);">VS</span>
+                        </div>
+                        <div style="background: var(--card-bg); padding: 0.8rem 1.5rem; border-radius: 10px; border: 1px solid var(--border);">
+                            <span style="color: var(--primary); font-weight: 700; font-size: 1.5rem;" id="score-right">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: center;">
+                    <canvas id="football-game" width="800" height="500" style="border-radius: 16px; border: 2px solid var(--border); box-shadow: 0 20px 60px rgba(0,0,0,0.5);"></canvas>
+                </div>
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <button onclick="startGame()" style="background: linear-gradient(135deg, var(--primary), #e63950); border: none; color: white; padding: 1rem 3rem; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin: 0 0.5rem;">开始比赛</button>
+                    <button onclick="resetGame()" style="background: var(--card-bg); border: 1px solid var(--border); color: var(--text); padding: 1rem 3rem; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin: 0 0.5rem;">重置比分</button>
+                </div>
+            </div>
+
+            <!-- 点球大战模式 -->
+            <div id="penalty-mode" style="display: none;">
+                <div class="penalty-info">
+                    <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">🥅 点球大战</h2>
+                    <p style="color: var(--text-muted);">点击球门区域射门，守门时点击球的方向扑救！</p>
+                    <div class="penalty-score-display">
+                        <div class="penalty-team-score">
+                            <span style="font-weight: 700;">🇺🇸 你的球队</span>
+                            <div class="dots" id="player-penalty-dots"></div>
+                        </div>
+                        <div style="font-size: 1.5rem; font-weight: 900; color: var(--primary); display: flex; align-items: center;" id="penalty-score-text">0 - 0</div>
+                        <div class="penalty-team-score">
+                            <span style="font-weight: 700;">🇧🇷 对手</span>
+                            <div class="dots" id="ai-penalty-dots"></div>
+                        </div>
+                    </div>
+                    <p class="penalty-instructions" id="penalty-instructions">点击「开始点球大战」开始游戏</p>
+                </div>
+                <div style="display: flex; justify-content: center;">
+                    <canvas id="penalty-game" width="800" height="500" style="border-radius: 16px; border: 2px solid var(--border); box-shadow: 0 20px 60px rgba(0,0,0,0.5);"></canvas>
+                </div>
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <button onclick="startPenaltyGame()" style="background: linear-gradient(135deg, var(--primary), #e63950); border: none; color: white; padding: 1rem 3rem; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin: 0 0.5rem;">开始点球大战</button>
+                    <button onclick="resetPenaltyGame()" style="background: var(--card-bg); border: 1px solid var(--border); color: var(--text); padding: 1rem 3rem; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin: 0 0.5rem;">重置</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 历史回顾 -->
+        <section class="tab-content" id="history-section">
             <div style="text-align: center; margin-bottom: 2rem;">
-                <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">⚽ 足球小游戏</h2>
-                <p style="color: var(--text-muted);">WASD/方向键移动，空格键踢球，把球踢进对方球门！</p>
-                <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
-                    <div style="background: var(--card-bg); padding: 0.8rem 1.5rem; border-radius: 10px; border: 1px solid var(--border);">
-                        <span style="color: #002b5c; font-weight: 700; font-size: 1.5rem;" id="score-left">0</span>
+                <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">📜 世界杯历史回顾</h2>
+                <p style="color: var(--text-muted);">回顾历届世界杯的精彩瞬间</p>
+            </div>
+            <div class="history-controls" id="history-controls"></div>
+            <div class="history-grid" id="history-grid"></div>
+        </section>
+
+        <!-- 球队对比 -->
+        <section class="tab-content" id="compare-section">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">⚖️ 球队对比</h2>
+                <p style="color: var(--text-muted);">选择两支球队进行全方位对比</p>
+            </div>
+            <div class="compare-container">
+                <div class="compare-select-row">
+                    <div class="compare-select-group">
+                        <label>球队 A</label>
+                        <select id="compare-team-a"></select>
                     </div>
-                    <div style="background: var(--card-bg); padding: 0.8rem 1.5rem; border-radius: 10px; border: 1px solid var(--border);">
-                        <span style="color: var(--text-muted);">VS</span>
+                    <span class="vs-text">VS</span>
+                    <div class="compare-select-group">
+                        <label>球队 B</label>
+                        <select id="compare-team-b"></select>
                     </div>
-                    <div style="background: var(--card-bg); padding: 0.8rem 1.5rem; border-radius: 10px; border: 1px solid var(--border);">
-                        <span style="color: var(--primary); font-weight: 700; font-size: 1.5rem;" id="score-right">0</span>
+                </div>
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <button class="compare-btn" onclick="compareTeams()">开始对比</button>
+                </div>
+                <div class="compare-result" id="compare-result"></div>
+            </div>
+        </section>
+
+        <!-- 锦标赛模式 -->
+        <section class="tab-content" id="tournament-section">
+            <div id="tournament-setup-area">
+                <div class="tournament-setup">
+                    <h2>🏆 锦标赛模拟</h2>
+                    <p>选择你支持的球队，模拟完整世界杯之旅</p>
+                    <div class="tournament-stages" id="tournament-stages">
+                        <div class="stage-item active" id="stage-setup"><div class="stage-icon">1</div> 选择球队</div>
+                        <div class="stage-item" id="stage-group"><div class="stage-icon">2</div> 小组赛</div>
+                        <div class="stage-item" id="stage-knockout"><div class="stage-icon">3</div> 淘汰赛</div>
+                        <div class="stage-item" id="stage-final"><div class="stage-icon">4</div> 决赛</div>
+                        <div class="stage-item" id="stage-champion"><div class="stage-icon">5</div> 冠军</div>
+                    </div>
+                    <div class="team-select-group" style="max-width:400px;margin:0 auto 1.5rem;">
+                        <label>选择你的球队</label>
+                        <select id="tournament-team-select"></select>
+                    </div>
+                    <div style="text-align:center;">
+                        <button class="simulate-btn" onclick="startTournament()">开始锦标赛</button>
+                    </div>
+                    <div class="tournament-progress-section" id="tournament-progress-area" style="display:none;">
+                        <div class="progress-label">
+                            <span id="tournament-stage-text">准备中...</span>
+                            <span id="tournament-progress-pct">0%</span>
+                        </div>
+                        <div class="progress-bar" style="height:8px;">
+                            <div class="progress-fill" id="tournament-progress-fill" style="width:0%;"></div>
+                        </div>
+                        <p class="tournament-running" id="tournament-status-text"></p>
                     </div>
                 </div>
             </div>
-            <div style="display: flex; justify-content: center;">
-                <canvas id="football-game" width="800" height="500" style="border-radius: 16px; border: 2px solid var(--border); box-shadow: 0 20px 60px rgba(0,0,0,0.5);"></canvas>
+            <div id="tournament-results-area" style="display:none;"></div>
+        </section>
+
+        <!-- 赛程生成器 -->
+        <section class="tab-content" id="schedule-section">
+            <div class="schedule-generator">
+                <h2>📋 赛程生成器</h2>
+                <p>自定义选择参赛球队，生成完整赛程表</p>
+                <div class="schedule-config">
+                    <div class="config-row">
+                        <div class="config-group">
+                            <label>分组数量</label>
+                            <select id="schedule-group-count">
+                                <option value="4">4 组</option>
+                                <option value="6">6 组</option>
+                                <option value="8" selected>8 组</option>
+                                <option value="12">12 组</option>
+                            </select>
+                        </div>
+                        <div class="config-group">
+                            <label>赛制</label>
+                            <select id="schedule-format">
+                                <option value="round-robin" selected>单循环</option>
+                                <option value="double">双循环</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-picker">
+                    <h3>选择参赛球队</h3>
+                    <p>已选择: <span id="schedule-selected-count">0</span> 支球队</p>
+                    <div class="picker-actions">
+                        <button class="picker-action-btn" onclick="scheduleSelectAll()">全选</button>
+                        <button class="picker-action-btn" onclick="scheduleSelectNone()">全不选</button>
+                        <button class="picker-action-btn" onclick="scheduleSelectConf('UEFA')">欧洲</button>
+                        <button class="picker-action-btn" onclick="scheduleSelectConf('CONMEBOL')">南美</button>
+                        <button class="picker-action-btn" onclick="scheduleSelectConf('CONCACAF')">中北美</button>
+                        <button class="picker-action-btn" onclick="scheduleSelectConf('AFC')">亚洲</button>
+                        <button class="picker-action-btn" onclick="scheduleSelectConf('CAF')">非洲</button>
+                    </div>
+                    <div class="teams-checkbox-grid" id="schedule-team-grid"></div>
+                </div>
+                <div class="schedule-actions">
+                    <button class="simulate-btn" onclick="generateSchedule()">生成赛程</button>
+                </div>
+                <div id="schedule-output-area"></div>
             </div>
-            <div style="text-align: center; margin-top: 1.5rem;">
-                <button onclick="startGame()" style="background: linear-gradient(135deg, var(--primary), #e63950); border: none; color: white; padding: 1rem 3rem; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin: 0 0.5rem;">开始比赛</button>
-                <button onclick="resetGame()" style="background: var(--card-bg); border: 1px solid var(--border); color: var(--text); padding: 1rem 3rem; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin: 0 0.5rem;">重置比分</button>
+        </section>
+
+        <!-- 最佳阵容 -->
+        <section class="tab-content" id="besteleven-section">
+            <div class="best-eleven-container">
+                <h2>⭐ 最佳阵容评选</h2>
+                <p>根据球员实力和球队表现，评选最佳11人（4-3-3阵型）</p>
+                <div id="best-eleven-area"></div>
             </div>
         </section>
     </div>
@@ -2083,6 +3487,556 @@
         drawGame();
 
         // ============================================
+        // 锦标赛模式
+        // ============================================
+
+        const cupPlayerPool = {
+            GK: [
+                { name: '库尔图瓦', team: 'BEL', rating: 91 },
+                { name: '诺伊尔', team: 'GER', rating: 88 },
+                { name: '埃米利亚诺·马丁内斯', team: 'ARG', rating: 89 },
+                { name: '多纳鲁马', team: 'ESP', rating: 88 },
+                { name: '科斯塔', team: 'POR', rating: 86 },
+                { name: '奥纳纳', team: 'CMR', rating: 85 },
+                { name: '皮克福德', team: 'ENG', rating: 84 },
+                { name: '纳瓦斯', team: 'CRC', rating: 83 },
+                { name: '洛里', team: 'FRA', rating: 84 },
+                { name: '阿利松', team: 'BRA', rating: 89 },
+                { name: '汉达诺维奇', team: 'SEN', rating: 83 },
+                { name: '权田修一', team: 'JPN', rating: 80 },
+            ],
+            DEF: [
+                { name: '阿什拉夫', team: 'MAR', rating: 88 },
+                { name: '格瓦迪奥尔', team: 'CRO', rating: 87 },
+                { name: '迪亚斯', team: 'POR', rating: 88 },
+                { name: '德里赫特', team: 'NED', rating: 86 },
+                { name: '巴斯托尼', team: 'ESP', rating: 85 },
+                { name: '阿尔瓦雷斯', team: 'MEX', rating: 84 },
+                { name: '鲁本·迪亚斯', team: 'POR', rating: 88 },
+                { name: '瓦拉内', team: 'FRA', rating: 85 },
+                { name: '达尼洛', team: 'BRA', rating: 84 },
+                { name: '萨利苏', team: 'GHA', rating: 82 },
+                { name: '利桑德罗·马丁内斯', team: 'ARG', rating: 85 },
+                { name: '邓弗里斯', team: 'NED', rating: 84 },
+                { name: '塞恩斯伯里', team: 'AUS', rating: 78 },
+                { name: '富安健洋', team: 'JPN', rating: 82 },
+                { name: '沃克', team: 'ENG', rating: 84 },
+                { name: '哈基米', team: 'MAR', rating: 87 },
+                { name: '库利巴利', team: 'SEN', rating: 84 },
+                { name: '金玟哉', team: 'KOR', rating: 83 },
+                { name: '阿劳霍', team: 'URU', rating: 84 },
+                { name: '阿坎吉', team: 'SUI', rating: 83 },
+                { name: '卡瓦哈尔', team: 'ESP', rating: 86 },
+                { name: '特奥', team: 'FRA', rating: 86 },
+            ],
+            MID: [
+                { name: '德布劳内', team: 'BEL', rating: 91 },
+                { name: '贝林厄姆', team: 'ENG', rating: 90 },
+                { name: '佩德里', team: 'ESP', rating: 89 },
+                { name: '莫德里奇', team: 'CRO', rating: 88 },
+                { name: 'B·费尔南德斯', team: 'POR', rating: 89 },
+                { name: '罗德里', team: 'ESP', rating: 90 },
+                { name: '恩佐·费尔南德斯', team: 'ARG', rating: 86 },
+                { name: '德容', team: 'NED', rating: 86 },
+                { name: '穆西亚拉', team: 'GER', rating: 87 },
+                { name: '格列兹曼', team: 'FRA', rating: 87 },
+                { name: '贝尔纳多', team: 'POR', rating: 88 },
+                { name: '卡塞米罗', team: 'BRA', rating: 85 },
+                { name: '麦肯尼', team: 'USA', rating: 82 },
+                { name: '远藤航', team: 'JPN', rating: 82 },
+                { name: '巴尔韦德', team: 'URU', rating: 86 },
+                { name: '楚阿梅尼', team: 'FRA', rating: 85 },
+                { name: '扎卡', team: 'SUI', rating: 84 },
+                { name: '盖耶', team: 'SEN', rating: 82 },
+                { name: '安吉萨', team: 'CMR', rating: 83 },
+                { name: '科瓦契奇', team: 'CRO', rating: 84 },
+                { name: '凯塞多', team: 'ECU', rating: 83 },
+                { name: '京多安', team: 'GER', rating: 84 },
+            ],
+            FWD: [
+                { name: '姆巴佩', team: 'FRA', rating: 95 },
+                { name: '梅西', team: 'ARG', rating: 91 },
+                { name: '维尼修斯', team: 'BRA', rating: 93 },
+                { name: '凯恩', team: 'ENG', rating: 90 },
+                { name: 'C罗', team: 'POR', rating: 88 },
+                { name: '内马尔', team: 'BRA', rating: 89 },
+                { name: '萨卡', team: 'ENG', rating: 88 },
+                { name: '孙兴慜', team: 'KOR', rating: 87 },
+                { name: '卢卡库', team: 'BEL', rating: 86 },
+                { name: '久保建英', team: 'JPN', rating: 85 },
+                { name: '加克波', team: 'NED', rating: 85 },
+                { name: '登贝莱', team: 'FRA', rating: 86 },
+                { name: '阿尔瓦雷斯', team: 'ARG', rating: 85 },
+                { name: '福登', team: 'ENG', rating: 87 },
+                { name: '罗德里戈', team: 'BRA', rating: 85 },
+                { name: '普利西奇', team: 'USA', rating: 83 },
+                { name: '莱奥', team: 'POR', rating: 86 },
+                { name: '三笘薫', team: 'JPN', rating: 84 },
+                { name: '莫拉塔', team: 'ESP', rating: 84 },
+                { name: '哈弗茨', team: 'GER', rating: 84 },
+                { name: '努涅斯', team: 'URU', rating: 84 },
+                { name: '莱万多夫斯基', team: 'POL', rating: 87 },
+                { name: '特罗萨德', team: 'BEL', rating: 84 },
+                { name: '恩内斯里', team: 'MAR', rating: 83 },
+                { name: '马内', team: 'SEN', rating: 84 },
+            ]
+        };
+
+        let tournamentState = {
+            running: false,
+            selectedTeam: '',
+            groupResults: {},
+            knockoutResults: [],
+            champion: '',
+            progress: 0,
+            stage: 'setup'
+        };
+
+        function initTournament() {
+            const select = document.getElementById('tournament-team-select');
+            const teamList = Object.entries(teams)
+                .filter(([code]) => !code.includes('2'))
+                .sort((a, b) => a[1].name.localeCompare(b[1].name));
+            select.innerHTML = '';
+            teamList.forEach(([code, team]) => {
+                select.innerHTML += `<option value="${code}">${team.flag} ${team.name}</option>`;
+            });
+            renderBestEleven();
+        }
+
+        function updateTournamentStages(activeIndex) {
+            const ids = ['stage-setup', 'stage-group', 'stage-knockout', 'stage-final', 'stage-champion'];
+            ids.forEach((id, i) => {
+                const el = document.getElementById(id);
+                el.className = 'stage-item' + (i < activeIndex ? ' completed' : '') + (i === activeIndex ? ' active' : '');
+            });
+        }
+
+        function setTournamentProgress(pct, text) {
+            document.getElementById('tournament-progress-fill').style.width = pct + '%';
+            document.getElementById('tournament-progress-pct').textContent = pct + '%';
+            document.getElementById('tournament-stage-text').textContent = text;
+        }
+
+        function simMatchElo(homeCode, awayCode, isKnockout) {
+            const h = teams[homeCode] || { elo: 1600 };
+            const a = teams[awayCode] || { elo: 1600 };
+            const homeAdv = 100;
+            const hElo = h.elo + homeAdv;
+            const aElo = a.elo;
+            const hExp = 1 / (1 + Math.pow(10, (aElo - hElo) / 400));
+            const aExp = 1 - hExp;
+            const avg = 2.5;
+            let hg = Math.max(0, Math.round(avg * hExp + (Math.random() - 0.5)));
+            let ag = Math.max(0, Math.round(avg * aExp + (Math.random() - 0.5)));
+            if (isKnockout && hg === ag) {
+                if (Math.random() > 0.5) hg += 1; else ag += 1;
+            }
+            return [hg, ag];
+        }
+
+        async function startTournament() {
+            if (tournamentState.running) return;
+            const sel = document.getElementById('tournament-team-select').value;
+            if (!sel) return;
+            tournamentState = {
+                running: true,
+                selectedTeam: sel,
+                groupResults: {},
+                knockoutResults: [],
+                champion: '',
+                progress: 0,
+                stage: 'setup'
+            };
+            document.getElementById('tournament-progress-area').style.display = 'block';
+            document.getElementById('tournament-results-area').style.display = 'none';
+
+            updateTournamentStages(1);
+            setTournamentProgress(5, '小组赛进行中...');
+            document.getElementById('tournament-status-text').textContent = '正在模拟小组赛...';
+            await sleep(300);
+
+            const allGroupResults = {};
+            const groupNames = Object.keys(groups);
+            for (let gi = 0; gi < groupNames.length; gi++) {
+                const gName = groupNames[gi];
+                const tCodes = groups[gName];
+                const standings = {};
+                tCodes.forEach(c => {
+                    standings[c] = { w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 };
+                });
+                for (let i = 0; i < tCodes.length; i++) {
+                    for (let j = i + 1; j < tCodes.length; j++) {
+                        const [hg, ag] = simMatchElo(tCodes[i], tCodes[j], false);
+                        standings[tCodes[i]].gf += hg;
+                        standings[tCodes[i]].ga += ag;
+                        standings[tCodes[j]].gf += ag;
+                        standings[tCodes[j]].ga += hg;
+                        if (hg > ag) {
+                            standings[tCodes[i]].w++;
+                            standings[tCodes[i]].pts += 3;
+                            standings[tCodes[j]].l++;
+                        } else if (hg < ag) {
+                            standings[tCodes[j]].w++;
+                            standings[tCodes[j]].pts += 3;
+                            standings[tCodes[i]].l++;
+                        } else {
+                            standings[tCodes[i]].d++;
+                            standings[tCodes[i]].pts += 1;
+                            standings[tCodes[j]].d++;
+                            standings[tCodes[j]].pts += 1;
+                        }
+                    }
+                }
+                const sorted = [...tCodes].sort((a, b) => {
+                    const sa = standings[a], sb = standings[b];
+                    if (sb.pts !== sa.pts) return sb.pts - sa.pts;
+                    const gdA = sa.gf - sa.ga, gdB = sb.gf - sb.ga;
+                    if (gdB !== gdA) return gdB - gdA;
+                    return sb.gf - sa.gf;
+                });
+                allGroupResults[gName] = { standings, sorted };
+                setTournamentProgress(5 + Math.round((gi + 1) / groupNames.length * 30), `小组赛: ${gName}组 完成`);
+                await sleep(200);
+            }
+            tournamentState.groupResults = allGroupResults;
+
+            updateTournamentStages(2);
+            setTournamentProgress(40, '晋级队伍确定...');
+            document.getElementById('tournament-status-text').textContent = '正在确定32强...';
+            await sleep(300);
+
+            const qualified = [];
+            const thirdPlace = [];
+            groupNames.forEach(gName => {
+                const sorted = allGroupResults[gName].sorted;
+                qualified.push(sorted[0], sorted[1]);
+                thirdPlace.push({ team: sorted[2], group: gName, data: allGroupResults[gName].standings[sorted[2]] });
+            });
+            thirdPlace.sort((a, b) => {
+                const gdA = a.data.gf - a.data.ga, gdB = b.data.gf - b.data.ga;
+                if (b.data.pts !== a.data.pts) return b.data.pts - a.data.pts;
+                if (gdB !== gdA) return gdB - gdA;
+                return b.data.gf - a.data.gf;
+            });
+            const best8Third = thirdPlace.slice(0, 8).map(t => t.team);
+            qualified.push(...best8Third);
+
+            const koRounds = [32, 16, 8, 4, 2];
+            let currentTeams = [...qualified];
+            const allKoResults = [];
+
+            for (let ri = 0; ri < koRounds.length; ri++) {
+                const roundSize = koRounds[ri];
+                const roundNames = { 32: '32强', 16: '16强', 8: '8强', 4: '半决赛', 2: '决赛' };
+                const roundMatches = [];
+                const nextTeams = [];
+                for (let i = 0; i < currentTeams.length; i += 2) {
+                    const home = currentTeams[i];
+                    const away = currentTeams[i + 1];
+                    const [hg, ag] = simMatchElo(home, away, true);
+                    const winner = hg > ag ? home : away;
+                    roundMatches.push({ home, away, score: [hg, ag], winner });
+                    nextTeams.push(winner);
+                }
+                allKoResults.push({ round: roundNames[roundSize], matches: roundMatches });
+                currentTeams = nextTeams;
+                const pct = 40 + Math.round((ri + 1) / koRounds.length * 55);
+                setTournamentProgress(pct, `${roundNames[roundSize]} 完成`);
+                updateTournamentStages(ri >= 3 ? 3 : 2);
+                await sleep(400);
+            }
+
+            tournamentState.knockoutResults = allKoResults;
+            tournamentState.champion = currentTeams[0];
+            tournamentState.running = false;
+
+            updateTournamentStages(4);
+            setTournamentProgress(100, '冠军诞生!');
+            document.getElementById('tournament-status-text').textContent = `${teams[currentTeams[0]].flag} ${teams[currentTeams[0]].name} 夺冠!`;
+
+            setTimeout(() => {
+                renderTournamentResults();
+                createConfetti();
+            }, 500);
+        }
+
+        function renderTournamentResults() {
+            const area = document.getElementById('tournament-results-area');
+            const ch = tournamentState.champion;
+            const chTeam = teams[ch];
+            let html = `<div class="tournament-results">
+                <div class="champion-banner">
+                    <h2>🏆 锦标赛冠军</h2>
+                    <div class="champion-flag">${chTeam.flag}</div>
+                    <div class="champion-name">${chTeam.name}</div>
+                    <p style="color:var(--text-muted);margin-top:0.5rem;">ELO: ${chTeam.elo} | FIFA排名: ${chTeam.ranking}</p>
+                </div>`;
+
+            html += `<h3 class="tournament-phase-title">📊 小组赛积分榜</h3>`;
+            for (const [gName, gData] of Object.entries(tournamentState.groupResults)) {
+                html += `<div class="group-card" style="margin-bottom:1rem;">
+                    <div class="group-header"><span>🏆</span> 小组 ${gName}</div>
+                    <div class="group-teams">`;
+                gData.sorted.forEach((code, i) => {
+                    const s = gData.standings[code];
+                    const t = teams[code];
+                    const isUser = code === tournamentState.selectedTeam;
+                    html += `<div class="team-row" style="${isUser ? 'background:rgba(200,16,46,0.1);' : ''}">
+                        <div class="team-rank ${i < 2 ? 'top' : ''}">${i + 1}</div>
+                        <span class="team-flag">${t.flag}</span>
+                        <span class="team-name">${t.name} ${isUser ? '⭐' : ''}</span>
+                        <div class="team-stats"><span>${s.w}</span><span>${s.d}</span><span>${s.l}</span></div>
+                        <span class="team-points">${s.pts}</span>
+                    </div>`;
+                });
+                html += `</div></div>`;
+            }
+
+            html += `<h3 class="tournament-phase-title">🎯 淘汰赛赛程</h3>`;
+            tournamentState.knockoutResults.forEach(round => {
+                html += `<h4 style="color:var(--gold);margin:1rem 0 0.5rem;">${round.round}</h4>`;
+                round.matches.forEach(m => {
+                    const hTeam = teams[m.home];
+                    const aTeam = teams[m.away];
+                    const hWin = m.winner === m.home;
+                    const isUserMatch = m.home === tournamentState.selectedTeam || m.away === tournamentState.selectedTeam;
+                    html += `<div class="match-card" style="${isUserMatch ? 'border-color:var(--primary);' : ''}">
+                        <div class="match-team home">
+                            <span class="team-flag">${hTeam.flag}</span>
+                            <span class="team-name" style="${hWin ? 'color:var(--gold);font-weight:700;' : ''}">${hTeam.name}</span>
+                        </div>
+                        <div class="match-score">${m.score[0]} - ${m.score[1]}</div>
+                        <div class="match-team away">
+                            <span class="team-flag">${aTeam.flag}</span>
+                            <span class="team-name" style="${!hWin ? 'color:var(--gold);font-weight:700;' : ''}">${aTeam.name}</span>
+                        </div>
+                    </div>`;
+                });
+            });
+
+            html += `</div>`;
+            area.innerHTML = html;
+            area.style.display = 'block';
+            document.getElementById('tournament-setup-area').style.display = 'none';
+        }
+
+        function createConfetti() {
+            const colors = ['#c8102e', '#d4af37', '#002b5c', '#2ecc71', '#ffffff'];
+            for (let i = 0; i < 60; i++) {
+                const el = document.createElement('div');
+                el.className = 'confetti';
+                el.style.left = Math.random() * 100 + 'vw';
+                el.style.background = colors[Math.floor(Math.random() * colors.length)];
+                el.style.animationDuration = (2 + Math.random() * 3) + 's';
+                el.style.animationDelay = Math.random() * 2 + 's';
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 5000);
+            }
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // ============================================
+        // 赛程生成器
+        // ============================================
+
+        function initSchedule() {
+            const grid = document.getElementById('schedule-team-grid');
+            const teamList = Object.entries(teams)
+                .filter(([code]) => !code.includes('2'))
+                .sort((a, b) => a[1].name.localeCompare(b[1].name));
+            grid.innerHTML = '';
+            teamList.forEach(([code, team]) => {
+                grid.innerHTML += `<label class="team-checkbox-item"><input type="checkbox" value="${code}" checked onchange="updateScheduleCount()"> ${team.flag} ${team.name}</label>`;
+            });
+            updateScheduleCount();
+        }
+
+        function updateScheduleCount() {
+            const checked = document.querySelectorAll('#schedule-team-grid input:checked').length;
+            document.getElementById('schedule-selected-count').textContent = checked;
+        }
+
+        function scheduleSelectAll() {
+            document.querySelectorAll('#schedule-team-grid input').forEach(cb => cb.checked = true);
+            updateScheduleCount();
+        }
+
+        function scheduleSelectNone() {
+            document.querySelectorAll('#schedule-team-grid input').forEach(cb => cb.checked = false);
+            updateScheduleCount();
+        }
+
+        function scheduleSelectConf(conf) {
+            document.querySelectorAll('#schedule-team-grid input').forEach(cb => {
+                const t = teams[cb.value];
+                cb.checked = t && t.conf === conf;
+            });
+            updateScheduleCount();
+        }
+
+        function generateSchedule() {
+            const checkedBoxes = document.querySelectorAll('#schedule-team-grid input:checked');
+            const selectedCodes = Array.from(checkedBoxes).map(cb => cb.value);
+            if (selectedCodes.length < 4) {
+                alert('请至少选择4支球队');
+                return;
+            }
+            const groupCount = parseInt(document.getElementById('schedule-group-count').value);
+            const format = document.getElementById('schedule-format').value;
+            const teamsPerGroup = Math.ceil(selectedCodes.length / groupCount);
+            if (teamsPerGroup < 3) {
+                alert('分组数量过多，请减少分组或增加球队');
+                return;
+            }
+
+            const shuffled = [...selectedCodes].sort(() => Math.random() - 0.5);
+            const scheduleGroups = [];
+            for (let i = 0; i < groupCount; i++) {
+                const start = i * teamsPerGroup;
+                const end = Math.min(start + teamsPerGroup, shuffled.length);
+                if (start < shuffled.length) {
+                    scheduleGroups.push(shuffled.slice(start, end));
+                }
+            }
+
+            const groupLabels = 'ABCDEFGHIJKLMNOP'.split('');
+            let totalMatches = 0;
+            let outputHtml = '<div class="schedule-output"><div class="output-header"><h3>📋 生成的赛程</h3></div><div class="schedule-groups">';
+
+            scheduleGroups.forEach((group, gi) => {
+                const label = groupLabels[gi];
+                const matches = [];
+                for (let i = 0; i < group.length; i++) {
+                    for (let j = i + 1; j < group.length; j++) {
+                        matches.push({ home: group[i], away: group[j] });
+                        if (format === 'double') {
+                            matches.push({ home: group[j], away: group[i] });
+                        }
+                    }
+                }
+                totalMatches += matches.length;
+
+                outputHtml += `<div class="schedule-group-card">
+                    <div class="schedule-group-header">小组 ${label} (${group.length}队)</div>
+                    <div class="schedule-group-teams">`;
+                group.forEach(code => {
+                    const t = teams[code];
+                    outputHtml += `<div>${t.flag} ${t.name}</div>`;
+                });
+                outputHtml += `</div>`;
+                matches.forEach((m, mi) => {
+                    const h = teams[m.home];
+                    const a = teams[m.away];
+                    const day = Math.floor(mi / 2) + 1;
+                    outputHtml += `<div class="schedule-match">
+                        <span class="schedule-match-day">第${day}轮</span>
+                        <div class="schedule-match-teams">${h.flag} ${h.name} <span>VS</span> ${a.name} ${a.flag}</div>
+                    </div>`;
+                });
+                outputHtml += `</div>`;
+            });
+
+            outputHtml += `</div>`;
+            outputHtml += `<div class="output-header" style="margin-top:1.5rem;">
+                <div class="output-stats">
+                    <span>球队: ${selectedCodes.length}</span>
+                    <span>分组: ${scheduleGroups.length}</span>
+                    <span>比赛: ${totalMatches}</span>
+                </div>
+            </div></div>`;
+
+            document.getElementById('schedule-output-area').innerHTML = outputHtml;
+        }
+
+        // ============================================
+        // 最佳阵容（4-3-3）
+        // ============================================
+
+        function renderBestEleven() {
+            const area = document.getElementById('best-eleven-area');
+            const bestGK = [...cupPlayerPool.GK].sort((a, b) => b.rating - a.rating).slice(0, 1);
+            const bestDEF = [...cupPlayerPool.DEF].sort((a, b) => b.rating - a.rating).slice(0, 4);
+            const bestMID = [...cupPlayerPool.MID].sort((a, b) => b.rating - a.rating).slice(0, 3);
+            const bestFWD = [...cupPlayerPool.FWD].sort((a, b) => b.rating - a.rating).slice(0, 3);
+            const starting = [...bestGK, ...bestDEF, ...bestMID, ...bestFWD];
+
+            const allPool = [...cupPlayerPool.GK, ...cupPlayerPool.DEF, ...cupPlayerPool.MID, ...cupPlayerPool.FWD];
+            const startingNames = new Set(starting.map(p => p.name));
+            const bench = allPool.filter(p => !startingNames.has(p.name)).sort((a, b) => b.rating - a.rating).slice(0, 7);
+
+            const positions = [
+                { x: 50, y: 90, pos: 'GK' },
+                { x: 15, y: 70, pos: 'LB' },
+                { x: 37, y: 72, pos: 'CB' },
+                { x: 63, y: 72, pos: 'CB' },
+                { x: 85, y: 70, pos: 'RB' },
+                { x: 25, y: 48, pos: 'CM' },
+                { x: 50, y: 45, pos: 'CM' },
+                { x: 75, y: 48, pos: 'CM' },
+                { x: 18, y: 22, pos: 'LW' },
+                { x: 50, y: 18, pos: 'ST' },
+                { x: 82, y: 22, pos: 'RW' }
+            ];
+
+            let grassLines = '';
+            for (let i = 0; i < 13; i++) {
+                grassLines += `<div class="grass-line" style="top:${i * 40}px;"></div>`;
+            }
+
+            let pitchHtml = `<div class="formation-pitch">
+                <div class="pitch-bg"></div>
+                <div class="pitch-grass-lines">${grassLines}</div>
+                <div class="pitch-line pitch-outline"></div>
+                <div class="pitch-line pitch-center-line"></div>
+                <div class="pitch-line pitch-center-circle"></div>
+                <div class="pitch-line pitch-penalty-top"></div>
+                <div class="pitch-line pitch-penalty-bottom"></div>
+                <div class="pitch-line pitch-goal-top"></div>
+                <div class="pitch-line pitch-goal-bottom"></div>`;
+
+            starting.forEach((p, i) => {
+                const pos = positions[i];
+                const team = teams[p.team] || { flag: '🏳️' };
+                pitchHtml += `<div class="player-marker" style="left:${pos.x}%;top:${pos.y}%;">
+                    <div class="player-circle">${team.flag}</div>
+                    <div class="player-name">${p.name}</div>
+                    <div class="player-detail">${pos.pos} | ${p.rating}</div>
+                </div>`;
+            });
+            pitchHtml += `</div>`;
+
+            let lineupHtml = `<div class="lineup-stats"><h3>⭐ 首发阵容 (4-3-3)</h3><div class="lineup-players">`;
+            starting.forEach((p, i) => {
+                const pos = positions[i];
+                const team = teams[p.team] || { flag: '🏳️', name: '未知' };
+                lineupHtml += `<div class="lineup-player-row">
+                    <span class="lineup-player-pos">${pos.pos}</span>
+                    <div class="lineup-player-info"><span class="country-flag">${team.flag}</span> ${p.name} (${team.name})</div>
+                    <span class="lineup-player-rating">${p.rating}</span>
+                </div>`;
+            });
+            lineupHtml += `</div></div>`;
+
+            let benchHtml = `<div class="bench-section"><h3>🪑 替补阵容</h3><div class="bench-players">`;
+            bench.forEach(p => {
+                const team = teams[p.team] || { flag: '🏳️', name: '未知' };
+                const posType = cupPlayerPool.GK.includes(p) ? 'GK' : cupPlayerPool.DEF.includes(p) ? 'DEF' : cupPlayerPool.MID.includes(p) ? 'MID' : 'FWD';
+                benchHtml += `<div class="lineup-player-row">
+                    <span class="lineup-player-pos">${posType}</span>
+                    <div class="lineup-player-info"><span class="country-flag">${team.flag}</span> ${p.name} (${team.name})</div>
+                    <span class="lineup-player-rating">${p.rating}</span>
+                </div>`;
+            });
+            benchHtml += `</div></div>`;
+
+            area.innerHTML = pitchHtml + lineupHtml + benchHtml;
+        }
+
+        // ============================================
         // 初始化
         // ============================================
 
@@ -2092,6 +4046,8 @@
             renderBracket();
             initSimulator();
             drawGame();
+            initTournament();
+            initSchedule();
         });
     </script>
 </body>
