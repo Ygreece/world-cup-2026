@@ -4483,6 +4483,223 @@
         }
 
         // ============================================
+        // 历史世界杯数据
+        // ============================================
+
+        const worldCupHistory = [
+            { year: 1930, host: '乌拉圭', hostFlag: '🇺🇾', champion: '乌拉圭', championFlag: '🇺🇾', runnerUp: '阿根廷', runnerUpFlag: '🇦🇷', topScorer: '斯塔比莱 (阿根廷, 8球)', teams: 13 },
+            { year: 1934, host: '意大利', hostFlag: '🇮🇹', champion: '意大利', championFlag: '🇮🇹', runnerUp: '捷克斯洛伐克', runnerUpFlag: '🇨🇿', topScorer: '内耶德利 (捷克, 5球)', teams: 16 },
+            { year: 1938, host: '法国', hostFlag: '🇫🇷', champion: '意大利', championFlag: '🇮🇹', runnerUp: '匈牙利', runnerUpFlag: '🇭🇺', topScorer: '莱昂尼达斯 (巴西, 7球)', teams: 15 },
+            { year: 1950, host: '巴西', hostFlag: '🇧🇷', champion: '乌拉圭', championFlag: '🇺🇾', runnerUp: '巴西', runnerUpFlag: '🇧🇷', topScorer: '阿德米尔 (巴西, 9球)', teams: 13 },
+            { year: 1954, host: '瑞士', hostFlag: '🇨🇭', champion: '西德', championFlag: '🇩🇪', runnerUp: '匈牙利', runnerUpFlag: '🇭🇺', topScorer: '柯奇士 (匈牙利, 11球)', teams: 16 },
+            { year: 1958, host: '瑞典', hostFlag: '🇸🇪', champion: '巴西', championFlag: '🇧🇷', runnerUp: '瑞典', runnerUpFlag: '🇸🇪', topScorer: '方丹 (法国, 13球)', teams: 16 },
+            { year: 1962, host: '智利', hostFlag: '🇨🇱', champion: '巴西', championFlag: '🇧🇷', runnerUp: '捷克斯洛伐克', runnerUpFlag: '🇨🇿', topScorer: '加林查等6人 (各4球)', teams: 16 },
+            { year: 1966, host: '英格兰', hostFlag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', champion: '英格兰', championFlag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', runnerUp: '西德', runnerUpFlag: '🇩🇪', topScorer: '尤西比奥 (葡萄牙, 9球)', teams: 16 },
+            { year: 1970, host: '墨西哥', hostFlag: '🇲🇽', champion: '巴西', championFlag: '🇧🇷', runnerUp: '意大利', runnerUpFlag: '🇮🇹', topScorer: '穆勒 (西德, 10球)', teams: 16 },
+            { year: 1974, host: '西德', hostFlag: '🇩🇪', champion: '西德', championFlag: '🇩🇪', runnerUp: '荷兰', runnerUpFlag: '🇳🇱', topScorer: '拉托 (波兰, 7球)', teams: 16 },
+            { year: 1978, host: '阿根廷', hostFlag: '🇦🇷', champion: '阿根廷', championFlag: '🇦🇷', runnerUp: '荷兰', runnerUpFlag: '🇳🇱', topScorer: '肯佩斯 (阿根廷, 6球)', teams: 16 },
+            { year: 1982, host: '西班牙', hostFlag: '🇪🇸', champion: '意大利', championFlag: '🇮🇹', runnerUp: '西德', runnerUpFlag: '🇩🇪', topScorer: '罗西 (意大利, 6球)', teams: 24 },
+            { year: 1986, host: '墨西哥', hostFlag: '🇲🇽', champion: '阿根廷', championFlag: '🇦🇷', runnerUp: '西德', runnerUpFlag: '🇩🇪', topScorer: '莱因克尔 (英格兰, 6球)', teams: 24 },
+            { year: 1990, host: '意大利', hostFlag: '🇮🇹', champion: '西德', championFlag: '🇩🇪', runnerUp: '阿根廷', runnerUpFlag: '🇦🇷', topScorer: '斯基拉奇 (意大利, 6球)', teams: 24 },
+            { year: 1994, host: '美国', hostFlag: '🇺🇸', champion: '巴西', championFlag: '🇧🇷', runnerUp: '意大利', runnerUpFlag: '🇮🇹', topScorer: '斯托伊奇科夫/萨连科 (各6球)', teams: 24 },
+            { year: 1998, host: '法国', hostFlag: '🇫🇷', champion: '法国', championFlag: '🇫🇷', runnerUp: '巴西', runnerUpFlag: '🇧🇷', topScorer: '苏克 (克罗地亚, 6球)', teams: 32 },
+            { year: 2002, host: '韩日', hostFlag: '🇰🇷🇯🇵', champion: '巴西', championFlag: '🇧🇷', runnerUp: '德国', runnerUpFlag: '🇩🇪', topScorer: '罗纳尔多 (巴西, 8球)', teams: 32 },
+            { year: 2006, host: '德国', hostFlag: '🇩🇪', champion: '意大利', championFlag: '🇮🇹', runnerUp: '法国', runnerUpFlag: '🇫🇷', topScorer: '克洛泽 (德国, 5球)', teams: 32 },
+            { year: 2010, host: '南非', hostFlag: '🇿🇦', champion: '西班牙', championFlag: '🇪🇸', runnerUp: '荷兰', runnerUpFlag: '🇳🇱', topScorer: '穆勒/比利亚/斯内德/弗兰 (各5球)', teams: 32 },
+            { year: 2014, host: '巴西', hostFlag: '🇧🇷', champion: '德国', championFlag: '🇩🇪', runnerUp: '阿根廷', runnerUpFlag: '🇦🇷', topScorer: 'J罗 (哥伦比亚, 6球)', teams: 32 },
+            { year: 2018, host: '俄罗斯', hostFlag: '🇷🇺', champion: '法国', championFlag: '🇫🇷', runnerUp: '克罗地亚', runnerUpFlag: '🇭🇷', topScorer: '凯恩 (英格兰, 6球)', teams: 32 },
+            { year: 2022, host: '卡塔尔', hostFlag: '🇶🇦', champion: '阿根廷', championFlag: '🇦🇷', runnerUp: '法国', runnerUpFlag: '🇫🇷', topScorer: '姆巴佩 (法国, 8球)', teams: 32 },
+        ];
+
+        let historyFilter = 'all';
+
+        function renderHistoryControls() {
+            const c = document.getElementById('history-controls');
+            if (!c) return;
+            const ds = ['all','1930-1960','1962-1978','1982-1998','2002-2026'];
+            const ls = ['全部','1930-1960','1962-1978','1982-1998','2002-2026'];
+            c.innerHTML = ds.map((d,i) => '<button class="history-filter-btn '+(d===historyFilter?'active':'')+'" onclick="filterHistory(''+d+'')">'+ls[i]+'</button>').join('');
+        }
+
+        function filterHistory(f) { historyFilter=f; renderHistoryControls(); renderHistoryGrid(); }
+
+        function getFilteredHistory() {
+            if (historyFilter==='all') return worldCupHistory;
+            const [s,e]=historyFilter.split('-').map(Number);
+            return worldCupHistory.filter(w=>w.year>=s&&w.year<=e);
+        }
+
+        function renderHistoryGrid() {
+            const g=document.getElementById('history-grid');
+            if(!g)return;
+            const d=getFilteredHistory();
+            g.innerHTML=d.map(w=>'<div class="history-card"><div class="history-card-header"><span class="year">'+w.year+'</span><span class="host">'+w.hostFlag+' '+w.host+'</span></div><div class="history-card-body"><div class="history-row"><span class="history-label">冠军</span><span class="history-value champion">'+w.championFlag+' '+w.champion+'</span></div><div class="history-row"><span class="history-label">亚军</span><span class="history-value runner-up">'+w.runnerUpFlag+' '+w.runnerUp+'</span></div><div class="history-row"><span class="history-label">最佳射手</span><span class="history-value">'+w.topScorer+'</span></div><div class="history-row"><span class="history-label">参赛队伍</span><span class="history-value">'+w.teams+' 支</span></div></div></div>').join('');
+        }
+
+        // ============================================
+        // 球队对比
+        // ============================================
+
+        const teamHistoryData = {
+            'ARG':{wcTitles:3,wcFinals:6,bestResult:'冠军(1978,1986,2022)',topScorer:'梅西(108球)',wcApps:18,nickname:'蓝白军团'},
+            'FRA':{wcTitles:2,wcFinals:4,bestResult:'冠军(1998,2018)',topScorer:'吉鲁(57球)',wcApps:16,nickname:'高卢雄鸡'},
+            'BRA':{wcTitles:5,wcFinals:7,bestResult:'冠军(1958,1962,1970,1994,2002)',topScorer:'内马尔(79球)',wcApps:22,nickname:'桑巴军团'},
+            'ENG':{wcTitles:1,wcFinals:2,bestResult:'冠军(1966)',topScorer:'凯恩(68球)',wcApps:16,nickname:'三狮军团'},
+            'ESP':{wcTitles:1,wcFinals:1,bestResult:'冠军(2010)',topScorer:'比利亚(59球)',wcApps:16,nickname:'斗牛士军团'},
+            'GER':{wcTitles:4,wcFinals:8,bestResult:'冠军(1954,1974,1990,2014)',topScorer:'克洛泽(71球)',wcApps:20,nickname:'日耳曼战车'},
+            'POR':{wcTitles:0,wcFinals:0,bestResult:'季军(1966,2006)',topScorer:'C罗(130球)',wcApps:8,nickname:'五盾军团'},
+            'NED':{wcTitles:0,wcFinals:3,bestResult:'亚军(1974,1978,2010)',topScorer:'范佩西(50球)',wcApps:11,nickname:'橙衣军团'},
+            'CRO':{wcTitles:0,wcFinals:1,bestResult:'亚军(2018)',topScorer:'苏克(45球)',wcApps:6,nickname:'格子军团'},
+            'BEL':{wcTitles:0,wcFinals:0,bestResult:'季军(2018)',topScorer:'卢卡库(83球)',wcApps:14,nickname:'欧洲红魔'},
+            'MAR':{wcTitles:0,wcFinals:0,bestResult:'四强(2022)',topScorer:'查马拉(23球)',wcApps:6,nickname:'阿特拉斯雄狮'},
+            'USA':{wcTitles:0,wcFinals:0,bestResult:'四强(1930)',topScorer:'多诺万(57球)',wcApps:11,nickname:'美国队'},
+            'JPN':{wcTitles:0,wcFinals:0,bestResult:'16强(2002,2010,2018,2022)',topScorer:'冈崎慎司(50球)',wcApps:7,nickname:'蓝武士'},
+            'KOR':{wcTitles:0,wcFinals:0,bestResult:'四强(2002)',topScorer:'孙兴慜(49球)',wcApps:11,nickname:'太极虎'},
+            'MEX':{wcTitles:0,wcFinals:0,bestResult:'8强(1970,1986)',topScorer:'波尔赫蒂(46球)',wcApps:17,nickname:'墨西哥仙人掌'},
+            'SEN':{wcTitles:0,wcFinals:0,bestResult:'8强(2002)',topScorer:'马内(38球)',wcApps:3,nickname:'特兰加雄狮'},
+            'URU':{wcTitles:2,wcFinals:2,bestResult:'冠军(1930,1950)',topScorer:'苏亚雷斯(68球)',wcApps:14,nickname:'天蓝军团'},
+            'SUI':{wcTitles:0,wcFinals:0,bestResult:'8强(1934,1938,1954)',topScorer:'弗雷(42球)',wcApps:12,nickname:'瑞士军刀'},
+            'POL':{wcTitles:0,wcFinals:0,bestResult:'季军(1974,1982)',topScorer:'莱万(82球)',wcApps:9,nickname:'白鹰'},
+            'SRB':{wcTitles:0,wcFinals:0,bestResult:'四强(1930,1962)',topScorer:'米特洛维奇(56球)',wcApps:13,nickname:'白鹰'},
+            'CMR':{wcTitles:0,wcFinals:0,bestResult:'8强(1990)',topScorer:'埃托奥(56球)',wcApps:8,nickname:'非洲雄狮'},
+            'GHA':{wcTitles:0,wcFinals:0,bestResult:'8强(2010)',topScorer:'吉安(51球)',wcApps:4,nickname:'黑星'},
+            'KSA':{wcTitles:0,wcFinals:0,bestResult:'16强(1994)',topScorer:'贾比尔(28球)',wcApps:6,nickname:'沙漠雄鹰'},
+            'IRN':{wcTitles:0,wcFinals:0,bestResult:'小组赛',topScorer:'代伊(109球)',wcApps:6,nickname:'波斯铁骑'},
+            'AUS':{wcTitles:0,wcFinals:0,bestResult:'16强(2006,2022)',topScorer:'卡希尔(50球)',wcApps:6,nickname:'袋鼠军团'},
+            'TUN':{wcTitles:0,wcFinals:0,bestResult:'小组赛',topScorer:'哈兹里(25球)',wcApps:6,nickname:'迦太基雄鹰'},
+            'CRC':{wcTitles:0,wcFinals:0,bestResult:'8强(2014)',topScorer:'鲁伊斯(39球)',wcApps:6,nickname:'加勒比海盗'},
+            'CAN':{wcTitles:0,wcFinals:0,bestResult:'小组赛',topScorer:'戴维斯(15球)',wcApps:2,nickname:'枫叶军团'},
+            'WAL':{wcTitles:0,wcFinals:0,bestResult:'8强(1958)',topScorer:'贝尔(41球)',wcApps:2,nickname:'红龙'},
+            'ECU':{wcTitles:0,wcFinals:0,bestResult:'16强(2006)',topScorer:'瓦伦西亚(40球)',wcApps:4,nickname:'三色军团'},
+        };
+
+        function initCompare() {
+            const sa=document.getElementById('compare-team-a'),sb=document.getElementById('compare-team-b');
+            if(!sa||!sb)return;
+            const tl=Object.entries(teams).filter(([c])=>!c.includes('2')).sort((a,b)=>a[1].ranking-b[1].ranking);
+            const oh=tl.map(([c,t])=>'<option value="'+c+'">'+t.flag+' '+t.name+' (排名'+t.ranking+')</option>').join('');
+            sa.innerHTML=oh;sb.innerHTML=oh;sa.value='ARG';sb.value='FRA';
+        }
+
+        function compareTeams() {
+            const a=document.getElementById('compare-team-a').value,b=document.getElementById('compare-team-b').value;
+            if(a===b){alert('请选择两支不同的球队！');return;}
+            const ta=teams[a],tb=teams[b];
+            const ha=teamHistoryData[a]||{wcTitles:0,wcFinals:0,bestResult:'未知',topScorer:'未知',wcApps:0,nickname:'未知'};
+            const hb=teamHistoryData[b]||{wcTitles:0,wcFinals:0,bestResult:'未知',topScorer:'未知',wcApps:0,nickname:'未知'};
+            const pa=players[a]||[],pb=players[b]||[];
+            function wc(va,vb,l){if(va===vb)return'';if(l)return va<vb?'winner':'';return va>vb?'winner':'';}
+            const r=document.getElementById('compare-result');
+            r.innerHTML='<div class="compare-header"><div class="compare-team-card"><span class="flag">'+ta.flag+'</span><span class="name">'+ta.name+'</span><div style="color:var(--text-muted);font-size:0.9rem;">'+ha.nickname+'</div></div><div class="compare-vs">VS</div><div class="compare-team-card"><span class="flag">'+tb.flag+'</span><span class="name">'+tb.name+'</span><div style="color:var(--text-muted);font-size:0.9rem;">'+hb.nickname+'</div></div></div><div class="compare-section-title">基本数据</div><table class="compare-table"><tr><td class="left-val '+wc(ta.ranking,tb.ranking,1)+'">'+ta.ranking+'</td><td class="attr-name">FIFA排名</td><td class="right-val '+wc(tb.ranking,ta.ranking,1)+'">'+tb.ranking+'</td></tr><tr><td class="left-val '+wc(ta.elo,tb.elo)+'">'+ta.elo+'</td><td class="attr-name">ELO评分</td><td class="right-val '+wc(tb.elo,ta.elo)+'">'+tb.elo+'</td></tr><tr><td class="left-val">'+ta.conf+'</td><td class="attr-name">所属联合会</td><td class="right-val">'+tb.conf+'</td></tr><tr><td class="left-val">'+ta.group+'</td><td class="attr-name">所在小组</td><td class="right-val">'+tb.group+'</td></tr></table><div class="compare-section-title">历史战绩</div><table class="compare-table"><tr><td class="left-val '+wc(ha.wcTitles,hb.wcTitles)+'">'+ha.wcTitles+'</td><td class="attr-name">世界杯冠军</td><td class="right-val '+wc(hb.wcTitles,ha.wcTitles)+'">'+hb.wcTitles+'</td></tr><tr><td class="left-val '+wc(ha.wcFinals,hb.wcFinals)+'">'+ha.wcFinals+'</td><td class="attr-name">进入决赛</td><td class="right-val '+wc(hb.wcFinals,ha.wcFinals)+'">'+hb.wcFinals+'</td></tr><tr><td class="left-val '+wc(ha.wcApps,hb.wcApps)+'">'+ha.wcApps+'</td><td class="attr-name">参赛次数</td><td class="right-val '+wc(hb.wcApps,ha.wcApps)+'">'+hb.wcApps+'</td></tr><tr><td class="left-val">'+ha.bestResult+'</td><td class="attr-name">最佳成绩</td><td class="right-val">'+hb.bestResult+'</td></tr><tr><td class="left-val">'+ha.topScorer+'</td><td class="attr-name">历史最佳射手</td><td class="right-val">'+hb.topScorer+'</td></tr></table><div class="compare-section-title">核心球员</div><div class="compare-players"><div class="compare-player-list"><h4>'+ta.flag+' '+ta.name+'</h4>'+pa.map((p,i)=>'<div class="compare-player-item"><span class="rank-badge">'+(i+1)+'</span><span>'+p+'</span></div>').join('')+'</div><div class="compare-player-list"><h4>'+tb.flag+' '+tb.name+'</h4>'+pb.map((p,i)=>'<div class="compare-player-item"><span class="rank-badge">'+(i+1)+'</span><span>'+p+'</span></div>').join('')+'</div></div>';
+            r.classList.add('show');
+        }
+
+        // ============================================
+        // 游戏模式切换
+        // ============================================
+
+        function switchGameMode(mode) {
+            if(mode==='penalty'){game.running=false;}else{penaltyGame.running=false;}
+            document.querySelectorAll('.game-mode-btn').forEach(b=>b.classList.remove('active'));
+            if(typeof event!=='undefined'&&event.target)event.target.classList.add('active');
+            document.getElementById('football-mode').style.display=mode==='football'?'block':'none';
+            document.getElementById('penalty-mode').style.display=mode==='penalty'?'block':'none';
+            if(mode==='penalty'){drawPenaltyGame();}else{drawGame();}
+        }
+
+        // ============================================
+        // 点球大战
+        // ============================================
+
+        const penaltyCanvas=document.getElementById('penalty-game');
+        const penaltyCtx=penaltyCanvas?penaltyCanvas.getContext('2d'):null;
+        const PW=800,PH=500;
+
+        const penaltyGame={running:false,phase:'idle',round:0,maxRounds:5,playerScore:0,aiScore:0,playerResults:[],aiResults:[],isPlayerTurn:true,ball:{x:PW/2,y:PH-80,vx:0,vy:0,moving:false},goalkeeper:{x:PW/2,y:120,diving:false,diveDir:0,diveProgress:0},playerGoalkeeper:{x:PW/2,y:PH-120,diving:false,diveDir:0,diveProgress:0},resultTimer:0,goalFlash:0,message:''};
+
+        function updatePenaltyDots(){
+            const pd=document.getElementById('player-penalty-dots'),ad=document.getElementById('ai-penalty-dots');
+            if(!pd||!ad)return;let ph='',ah='';
+            for(let i=0;i<penaltyGame.maxRounds;i++){
+                ph+=i<penaltyGame.playerResults.length?'<div class="penalty-dot '+(penaltyGame.playerResults[i]?'scored':'missed')+'"></div>':'<div class="penalty-dot"></div>';
+                ah+=i<penaltyGame.aiResults.length?'<div class="penalty-dot '+(penaltyGame.aiResults[i]?'scored':'missed')+'"></div>':'<div class="penalty-dot"></div>';
+            }
+            pd.innerHTML=ph;ad.innerHTML=ah;
+            document.getElementById('penalty-score-text').textContent=penaltyGame.playerScore+' - '+penaltyGame.aiScore;
+        }
+
+        function drawPenaltyStadium(ctx){
+            const g=ctx.createLinearGradient(0,0,0,PH);g.addColorStop(0,'#0a1628');g.addColorStop(0.4,'#132743');g.addColorStop(1,'#1a472a');ctx.fillStyle=g;ctx.fillRect(0,0,PW,PH);
+            ctx.fillStyle='#1a472a';ctx.fillRect(0,PH*0.35,PW,PH*0.65);
+            for(let x=0;x<PW;x+=40){ctx.fillStyle=x%80===0?'#1e5232':'#1a472a';ctx.fillRect(x,PH*0.35,20,PH*0.65);}
+            const gl=PW/2-160,gr=PW/2+160,gt=50,gb=180;
+            ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=1;
+            for(let x=gl;x<=gr;x+=20){ctx.beginPath();ctx.moveTo(x,gt);ctx.lineTo(x,gb);ctx.stroke();}
+            for(let y=gt;y<=gb;y+=15){ctx.beginPath();ctx.moveTo(gl,y);ctx.lineTo(gr,y);ctx.stroke();}
+            ctx.strokeStyle='#ffffff';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(gl,gb);ctx.lineTo(gl,gt);ctx.lineTo(gr,gt);ctx.lineTo(gr,gb);ctx.stroke();
+            ctx.strokeStyle='rgba(255,255,255,0.4)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(gl,gb);ctx.lineTo(gr,gb);ctx.stroke();
+            ctx.strokeStyle='rgba(255,255,255,0.3)';ctx.beginPath();ctx.arc(PW/2,gb,100,0,Math.PI);ctx.stroke();
+            ctx.fillStyle='rgba(255,255,255,0.6)';ctx.beginPath();ctx.arc(PW/2,PH-130,4,0,Math.PI*2);ctx.fill();
+        }
+
+        function drawPenaltySprite(ctx,x,y,color,isGK){
+            ctx.fillStyle=color;ctx.beginPath();ctx.roundRect(x-14,y-20,28,36,4);ctx.fill();
+            ctx.fillStyle='#f4c7a0';ctx.beginPath();ctx.arc(x,y-30,10,0,Math.PI*2);ctx.fill();
+            if(isGK){ctx.fillStyle='#d4af37';ctx.beginPath();ctx.arc(x-18,y-10,6,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(x+18,y-10,6,0,Math.PI*2);ctx.fill();}
+            ctx.fillStyle='#1a1a1a';ctx.fillRect(x-10,y+16,8,14);ctx.fillRect(x+2,y+16,8,14);
+            ctx.fillStyle=isGK?'#d4af37':'#ffffff';ctx.fillRect(x-12,y+28,12,5);ctx.fillRect(x,y+28,12,5);
+        }
+
+        function drawPenaltyBall2(ctx,x,y){
+            ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(x,y,10,0,Math.PI*2);ctx.fill();
+            ctx.fillStyle='#333333';
+            for(let i=0;i<5;i++){const a=(i/5)*Math.PI*2,px=x+Math.cos(a)*5,py=y+Math.sin(a)*5;ctx.beginPath();for(let j=0;j<5;j++){const aj=a+(j/5)*Math.PI*2;const dx=px+Math.cos(aj)*2,dy=py+Math.sin(aj)*2;if(j===0)ctx.moveTo(dx,dy);else ctx.lineTo(dx,dy);}ctx.closePath();ctx.fill();}
+        }
+
+        function drawPenaltyGame(){
+            if(!penaltyCtx)return;const ctx=penaltyCtx,pg=penaltyGame;drawPenaltyStadium(ctx);
+            const gk=pg.goalkeeper;if(gk.diving){ctx.save();ctx.translate(gk.x,gk.y);ctx.rotate(gk.diveDir*gk.diveProgress*1.2);drawPenaltySprite(ctx,0,0,'#c8102e',true);ctx.restore();}else{drawPenaltySprite(ctx,gk.x,gk.y,'#c8102e',true);}
+            if(pg.phase==='saving'){const pgk=pg.playerGoalkeeper;if(pgk.diving){ctx.save();ctx.translate(pgk.x,pgk.y);ctx.rotate(pgk.diveDir*pgk.diveProgress*1.2);drawPenaltySprite(ctx,0,0,'#002b5c',true);ctx.restore();}else{drawPenaltySprite(ctx,pgk.x,pgk.y,'#002b5c',true);}}
+            drawPenaltyBall2(ctx,pg.ball.x,pg.ball.y);
+            if(pg.phase==='shooting'||pg.phase==='idle'||pg.phase==='result')drawPenaltySprite(ctx,PW/2,PH-70,'#002b5c',false);
+            if(pg.phase==='saving')drawPenaltySprite(ctx,PW/2,PH-70,'#c8102e',false);
+            if(pg.goalFlash>0){ctx.fillStyle='rgba(255,215,0,'+pg.goalFlash/30*0.25+')';ctx.fillRect(0,0,PW,PH);}
+            if(pg.message){ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(PW/2-200,PH/2-35,400,70);ctx.fillStyle=(pg.message.includes('进球')||pg.message.includes('赢')||pg.message.includes('扑出'))?'#d4af37':'#c8102e';ctx.font='bold 24px "Segoe UI"';ctx.textAlign='center';ctx.fillText(pg.message,PW/2,PH/2+8);}
+            if(pg.phase==='idle'&&!pg.running){ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(0,0,PW,PH);ctx.fillStyle='#ffffff';ctx.font='bold 36px "Segoe UI"';ctx.textAlign='center';ctx.fillText('点球大战',PW/2,PH/2-40);ctx.font='18px "Segoe UI"';ctx.fillStyle='#888888';ctx.fillText('射门时：点击球门上方区域选择射门方向',PW/2,PH/2+10);ctx.fillText('守门时：点击球门方向进行扑救',PW/2,PH/2+38);ctx.font='14px "Segoe UI"';ctx.fillStyle='#666666';ctx.fillText('点击「开始点球大战」按钮开始',PW/2,PH/2+70);}
+        }
+
+        function startPenaltyGame(){Object.assign(penaltyGame,{running:true,phase:'shooting',round:0,playerScore:0,aiScore:0,playerResults:[],aiResults:[],isPlayerTurn:true,message:'',goalFlash:0,resultTimer:0});penaltyGame.ball={x:PW/2,y:PH-130,vx:0,vy:0,moving:false};penaltyGame.goalkeeper={x:PW/2,y:120,diving:false,diveDir:0,diveProgress:0};penaltyGame.playerGoalkeeper={x:PW/2,y:PH-120,diving:false,diveDir:0,diveProgress:0};updatePenaltyDots();document.getElementById('penalty-instructions').textContent='你的回合 - 点击上方球门区域射门！';penaltyLoop();}
+
+        function resetPenaltyGame(){Object.assign(penaltyGame,{running:false,phase:'idle',round:0,playerScore:0,aiScore:0,playerResults:[],aiResults:[],message:'',goalFlash:0});penaltyGame.ball={x:PW/2,y:PH-130,vx:0,vy:0,moving:false};penaltyGame.goalkeeper={x:PW/2,y:120,diving:false,diveDir:0,diveProgress:0};updatePenaltyDots();document.getElementById('penalty-instructions').textContent='点击「开始点球大战」开始游戏';drawPenaltyGame();}
+
+        function penaltyLoop(){if(!penaltyGame.running)return;updatePenalty();drawPenaltyGame();requestAnimationFrame(penaltyLoop);}
+
+        function updatePenalty(){
+            const pg=penaltyGame;
+            if(pg.ball.moving){pg.ball.x+=pg.ball.vx;pg.ball.y+=pg.ball.vy;
+                if(pg.ball.y<=140){pg.ball.moving=false;pg.ball.vy=0;pg.ball.vx=0;const gl=PW/2-160,gr=PW/2+160,gb=180;const inGoal=pg.ball.x>=gl&&pg.ball.x<=gr&&pg.ball.y>=50&&pg.ball.y<=gb;
+                    if(pg.isPlayerTurn){let s=false;if(pg.goalkeeper.diving&&Math.abs(pg.ball.x-(pg.goalkeeper.x+pg.goalkeeper.diveDir*60))<50&&pg.ball.y<gb)s=true;if(inGoal&&!s){pg.playerScore++;pg.playerResults.push(true);pg.message='进球！漂亮！';pg.goalFlash=30;}else{pg.playerResults.push(false);pg.message=s?'被扑出了！':'射偏了！';}}
+                    else{let s=false;if(pg.playerGoalkeeper.diving&&Math.abs(pg.ball.x-(pg.playerGoalkeeper.x+pg.playerGoalkeeper.diveDir*60))<50&&pg.ball.y<gb)s=true;if(inGoal&&!s){pg.aiScore++;pg.aiResults.push(true);pg.message='对手进球了！';pg.goalFlash=30;}else{pg.aiResults.push(false);pg.message=s?'扑出去了！太棒了！':'对手射偏了！';}}
+                    pg.resultTimer=90;pg.phase='result';}}
+            if(pg.goalkeeper.diving){pg.goalkeeper.diveProgress=Math.min(1,pg.goalkeeper.diveProgress+0.05);pg.goalkeeper.x+=pg.goalkeeper.diveDir*4;}
+            if(pg.playerGoalkeeper.diving){pg.playerGoalkeeper.diveProgress=Math.min(1,pg.playerGoalkeeper.diveProgress+0.05);pg.playerGoalkeeper.x+=pg.playerGoalkeeper.diveDir*4;}
+            if(pg.phase==='result'){pg.resultTimer--;if(pg.resultTimer<=0){pg.message='';
+                if(pg.playerResults.length>=pg.maxRounds&&pg.aiResults.length>=pg.maxRounds&&pg.playerScore!==pg.aiScore){endPenaltyGame();return;}
+                if(pg.playerResults.length>=3&&pg.aiResults.length>=3){const pr=pg.maxRounds-pg.playerResults.length,ar=pg.maxRounds-pg.aiResults.length;if(pg.playerScore>pg.aiScore+ar||pg.aiScore>pg.playerScore+pr){endPenaltyGame();return;}}
+                pg.isPlayerTurn=!pg.isPlayerTurn;
+                if(pg.isPlayerTurn){pg.phase='shooting';pg.ball={x:PW/2,y:PH-130,vx:0,vy:0,moving:false};pg.goalkeeper={x:PW/2,y:120,diving:false,diveDir:0,diveProgress:0};document.getElementById('penalty-instructions').textContent='你的回合 - 点击上方球门区域射门！';}
+                else{pg.phase='saving';pg.ball={x:PW/2,y:PH-130,vx:0,vy:0,moving:false};pg.playerGoalkeeper={x:PW/2,y:PH-120,diving:false,diveDir:0,diveProgress:0};document.getElementById('penalty-instructions').textContent='对手的回合 - 点击球门方向扑救！';setTimeout(aiShoot,800);}
+                pg.round++;}}if(pg.goalFlash>0)pg.goalFlash--;}
+
+        function aiShoot(){const pg=penaltyGame;if(pg.phase!=='saving'||pg.ball.moving)return;const gl=PW/2-160,gr=PW/2+160;const tx=gl+Math.random()*(gr-gl),ty=60+Math.random()*100;const dx=tx-pg.ball.x,dy=ty-pg.ball.y,dist=Math.sqrt(dx*dx+dy*dy);pg.ball.vx=(dx/dist)*12;pg.ball.vy=(dy/dist)*12;pg.ball.moving=true;}
+
+        function endPenaltyGame(){const pg=penaltyGame;pg.phase='ended';pg.running=false;pg.message=pg.playerScore>pg.aiScore?'你赢了！'+pg.playerScore+' - '+pg.aiScore:pg.aiScore>pg.playerScore?'你输了！'+pg.playerScore+' - '+pg.aiScore:'平局！'+pg.playerScore+' - '+pg.aiScore;document.getElementById('penalty-instructions').textContent='比赛结束！点击「重置」重新开始';drawPenaltyGame();}
+
+        if(penaltyCanvas){penaltyCanvas.addEventListener('click',function(e){const pg=penaltyGame;if(!pg.running)return;const rect=penaltyCanvas.getBoundingClientRect();const cx=(e.clientX-rect.left)*(PW/rect.width),cy=(e.clientY-rect.top)*(PH/rect.height);const gl=PW/2-160,gr=PW/2+160,gb=180;if(pg.phase==='shooting'&&!pg.ball.moving&&cy<=gb+30){const tx=Math.max(gl+20,Math.min(gr-20,cx)),ty=Math.max(60,Math.min(gb-10,cy));const dx=tx-pg.ball.x,dy=ty-pg.ball.y,dist=Math.sqrt(dx*dx+dy*dy);pg.ball.vx=(dx/dist)*12;pg.ball.vy=(dy/dist)*12;pg.ball.moving=true;if(Math.random()<0.4){pg.goalkeeper.diving=true;pg.goalkeeper.diveDir=Math.random()<0.5?-1:1;pg.goalkeeper.diveProgress=0;}}else if(pg.phase==='saving'&&!pg.ball.moving){pg.playerGoalkeeper.diving=true;pg.playerGoalkeeper.diveDir=cx<PW/2?-1:1;pg.playerGoalkeeper.diveProgress=0;}});}
+
+        drawPenaltyGame();
+
+        // ============================================
         // 初始化
         // ============================================
 
@@ -4492,6 +4709,10 @@
             renderBracket();
             initSimulator();
             drawGame();
+            initCompare();
+            renderHistoryControls();
+            renderHistoryGrid();
+            drawPenaltyGame();
             initTournament();
             initSchedule();
         });
