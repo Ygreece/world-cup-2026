@@ -4553,7 +4553,7 @@
             if (!c) return;
             const ds = ['all','1930-1960','1962-1978','1982-1998','2002-2026'];
             const ls = ['全部','1930-1960','1962-1978','1982-1998','2002-2026'];
-            c.innerHTML = ds.map((d,i) => '<button class="history-filter-btn '+(d===historyFilter?'active':'')+'" onclick="filterHistory(''+d+'')">'+ls[i]+'</button>').join('');
+            c.innerHTML = ds.map((d,i) => '<button class="history-filter-btn '+(d===historyFilter?'active':'')+'" onclick="filterHistory(\''+d+'\')">'+ls[i]+'</button>').join('');
         }
 
         function filterHistory(f) { historyFilter=f; renderHistoryControls(); renderHistoryGrid(); }
