@@ -6,19 +6,20 @@
 <title>⚽ 点球大战 - 2026世界杯</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: #0a1628; color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+body { background: #0a1628; color: #fff; font-family: 'Segoe UI', sans-serif; }
+body.in-game { overflow: hidden; }
 
 /* 主菜单 */
-.menu { position: fixed; inset: 0; background: linear-gradient(135deg, #0a1628 0%, #1a2a4a 50%, #0d1f3c 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
+.menu { position: fixed; inset: 0; background: linear-gradient(135deg, #0a1628 0%, #1a2a4a 50%, #0d1f3c 100%); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; z-index: 100; overflow-y: auto; padding: 30px 20px; }
 .menu h1 { font-size: 3.5rem; margin-bottom: 0.5rem; background: linear-gradient(90deg, #ffd700, #ff6b35, #ffd700); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: none; }
 .menu .subtitle { color: #88aacc; margin-bottom: 2rem; font-size: 1.1rem; }
 .menu-btn { display: block; width: 280px; padding: 15px; margin: 8px; background: linear-gradient(135deg, #1e3a5f, #2a4a6f); border: 2px solid #3a6a9f; border-radius: 12px; color: #fff; font-size: 1.1rem; cursor: pointer; transition: all 0.3s; text-align: center; }
 .menu-btn:hover { background: linear-gradient(135deg, #2a5a8f, #3a7abf); border-color: #5a9adf; transform: translateY(-2px); box-shadow: 0 5px 20px rgba(90,154,223,0.3); }
-.team-select { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; max-width: 600px; margin: 15px 0; }
-.team-card { padding: 12px 20px; background: rgba(255,255,255,0.05); border: 2px solid transparent; border-radius: 10px; cursor: pointer; transition: all 0.3s; text-align: center; min-width: 100px; }
+.team-select { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; max-width: 700px; margin: 10px 0; }
+.team-card { padding: 8px 12px; background: rgba(255,255,255,0.05); border: 2px solid transparent; border-radius: 8px; cursor: pointer; transition: all 0.3s; text-align: center; min-width: 75px; }
 .team-card:hover, .team-card.selected { border-color: #ffd700; background: rgba(255,215,0,0.1); }
-.team-card .flag { font-size: 2.5rem; }
-.team-card .name { font-size: 0.85rem; margin-top: 5px; color: #aac; }
+.team-card .flag { font-size: 1.8rem; }
+.team-card .name { font-size: 0.75rem; margin-top: 3px; color: #aac; }
 
 /* 游戏界面 */
 .game { display: none; position: fixed; inset: 0; }
@@ -183,6 +184,7 @@ function setDifficulty(d) {
 }
 
 function startGame() {
+  document.body.classList.add('in-game');
   document.getElementById('menu').style.display = 'none';
   document.getElementById('game').style.display = 'block';
   document.getElementById('resultOverlay').style.display = 'none';
@@ -580,6 +582,7 @@ function endGame() {
 }
 
 function backToMenu() {
+  document.body.classList.remove('in-game');
   document.getElementById('menu').style.display = 'flex';
   document.getElementById('game').style.display = 'none';
   document.getElementById('resultOverlay').style.display = 'none';
