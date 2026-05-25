@@ -2912,6 +2912,452 @@
         }
 
         // ============================================
+        // Web Audio API 音效系统
+        // ============================================
+
+        var audioCtx = null;
+        var soundEnabled = true;
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            var btn = document.getElementById('btn-sound');
+            btn.textContent = soundEnabled ? '\u{1F50A} 音效' : '\u{1F507} 静音';
+            btn.classList.toggle('active', soundEnabled);
+        }
+
+        function ensureAudioCtx() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playWhistle() {
+            if (!soundEnabled) return;
+            var ctx = ensureAudioCtx();
+            var now = ctx.currentTime;
+            var osc = ctx.createOscillator();
+            var gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(3200, now);
+            osc.frequency.linearRampToValueAtTime(2800, now + 0.15);
+            osc.frequency.setValueAtTime(3200, now + 0.2);
+            osc.frequency.linearRampToValueAtTime(2800, now + 0.35);
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.8);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.8);
+        }
+
+        function playGoalSound() {
+            if (!soundEnabled) return;
+            var ctx = ensureAudioCtx();
+            var now = ctx.currentTime;
+            for (var i = 0; i < 5; i++) {
+                var osc = ctx.createOscillator();
+                var gain = ctx.createGain();
+                osc.type = 'sawtooth';
+                var baseFreq = 200 + Math.random() * 400;
+                osc.frequency.setValueAtTime(baseFreq, now);
+                osc.frequency.linearRampToValueAtTime(baseFreq * 1.5, now + 0.3);
+                osc.frequency.linearRampToValueAtTime(baseFreq * 0.8, now + 1.0);
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.08, now + 0.1 + i * 0.05);
+                gain.gain.linearRampToValueAtTime(0.01, now + 1.2);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now + i * 0.05);
+                osc.stop(now + 1.2);
+            }
+            var bufferSize = ctx.sampleRate * 1.2;
+            var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            var data = buffer.getChannelData(0);
+            for (var j = 0; j < bufferSize; j++) {
+                data[j] = (Math.random() * 2 - 1) * 0.3;
+            }
+            var noise = ctx.createBufferSource();
+            noise.buffer = buffer;
+            var noiseGain = ctx.createGain();
+            var noiseFilter = ctx.createBiquadFilter();
+            noiseFilter.type = 'bandpass';
+            noiseFilter.frequency.value = 800;
+            noiseFilter.Q.value = 0.5;
+            noiseGain.gain.setValueAtTime(0, now);
+            noiseGain.gain.linearRampToValueAtTime(0.15, now + 0.1);
+            noiseGain.gain.linearRampToValueAtTime(0.01, now + 1.2);
+            noise.connect(noiseFilter);
+            noiseFilter.connect(noiseGain);
+            noiseGain.connect(ctx.destination);
+            noise.start(now);
+            noise.stop(now + 1.2);
+        }
+
+        function playKickSound() {
+            if (!soundEnabled) return;
+            var ctx = ensureAudioCtx();
+            var now = ctx.currentTime;
+            var osc = ctx.createOscillator();
+            var gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(300, now);
+            osc.frequency.exponentialRampToValueAtTime(80, now + 0.1);
+            gain.gain.setValueAtTime(0.4, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.15);
+            var bufferSize = ctx.sampleRate * 0.1;
+            var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            var data = buffer.getChannelData(0);
+            for (var i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.02));
+            }
+            var noise = ctx.createBufferSource();
+            noise.buffer = buffer;
+            var noiseGain = ctx.createGain();
+            noiseGain.gain.value = 0.2;
+            noise.connect(noiseGain);
+            noiseGain.connect(ctx.destination);
+            noise.start(now);
+        }
+
+        function playCardSound() {
+            if (!soundEnabled) return;
+            var ctx = ensureAudioCtx();
+            var now = ctx.currentTime;
+            var osc = ctx.createOscillator();
+            var gain = ctx.createGain();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(800, now);
+            osc.frequency.setValueAtTime(600, now + 0.1);
+            gain.gain.setValueAtTime(0.15, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.3);
+        }
+
+        function playCrowdAmbient() {
+            if (!soundEnabled) return;
+            var ctx = ensureAudioCtx();
+            var now = ctx.currentTime;
+            var bufferSize = ctx.sampleRate * 0.6;
+            var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            var data = buffer.getChannelData(0);
+            for (var i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * 0.05;
+            }
+            var noise = ctx.createBufferSource();
+            noise.buffer = buffer;
+            var filter = ctx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.value = 400;
+            filter.Q.value = 0.3;
+            var gain = ctx.createGain();
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.6);
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+            noise.start(now);
+            noise.stop(now + 0.6);
+        }
+
+        // ============================================
+        // 比赛动画系统
+        // ============================================
+
+        var matchAnimState = null;
+
+        function getFormationPositions(teamSide, canvasW, canvasH) {
+            var isHome = teamSide === 'home';
+            var cx = isHome ? canvasW * 0.25 : canvasW * 0.75;
+            var spread = canvasW * 0.18;
+            var ySpread = canvasH * 0.35;
+            return [
+                { x: isHome ? 30 : canvasW - 30, y: canvasH / 2 },
+                { x: cx - spread * 0.3, y: canvasH / 2 - ySpread * 0.8 },
+                { x: cx - spread * 0.3, y: canvasH / 2 - ySpread * 0.3 },
+                { x: cx - spread * 0.3, y: canvasH / 2 + ySpread * 0.3 },
+                { x: cx - spread * 0.3, y: canvasH / 2 + ySpread * 0.8 },
+                { x: cx, y: canvasH / 2 - ySpread * 0.5 },
+                { x: cx, y: canvasH / 2 },
+                { x: cx, y: canvasH / 2 + ySpread * 0.5 },
+                { x: cx + spread * 0.4, y: canvasH / 2 - ySpread * 0.5 },
+                { x: cx + spread * 0.4, y: canvasH / 2 },
+                { x: cx + spread * 0.4, y: canvasH / 2 + ySpread * 0.5 },
+            ];
+        }
+
+        function initMatchAnimCanvas(homeTeam, awayTeam) {
+            var canvas = document.getElementById('match-canvas');
+            var CW = canvas.width;
+            var CH = canvas.height;
+            var homeFormation = getFormationPositions('home', CW, CH);
+            var awayFormation = getFormationPositions('away', CW, CH);
+            matchAnimState = {
+                canvas: canvas, CW: CW, CH: CH,
+                homeTeam: homeTeam, awayTeam: awayTeam,
+                homePlayers: homeFormation.map(function(pos) { return { x: pos.x, y: pos.y, targetX: pos.x, targetY: pos.y }; }),
+                awayPlayers: awayFormation.map(function(pos) { return { x: pos.x, y: pos.y, targetX: pos.x, targetY: pos.y }; }),
+                ball: { x: CW / 2, y: CH / 2, targetX: CW / 2, targetY: CH / 2 },
+                particles: [], goalFlash: 0,
+            };
+        }
+
+        function setBallTarget(x, y) {
+            if (!matchAnimState) return;
+            matchAnimState.ball.targetX = Math.max(15, Math.min(matchAnimState.CW - 15, x));
+            matchAnimState.ball.targetY = Math.max(15, Math.min(matchAnimState.CH - 15, y));
+        }
+
+        function movePlayersTowardBall(ballX, ballY, intensity) {
+            if (!matchAnimState) return;
+            var s = matchAnimState;
+            s.homePlayers.forEach(function(p, i) {
+                if (i === 0) { p.targetX = 30 + Math.random() * 40; p.targetY = s.CH / 2 + (ballY - s.CH / 2) * 0.3; }
+                else { p.targetX = p.x + (ballX - p.x) * intensity * 0.3 + (Math.random() - 0.5) * 60; p.targetY = p.y + (ballY - p.y) * intensity * 0.3 + (Math.random() - 0.5) * 40; }
+                p.targetX = Math.max(10, Math.min(s.CW / 2 - 10, p.targetX));
+                p.targetY = Math.max(10, Math.min(s.CH - 10, p.targetY));
+            });
+            s.awayPlayers.forEach(function(p, i) {
+                if (i === 0) { p.targetX = s.CW - 30 - Math.random() * 40; p.targetY = s.CH / 2 + (ballY - s.CH / 2) * 0.3; }
+                else { p.targetX = p.x + (ballX - p.x) * intensity * 0.3 + (Math.random() - 0.5) * 60; p.targetY = p.y + (ballY - p.y) * intensity * 0.3 + (Math.random() - 0.5) * 40; }
+                p.targetX = Math.max(s.CW / 2 + 10, Math.min(s.CW - 10, p.targetX));
+                p.targetY = Math.max(10, Math.min(s.CH - 10, p.targetY));
+            });
+        }
+
+        function addMatchParticles(x, y, count, color) {
+            if (!matchAnimState) return;
+            for (var i = 0; i < count; i++) {
+                matchAnimState.particles.push({ x: x, y: y, vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6, life: 20 + Math.random() * 15, color: color || '#d4af37' });
+            }
+        }
+
+        function updateMatchAnim() {
+            if (!matchAnimState) return;
+            var s = matchAnimState, ease = 0.08;
+            s.ball.x += (s.ball.targetX - s.ball.x) * ease;
+            s.ball.y += (s.ball.targetY - s.ball.y) * ease;
+            s.homePlayers.forEach(function(p) { p.x += (p.targetX - p.x) * ease; p.y += (p.targetY - p.y) * ease; });
+            s.awayPlayers.forEach(function(p) { p.x += (p.targetX - p.x) * ease; p.y += (p.targetY - p.y) * ease; });
+            s.particles = s.particles.filter(function(p) { p.x += p.vx; p.y += p.vy; p.vx *= 0.95; p.vy *= 0.95; p.life--; return p.life > 0; });
+            if (s.goalFlash > 0) s.goalFlash--;
+        }
+
+        function drawMatchCanvas() {
+            if (!matchAnimState) return;
+            var s = matchAnimState, ctx = s.canvas.getContext('2d'), CW = s.CW, CH = s.CH;
+            ctx.clearRect(0, 0, CW, CH);
+            ctx.fillStyle = '#1a472a'; ctx.fillRect(0, 0, CW, CH);
+            ctx.fillStyle = '#1e5232'; for (var x = 0; x < CW; x += 30) { ctx.fillRect(x, 0, 15, CH); }
+            ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 2; ctx.strokeRect(8, 8, CW - 16, CH - 16);
+            ctx.beginPath(); ctx.moveTo(CW / 2, 8); ctx.lineTo(CW / 2, CH - 8); ctx.stroke();
+            ctx.beginPath(); ctx.arc(CW / 2, CH / 2, 40, 0, Math.PI * 2); ctx.stroke();
+            ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.beginPath(); ctx.arc(CW / 2, CH / 2, 3, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeRect(8, CH / 2 - 70, 55, 140); ctx.strokeRect(CW - 63, CH / 2 - 70, 55, 140);
+            ctx.fillStyle = 'rgba(0,0,0,0.4)'; ctx.fillRect(0, CH / 2 - 40, 8, 80); ctx.fillRect(CW - 8, CH / 2 - 40, 8, 80);
+            s.homePlayers.forEach(function(p, i) { ctx.fillStyle = '#004488'; ctx.beginPath(); ctx.arc(p.x, p.y, i === 0 ? 7 : 6, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 1; ctx.stroke(); if (i > 0) { ctx.fillStyle = 'white'; ctx.font = '8px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(String(i), p.x, p.y + 3); } });
+            s.awayPlayers.forEach(function(p, i) { ctx.fillStyle = '#c8102e'; ctx.beginPath(); ctx.arc(p.x, p.y, i === 0 ? 7 : 6, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 1; ctx.stroke(); if (i > 0) { ctx.fillStyle = 'white'; ctx.font = '8px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(String(i), p.x, p.y + 3); } });
+            s.particles.forEach(function(p) { ctx.globalAlpha = Math.max(0, p.life / 35); ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI * 2); ctx.fill(); });
+            ctx.globalAlpha = 1;
+            var bx = s.ball.x, by = s.ball.y;
+            ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.beginPath(); ctx.arc(bx + 1, by + 1, 5, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(bx, by, 5, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#333'; ctx.lineWidth = 1; ctx.stroke();
+            if (s.goalFlash > 0) { ctx.fillStyle = 'rgba(255,215,0,' + (s.goalFlash / 25 * 0.3) + ')'; ctx.fillRect(0, 0, CW, CH); ctx.fillStyle = '#d4af37'; ctx.font = 'bold 32px "Segoe UI"'; ctx.textAlign = 'center'; ctx.fillText('⚽ 进球！', CW / 2, CH / 2); }
+        }
+
+        // ============================================
+        // 解说系统
+        // ============================================
+
+        function addCommentary(minute, icon, text, type) {
+            var log = document.getElementById('commentary-log');
+            var entry = document.createElement('div');
+            entry.className = 'commentary-entry' + (type ? ' ' + type : '');
+            entry.innerHTML = '<span class="commentary-minute">' + minute + "'</span><span class='commentary-icon'>" + icon + "</span><span class='commentary-text'>" + text + '</span>';
+            log.insertBefore(entry, log.firstChild);
+        }
+
+        function generatePlayCommentary(minute, hTeam, aTeam, hPlayers, aPlayers) {
+            var all = [
+                { icon: '\u{1F3C3}', texts: [hTeam.name + '在中场组织进攻', aTeam.name + '后防线稳固防守', '双方在中场激烈拼抢', hTeam.name + '试图通过边路突破', aTeam.name + '发起快速反击'] },
+                { icon: '\u{1F462}', texts: [hPlayers[Math.floor(Math.random() * hPlayers.length)] + '一脚远射，球偏出了球门', aPlayers[Math.floor(Math.random() * aPlayers.length)] + '带球突破，被防守球员拦截', hPlayers[Math.floor(Math.random() * hPlayers.length)] + '的传球被对方门将没收', aPlayers[Math.floor(Math.random() * aPlayers.length)] + '头球攻门，稍稍高出横梁'] },
+                { icon: '\u{1F504}', texts: [hTeam.name + '换边进攻', aTeam.name + '控球率逐渐提升', '比赛节奏在加快', '两队互有攻守，场面十分胶着'] },
+                { icon: '⚡', texts: [hPlayers[Math.floor(Math.random() * hPlayers.length)] + '精彩的过人！观众席发出惊呼', aPlayers[Math.floor(Math.random() * aPlayers.length)] + '在禁区前沿制造了威胁', '门将神勇扑救！化解了一次必进之球', hPlayers[Math.floor(Math.random() * hPlayers.length)] + '射门！球打在了门柱上'] },
+            ];
+            var action = all[Math.floor(Math.random() * all.length)];
+            return { icon: action.icon, text: action.texts[Math.floor(Math.random() * action.texts.length)] };
+        }
+
+        // ============================================
+        // 动画比赛模拟主流程
+        // ============================================
+
+        var matchRunning = false;
+
+        function matchDelay(ms) {
+            return new Promise(function(resolve) { setTimeout(resolve, ms); });
+        }
+
+        function startAnimatedMatch() {
+            if (matchRunning) return;
+            var homeCode = document.getElementById('home-team').value;
+            var awayCode = document.getElementById('away-team').value;
+            if (homeCode === awayCode) { alert('请选择不同的球队！'); return; }
+
+            matchRunning = true;
+            var homeTeam = teams[homeCode], awayTeam = teams[awayCode];
+            var homePlayers = players[homeCode] || ['球员1', '球员2', '球员3'];
+            var awayPlayers = players[awayCode] || ['球员1', '球员2', '球员3'];
+
+            document.getElementById('simulate-btn').textContent = '比赛中...';
+            document.getElementById('simulate-btn').style.opacity = '0.6';
+            document.getElementById('match-result').classList.remove('show');
+            document.getElementById('live-score-area').style.display = 'flex';
+            document.getElementById('match-animation-area').classList.add('show');
+            document.getElementById('commentary-section').classList.add('show');
+            document.getElementById('live-home-flag').textContent = homeTeam.flag;
+            document.getElementById('live-home-name').textContent = homeTeam.name;
+            document.getElementById('live-away-flag').textContent = awayTeam.flag;
+            document.getElementById('live-away-name').textContent = awayTeam.name;
+            document.getElementById('live-home-goals').textContent = '0';
+            document.getElementById('live-away-goals').textContent = '0';
+            document.getElementById('commentary-log').innerHTML = '';
+            document.getElementById('commentary-badge').textContent = '直播中';
+            document.getElementById('commentary-badge').style.background = 'var(--primary)';
+            initMatchAnimCanvas(homeTeam, awayTeam);
+
+            var homeAdv = 100, homeElo = homeTeam.elo + homeAdv, awayElo = awayTeam.elo;
+            var homeExp = 1 / (1 + Math.pow(10, (awayElo - homeElo) / 400));
+            var totalHG = Math.max(0, Math.round(2.5 * homeExp + (Math.random() - 0.5)));
+            var totalAG = Math.max(0, Math.round(2.5 * (1 - homeExp) + (Math.random() - 0.5)));
+
+            var goalMinutes = [];
+            for (var gi = 0; gi < totalHG; gi++) goalMinutes.push({ minute: 2 + Math.floor(Math.random() * 88), team: 'home', scorer: homePlayers[Math.floor(Math.random() * homePlayers.length)] });
+            for (var gj = 0; gj < totalAG; gj++) goalMinutes.push({ minute: 2 + Math.floor(Math.random() * 88), team: 'away', scorer: awayPlayers[Math.floor(Math.random() * awayPlayers.length)] });
+            goalMinutes.sort(function(a, b) { return a.minute - b.minute; });
+
+            var cardEvents = [];
+            var numY = 1 + Math.floor(Math.random() * 4);
+            for (var ci = 0; ci < numY; ci++) {
+                var ch = Math.random() > 0.5;
+                cardEvents.push({ minute: 5 + Math.floor(Math.random() * 85), type: 'yellow', team: ch ? homeTeam : awayTeam, player: (ch ? homePlayers : awayPlayers)[Math.floor(Math.random() * (ch ? homePlayers : awayPlayers).length)] });
+            }
+            if (Math.random() < 0.15) {
+                var rh = Math.random() > 0.5;
+                cardEvents.push({ minute: 10 + Math.floor(Math.random() * 80), type: 'red', team: rh ? homeTeam : awayTeam, player: (rh ? homePlayers : awayPlayers)[Math.floor(Math.random() * (rh ? homePlayers : awayPlayers).length)] });
+            }
+            cardEvents.sort(function(a, b) { return a.minute - b.minute; });
+
+            var cornerEvents = [];
+            var numC = 2 + Math.floor(Math.random() * 6);
+            for (var ki = 0; ki < numC; ki++) {
+                var ch2 = Math.random() > 0.5;
+                cornerEvents.push({ minute: 5 + Math.floor(Math.random() * 85), team: ch2 ? homeTeam : awayTeam, isHome: ch2 });
+            }
+            cornerEvents.sort(function(a, b) { return a.minute - b.minute; });
+
+            var cHG = 0, cAG = 0, gI = 0, cdI = 0, cnI = 0;
+
+            addCommentary(0, '\u{1F4E3}', homeTeam.name + ' 对阵 ' + awayTeam.name + ' 的比赛即将开始！');
+            matchDelay(400).then(function() {
+                playWhistle();
+                addCommentary(0, '\u{1F4E3}', '裁判吹响了开场哨声！比赛开始！');
+                return matchDelay(300);
+            }).then(function() {
+                var aF;
+                function aL() { updateMatchAnim(); drawMatchCanvas(); aF = requestAnimationFrame(aL); }
+                aL();
+
+                var m = 1;
+                function simM() {
+                    if (m > 90) {
+                        playWhistle();
+                        matchDelay(300).then(function() { playWhistle(); return matchDelay(400); }).then(function() {
+                            var rT = cHG > cAG ? homeTeam.name + '获胜！' : cHG < cAG ? awayTeam.name + '获胜！' : '双方握手言和！';
+                            addCommentary(90, '\u{1F4E3}', '裁判吹响了终场哨声！', 'end');
+                            return matchDelay(400);
+                        }).then(function() {
+                            addCommentary(90, '\u{1F3C6}', '最终比分：' + homeTeam.name + ' ' + cHG + ' - ' + cAG + ' ' + awayTeam.name, 'end');
+                            document.getElementById('commentary-badge').textContent = '已结束';
+                            document.getElementById('commentary-badge').style.background = 'var(--text-muted)';
+                            document.getElementById('result-home-flag').textContent = homeTeam.flag;
+                            document.getElementById('result-home-name').textContent = homeTeam.name;
+                            document.getElementById('result-away-flag').textContent = awayTeam.flag;
+                            document.getElementById('result-away-name').textContent = awayTeam.name;
+                            document.getElementById('result-score').textContent = cHG + ' - ' + cAG;
+                            var sd = document.getElementById('goal-scorers');
+                            sd.innerHTML = '<h4>⚽ 进球</h4>';
+                            goalMinutes.forEach(function(g) { var t = g.team === 'home' ? homeTeam : awayTeam; sd.innerHTML += '<div class="scorer"><span class="minute">' + g.minute + "'</span><span>" + g.scorer + '</span><span>' + t.flag + '</span></div>'; });
+                            document.getElementById('match-result').classList.add('show');
+                            cancelAnimationFrame(aF); drawMatchCanvas();
+                            document.getElementById('simulate-btn').textContent = '开始比赛';
+                            document.getElementById('simulate-btn').style.opacity = '1';
+                            matchRunning = false;
+                        });
+                        return;
+                    }
+                    document.getElementById('match-timer').textContent = m + "'";
+                    document.getElementById('match-timer-fill').style.width = ((m / 90) * 100) + '%';
+                    var dMs = 100 + Math.random() * 100;
+
+                    if (gI < goalMinutes.length && goalMinutes[gI].minute === m) {
+                        var go = goalMinutes[gI];
+                        if (go.team === 'home') { cHG++; document.getElementById('live-home-goals').textContent = cHG; setBallTarget(matchAnimState.CW - 20, matchAnimState.CH / 2); }
+                        else { cAG++; document.getElementById('live-away-goals').textContent = cAG; setBallTarget(20, matchAnimState.CH / 2); }
+                        matchAnimState.goalFlash = 25; addMatchParticles(matchAnimState.ball.x, matchAnimState.ball.y, 30, '#d4af37');
+                        playGoalSound();
+                        addCommentary(m, '⚽', '进球！！！' + go.scorer + '为' + (go.team === 'home' ? homeTeam : awayTeam).name + '打入一球！', 'goal');
+                        gI++; dMs = 1200;
+                        matchDelay(800).then(function() { movePlayersTowardBall(matchAnimState.CW / 2, matchAnimState.CH / 2, 0.3); setBallTarget(matchAnimState.CW / 2, matchAnimState.CH / 2); });
+                    }
+                    if (cdI < cardEvents.length && cardEvents[cdI].minute === m) {
+                        var ca = cardEvents[cdI];
+                        playCardSound();
+                        addCommentary(m, ca.type === 'yellow' ? '\u{1F7E8}' : '\u{1F7E5}', ca.player + '（' + ca.team.name + '）被出示' + (ca.type === 'yellow' ? '黄牌' : '红牌') + '！', 'card');
+                        cdI++; dMs = Math.max(dMs, 800);
+                    }
+                    if (cnI < cornerEvents.length && cornerEvents[cnI].minute === m) {
+                        var co = cornerEvents[cnI];
+                        if (co.isHome) { setBallTarget(matchAnimState.CW - 20, Math.random() > 0.5 ? 20 : matchAnimState.CH - 20); movePlayersTowardBall(matchAnimState.CW - 40, matchAnimState.CH / 2, 0.5); }
+                        else { setBallTarget(20, Math.random() > 0.5 ? 20 : matchAnimState.CH - 20); movePlayersTowardBall(40, matchAnimState.CH / 2, 0.5); }
+                        playKickSound();
+                        addCommentary(m, '\u{1F6A9}', co.team.name + '获得角球机会');
+                        cnI++; dMs = Math.max(dMs, 700);
+                    }
+                    if (m > 1 && m % (3 + Math.floor(Math.random() * 3)) === 0) {
+                        var com = generatePlayCommentary(m, homeTeam, awayTeam, homePlayers, awayPlayers);
+                        addCommentary(m, com.icon, com.text);
+                        playCrowdAmbient();
+                        var rx = matchAnimState.CW * 0.2 + Math.random() * matchAnimState.CW * 0.6;
+                        var ry = matchAnimState.CH * 0.15 + Math.random() * matchAnimState.CH * 0.7;
+                        setBallTarget(rx, ry); movePlayersTowardBall(rx, ry, 0.4);
+                    }
+                    if (Math.random() < 0.3) playKickSound();
+                    if (m === 45) {
+                        playWhistle();
+                        addCommentary(45, '\u{1F4E3}', '上半场结束！比分：' + homeTeam.name + ' ' + cHG + ' - ' + cAG + ' ' + awayTeam.name, 'end');
+                        m++;
+                        matchDelay(1500).then(function() { addCommentary(45, '\u{1F4E3}', '下半场比赛开始！'); playWhistle(); return matchDelay(500); }).then(simM);
+                        return;
+                    }
+                    m++;
+                    matchDelay(dMs).then(simM);
+                }
+                simM();
+            });
+        }
+
+        // ============================================
         // 球队详情弹窗
         // ============================================
 
