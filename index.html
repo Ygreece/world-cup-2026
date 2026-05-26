@@ -4863,17 +4863,17 @@
         // ============================================
 
         document.addEventListener('DOMContentLoaded', function() {
-            renderGroups();
-            renderMatches();
-            renderBracket();
-            initSimulator();
-            drawGame();
-            initCompare();
-            renderHistoryControls();
-            renderHistoryGrid();
-            drawPenaltyGame();
-            initTournament();
-            initSchedule();
+            try { renderGroups(); } catch(e) { console.error('renderGroups error:', e); }
+            try { renderMatches(); } catch(e) { console.error('renderMatches error:', e); }
+            try { renderBracket(); } catch(e) { console.error('renderBracket error:', e); }
+            try { initSimulator(); } catch(e) { console.error('initSimulator error:', e); }
+            try { drawGame(); } catch(e) { console.error('drawGame error:', e); }
+            try { initCompare(); } catch(e) { console.error('initCompare error:', e); }
+            try { renderHistoryControls(); } catch(e) { console.error('renderHistoryControls error:', e); }
+            try { renderHistoryGrid(); } catch(e) { console.error('renderHistoryGrid error:', e); }
+            try { drawPenaltyGame(); } catch(e) { console.error('drawPenaltyGame error:', e); }
+            try { initTournament(); } catch(e) { console.error('initTournament error:', e); }
+            try { initSchedule(); } catch(e) { console.error('initSchedule error:', e); }
         });
 
         // 粒子动画
