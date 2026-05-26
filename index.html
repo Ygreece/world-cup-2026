@@ -363,6 +363,42 @@
             margin-right: 0.8rem;
         }
 
+        .team-flag img, .flag img, .modal-flag img, .champion-flag img, .compare-team-card .flag img, .country-flag img {
+            width: 1.5em;
+            height: 1em;
+            object-fit: cover;
+            border-radius: 2px;
+            vertical-align: middle;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .result-team .flag img { width: 3em; height: 2em; }
+        .modal-flag img { width: 5em; height: 3.3em; border-radius: 4px; }
+        .champion-flag img { width: 6em; height: 4em; border-radius: 6px; }
+        .compare-team-card .flag img { width: 4em; height: 2.7em; border-radius: 4px; }
+        .country-flag img { width: 1.2em; height: 0.8em; }
+
+        /* 浮动足球背景动画 */
+        .floating-balls {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .floating-ball {
+            position: absolute;
+            font-size: 1.5rem;
+            opacity: 0.08;
+            animation: floatUp linear infinite;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0.08; }
+            50% { opacity: 0.15; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0.08; }
+        }
+
         .team-name {
             flex: 1;
             font-weight: 500;
@@ -2070,6 +2106,7 @@
 </head>
 <body>
     <div class="bg-animation"></div>
+    <div class="floating-balls" id="floating-balls"></div>
 
     <!-- 导航栏 -->
     <nav class="navbar">
@@ -2503,7 +2540,7 @@
 
     <!-- 页脚 -->
     <footer class="footer">
-        <p>⚽ FIFA World Cup 2026 - 由 Claude 生成的学习项目</p>
+        <p>⚽ FIFA World Cup 2026</p>
         <p style="margin-top: 0.5rem;">数据仅供娱乐，非官方数据</p>
     </footer>
 
@@ -2575,6 +2612,45 @@
             'NGA': { name: '尼日利亚', flag: '🇳🇬', conf: 'CAF', ranking: 27, group: 'L', elo: 1710 },
             'GTM': { name: '危地马拉', flag: '🇬🇹', conf: 'CONCACAF', ranking: 90, group: 'L', elo: 1400 },
         };
+
+        // FIFA代码 → ISO代码映射（用于 flagcdn.com 国旗图片）
+        const fifaToIso = {
+            'USA':'us','ECU':'ec','SEN':'sn','NED':'nl',
+            'ENG':'gb-eng','SCO':'gb-sct','TUN':'tn','PAN':'pa',
+            'MEX':'mx','MAR':'ma','NZL':'nz','HON':'hn',
+            'FRA':'fr','AUS':'au','PER':'pe','CIV':'ci',
+            'ESP':'es','JPN':'jp','PAR':'py','CRC':'cr',
+            'BRA':'br','SUI':'ch','CMR':'cm','HAI':'ht',
+            'ARG':'ar','KSA':'sa','EGY':'eg','SLV':'sv',
+            'GER':'de','KOR':'kr','COL':'co','UAE':'ae',
+            'POR':'pt','SRB':'rs','GHA':'gh','UZB':'uz',
+            'NED2':'nl','ALG':'dz','CAN':'ca','CUW':'cw',
+            'BEL':'be','URU':'uy','CHN':'cn','CGO':'cg',
+            'CRO':'hr','IRN':'ir','NGA':'ng','GTM':'gt'
+        };
+
+        function getFlagImg(fifaCode, size) {
+            size = size || 40;
+            var iso = fifaToIso[fifaCode];
+            if (!iso) return teams[fifaCode] ? teams[fifaCode].flag : '';
+            return '<img src="https://flagcdn.com/w' + size + '/' + iso + '.png" alt="' + fifaCode + '" loading="lazy" onerror="this.style.display=\'none\';this.parentNode.insertBefore(document.createTextNode(this.alt),this)">';
+        }
+
+        // 浮动足球背景动画
+        (function() {
+            var container = document.getElementById('floating-balls');
+            var balls = ['⚽','🏆','⭐','🌟'];
+            for (var i = 0; i < 15; i++) {
+                var span = document.createElement('span');
+                span.className = 'floating-ball';
+                span.textContent = balls[i % balls.length];
+                span.style.left = Math.random() * 100 + '%';
+                span.style.fontSize = (1 + Math.random() * 2) + 'rem';
+                span.style.animationDuration = (15 + Math.random() * 25) + 's';
+                span.style.animationDelay = (Math.random() * 20) + 's';
+                container.appendChild(span);
+            }
+        })();
 
         // 2026 世界杯 12 组分组
         const groups = {
@@ -2781,7 +2857,7 @@
                             return `
                                 <div class="team-rank ${i < 2 ? 'top' : ''}" style="font-size:0.8rem;">${i + 1}</div>
                                 <div class="team-row" onclick="showTeamModal('${code}')" style="cursor:pointer;display:flex;align-items:center;gap:6px;padding:4px 0;">
-                                    <span class="team-flag">${team.flag}</span>
+                                    <span class="team-flag">${getFlagImg(code)}</span>
                                     <span class="team-name">${team.name}</span>
                                 </div>
                                 <span style="text-align:center;color:var(--text-muted)">${s.mp}</span>
@@ -2823,7 +2899,7 @@
                     card.innerHTML = `
                         <div style="flex:1;text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:8px;">
                             <span style="font-size:0.9rem">${homeTeam.name}</span>
-                            <span>${homeTeam.flag}</span>
+                            <span>${getFlagImg(match.home)}</span>
                         </div>
                         <div style="display:flex;align-items:center;gap:6px;">
                             <input type="number" min="0" max="20" value="${s0}" placeholder="-" style="width:40px;height:32px;text-align:center;font-weight:bold;font-size:1rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:var(--gold);" onchange="updateMatchScore('${groupName}',${mi},0,+this.value)">
@@ -2831,7 +2907,7 @@
                             <input type="number" min="0" max="20" value="${s1}" placeholder="-" style="width:40px;height:32px;text-align:center;font-weight:bold;font-size:1rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:var(--gold);" onchange="updateMatchScore('${groupName}',${mi},1,+this.value)">
                         </div>
                         <div style="flex:1;display:flex;align-items:center;gap:8px;">
-                            <span>${awayTeam.flag}</span>
+                            <span>${getFlagImg(match.away)}</span>
                             <span style="font-size:0.9rem">${awayTeam.name}</span>
                         </div>
                     `;
@@ -2932,8 +3008,8 @@
                 roundDiv.innerHTML = `<div class="round-title">${round.title}</div>`;
 
                 round.matches.forEach(match => {
-                    const homeTeam = teams[match.home] || { flag: '🏳️', name: match.home || '待定' };
-                    const awayTeam = teams[match.away] || { flag: '🏳️', name: match.away || '待定' };
+                    const homeTeam = teams[match.home] || { name: match.home || '待定' };
+                    const awayTeam = teams[match.away] || { name: match.away || '待定' };
                     const matchDiv = document.createElement('div');
                     matchDiv.className = 'bracket-match';
 
@@ -2944,14 +3020,14 @@
                     matchDiv.innerHTML = `
                         <div class="bracket-team ${homeWinner ? 'winner' : ''}">
                             <div class="bracket-team-info">
-                                <span>${homeTeam.flag}</span>
+                                <span>${getFlagImg(match.home)}</span>
                                 <span>${homeTeam.name}</span>
                             </div>
                             <span class="bracket-team-score">${hasScore ? match.score[0] : '-'}</span>
                         </div>
                         <div class="bracket-team ${awayWinner ? 'winner' : ''}">
                             <div class="bracket-team-info">
-                                <span>${awayTeam.flag}</span>
+                                <span>${getFlagImg(match.away)}</span>
                                 <span>${awayTeam.name}</span>
                             </div>
                             <span class="bracket-team-score">${hasScore ? match.score[1] : '-'}</span>
@@ -3012,9 +3088,9 @@
             const awayGoals = Math.round(avgGoals * awayExpected + (Math.random() - 0.5));
 
             // 显示结果
-            document.getElementById('result-home-flag').textContent = homeTeam.flag;
+            document.getElementById('result-home-flag').innerHTML = getFlagImg(match.home);
             document.getElementById('result-home-name').textContent = homeTeam.name;
-            document.getElementById('result-away-flag').textContent = awayTeam.flag;
+            document.getElementById('result-away-flag').innerHTML = getFlagImg(match.away);
             document.getElementById('result-away-name').textContent = awayTeam.name;
             document.getElementById('result-score').textContent = `${Math.max(0, homeGoals)} - ${Math.max(0, awayGoals)}`;
 
@@ -3032,7 +3108,7 @@
                     <div class="scorer">
                         <span class="minute">${minute}'</span>
                         <span>${player}</span>
-                        <span>${homeTeam.flag}</span>
+                        <span>${getFlagImg(homeCode)}</span>
                     </div>
                 `;
             }
@@ -3044,7 +3120,7 @@
                     <div class="scorer">
                         <span class="minute">${minute}'</span>
                         <span>${player}</span>
-                        <span>${awayTeam.flag}</span>
+                        <span>${getFlagImg(awayCode)}</span>
                     </div>
                 `;
             }
@@ -3366,9 +3442,9 @@
             document.getElementById('live-score-area').style.display = 'flex';
             document.getElementById('match-animation-area').classList.add('show');
             document.getElementById('commentary-section').classList.add('show');
-            document.getElementById('live-home-flag').textContent = homeTeam.flag;
+            document.getElementById('live-home-flag').innerHTML = getFlagImg(match.home);
             document.getElementById('live-home-name').textContent = homeTeam.name;
-            document.getElementById('live-away-flag').textContent = awayTeam.flag;
+            document.getElementById('live-away-flag').innerHTML = getFlagImg(match.away);
             document.getElementById('live-away-name').textContent = awayTeam.name;
             document.getElementById('live-home-goals').textContent = '0';
             document.getElementById('live-away-goals').textContent = '0';
@@ -3431,14 +3507,14 @@
                             addCommentary(90, '\u{1F3C6}', '最终比分：' + homeTeam.name + ' ' + cHG + ' - ' + cAG + ' ' + awayTeam.name, 'end');
                             document.getElementById('commentary-badge').textContent = '已结束';
                             document.getElementById('commentary-badge').style.background = 'var(--text-muted)';
-                            document.getElementById('result-home-flag').textContent = homeTeam.flag;
+                            document.getElementById('result-home-flag').innerHTML = getFlagImg(match.home);
                             document.getElementById('result-home-name').textContent = homeTeam.name;
-                            document.getElementById('result-away-flag').textContent = awayTeam.flag;
+                            document.getElementById('result-away-flag').innerHTML = getFlagImg(match.away);
                             document.getElementById('result-away-name').textContent = awayTeam.name;
                             document.getElementById('result-score').textContent = cHG + ' - ' + cAG;
                             var sd = document.getElementById('goal-scorers');
                             sd.innerHTML = '<h4>⚽ 进球</h4>';
-                            goalMinutes.forEach(function(g) { var t = g.team === 'home' ? homeTeam : awayTeam; sd.innerHTML += '<div class="scorer"><span class="minute">' + g.minute + "'</span><span>" + g.scorer + '</span><span>' + t.flag + '</span></div>'; });
+                            goalMinutes.forEach(function(g) { var tc = g.team === 'home' ? match.home : match.away; sd.innerHTML += '<div class="scorer"><span class="minute">' + g.minute + "'</span><span>" + g.scorer + '</span><span>' + getFlagImg(tc) + '</span></div>'; });
                             document.getElementById('match-result').classList.add('show');
                             cancelAnimationFrame(aF); drawMatchCanvas();
                             document.getElementById('simulate-btn').textContent = '开始比赛';
@@ -3506,7 +3582,7 @@
             const team = teams[code];
             if (!team) return;
 
-            document.getElementById('modal-flag').textContent = team.flag;
+            document.getElementById('modal-flag').innerHTML = getFlagImg(code, 80);
             document.getElementById('modal-name').textContent = team.name;
             document.getElementById('modal-ranking').textContent = `FIFA排名: ${team.ranking} | ${team.conf}`;
 
@@ -4340,7 +4416,7 @@
 
             updateTournamentStages(4);
             setTournamentProgress(100, '冠军诞生!');
-            document.getElementById('tournament-status-text').textContent = `${teams[currentTeams[0]].flag} ${teams[currentTeams[0]].name} 夺冠!`;
+            document.getElementById('tournament-status-text').innerHTML = `${getFlagImg(currentTeams[0])} ${teams[currentTeams[0]].name} 夺冠!`;
 
             setTimeout(() => {
                 renderTournamentResults();
@@ -4355,7 +4431,7 @@
             let html = `<div class="tournament-results">
                 <div class="champion-banner">
                     <h2>🏆 锦标赛冠军</h2>
-                    <div class="champion-flag">${chTeam.flag}</div>
+                    <div class="champion-flag">${getFlagImg(ch, 80)}</div>
                     <div class="champion-name">${chTeam.name}</div>
                     <p style="color:var(--text-muted);margin-top:0.5rem;">ELO: ${chTeam.elo} | FIFA排名: ${chTeam.ranking}</p>
                 </div>`;
@@ -4371,7 +4447,7 @@
                     const isUser = code === tournamentState.selectedTeam;
                     html += `<div class="team-row" style="${isUser ? 'background:rgba(200,16,46,0.1);' : ''}">
                         <div class="team-rank ${i < 2 ? 'top' : ''}">${i + 1}</div>
-                        <span class="team-flag">${t.flag}</span>
+                        <span class="team-flag">${getFlagImg(code)}</span>
                         <span class="team-name">${t.name} ${isUser ? '⭐' : ''}</span>
                         <div class="team-stats"><span>${s.w}</span><span>${s.d}</span><span>${s.l}</span></div>
                         <span class="team-points">${s.pts}</span>
@@ -4390,12 +4466,12 @@
                     const isUserMatch = m.home === tournamentState.selectedTeam || m.away === tournamentState.selectedTeam;
                     html += `<div class="match-card" style="${isUserMatch ? 'border-color:var(--primary);' : ''}">
                         <div class="match-team home">
-                            <span class="team-flag">${hTeam.flag}</span>
+                            <span class="team-flag">${getFlagImg(m.home)}</span>
                             <span class="team-name" style="${hWin ? 'color:var(--gold);font-weight:700;' : ''}">${hTeam.name}</span>
                         </div>
                         <div class="match-score">${m.score[0]} - ${m.score[1]}</div>
                         <div class="match-team away">
-                            <span class="team-flag">${aTeam.flag}</span>
+                            <span class="team-flag">${getFlagImg(m.away)}</span>
                             <span class="team-name" style="${!hWin ? 'color:var(--gold);font-weight:700;' : ''}">${aTeam.name}</span>
                         </div>
                     </div>`;
@@ -4512,7 +4588,7 @@
                     <div class="schedule-group-teams">`;
                 group.forEach(code => {
                     const t = teams[code];
-                    outputHtml += `<div>${t.flag} ${t.name}</div>`;
+                    outputHtml += `<div>${getFlagImg(code)} ${t.name}</div>`;
                 });
                 outputHtml += `</div>`;
                 matches.forEach((m, mi) => {
@@ -4521,7 +4597,7 @@
                     const day = Math.floor(mi / 2) + 1;
                     outputHtml += `<div class="schedule-match">
                         <span class="schedule-match-day">第${day}轮</span>
-                        <div class="schedule-match-teams">${h.flag} ${h.name} <span>VS</span> ${a.name} ${a.flag}</div>
+                        <div class="schedule-match-teams">${getFlagImg(m.home)} ${h.name} <span>VS</span> ${a.name} ${getFlagImg(m.away)}</div>
                     </div>`;
                 });
                 outputHtml += `</div>`;
@@ -4603,7 +4679,7 @@
                 const pos = positions[i];
                 const team = teams[p.team] || { flag: '🏳️' };
                 pitchHtml += `<div class="player-marker" style="left:${pos.x}%;top:${pos.y}%;">
-                    <div class="player-circle">${team.flag}</div>
+                    <div class="player-circle">${getFlagImg(p.team)}</div>
                     <div class="player-name">${p.name}</div>
                     <div class="player-detail">${pos.pos} | ${p.rating}</div>
                 </div>`;
@@ -4616,7 +4692,7 @@
                 const team = teams[p.team] || { flag: '🏳️', name: '未知' };
                 lineupHtml += `<div class="lineup-player-row">
                     <span class="lineup-player-pos">${pos.pos}</span>
-                    <div class="lineup-player-info"><span class="country-flag">${team.flag}</span> ${p.name} (${team.name})</div>
+                    <div class="lineup-player-info"><span class="country-flag">${getFlagImg(p.team)}</span> ${p.name} (${team.name})</div>
                     <span class="lineup-player-rating">${p.rating}</span>
                 </div>`;
             });
@@ -4624,11 +4700,11 @@
 
             let benchHtml = `<div class="bench-section"><h3>🪑 替补阵容</h3><div class="bench-players">`;
             bench.forEach(p => {
-                const team = teams[p.team] || { flag: '🏳️', name: '未知' };
+                const team = teams[p.team] || { name: '未知' };
                 const posType = cupPlayerPool.GK.includes(p) ? 'GK' : cupPlayerPool.DEF.includes(p) ? 'DEF' : cupPlayerPool.MID.includes(p) ? 'MID' : 'FWD';
                 benchHtml += `<div class="lineup-player-row">
                     <span class="lineup-player-pos">${posType}</span>
-                    <div class="lineup-player-info"><span class="country-flag">${team.flag}</span> ${p.name} (${team.name})</div>
+                    <div class="lineup-player-info"><span class="country-flag">${getFlagImg(p.team)}</span> ${p.name} (${team.name})</div>
                     <span class="lineup-player-rating">${p.rating}</span>
                 </div>`;
             });
@@ -4763,7 +4839,7 @@
             const pa=players[a]||[],pb=players[b]||[];
             function wc(va,vb,l){if(va===vb)return'';if(l)return va<vb?'winner':'';return va>vb?'winner':'';}
             const r=document.getElementById('compare-result');
-            r.innerHTML='<div class="compare-header"><div class="compare-team-card"><span class="flag">'+ta.flag+'</span><span class="name">'+ta.name+'</span><div style="color:var(--text-muted);font-size:0.9rem;">'+ha.nickname+'</div></div><div class="compare-vs">VS</div><div class="compare-team-card"><span class="flag">'+tb.flag+'</span><span class="name">'+tb.name+'</span><div style="color:var(--text-muted);font-size:0.9rem;">'+hb.nickname+'</div></div></div><div class="compare-section-title">基本数据</div><table class="compare-table"><tr><td class="left-val '+wc(ta.ranking,tb.ranking,1)+'">'+ta.ranking+'</td><td class="attr-name">FIFA排名</td><td class="right-val '+wc(tb.ranking,ta.ranking,1)+'">'+tb.ranking+'</td></tr><tr><td class="left-val '+wc(ta.elo,tb.elo)+'">'+ta.elo+'</td><td class="attr-name">ELO评分</td><td class="right-val '+wc(tb.elo,ta.elo)+'">'+tb.elo+'</td></tr><tr><td class="left-val">'+ta.conf+'</td><td class="attr-name">所属联合会</td><td class="right-val">'+tb.conf+'</td></tr><tr><td class="left-val">'+ta.group+'</td><td class="attr-name">所在小组</td><td class="right-val">'+tb.group+'</td></tr></table><div class="compare-section-title">历史战绩</div><table class="compare-table"><tr><td class="left-val '+wc(ha.wcTitles,hb.wcTitles)+'">'+ha.wcTitles+'</td><td class="attr-name">世界杯冠军</td><td class="right-val '+wc(hb.wcTitles,ha.wcTitles)+'">'+hb.wcTitles+'</td></tr><tr><td class="left-val '+wc(ha.wcFinals,hb.wcFinals)+'">'+ha.wcFinals+'</td><td class="attr-name">进入决赛</td><td class="right-val '+wc(hb.wcFinals,ha.wcFinals)+'">'+hb.wcFinals+'</td></tr><tr><td class="left-val '+wc(ha.wcApps,hb.wcApps)+'">'+ha.wcApps+'</td><td class="attr-name">参赛次数</td><td class="right-val '+wc(hb.wcApps,ha.wcApps)+'">'+hb.wcApps+'</td></tr><tr><td class="left-val">'+ha.bestResult+'</td><td class="attr-name">最佳成绩</td><td class="right-val">'+hb.bestResult+'</td></tr><tr><td class="left-val">'+ha.topScorer+'</td><td class="attr-name">历史最佳射手</td><td class="right-val">'+hb.topScorer+'</td></tr></table><div class="compare-section-title">核心球员</div><div class="compare-players"><div class="compare-player-list"><h4>'+ta.flag+' '+ta.name+'</h4>'+pa.map((p,i)=>'<div class="compare-player-item"><span class="rank-badge">'+(i+1)+'</span><span>'+p+'</span></div>').join('')+'</div><div class="compare-player-list"><h4>'+tb.flag+' '+tb.name+'</h4>'+pb.map((p,i)=>'<div class="compare-player-item"><span class="rank-badge">'+(i+1)+'</span><span>'+p+'</span></div>').join('')+'</div></div>';
+            r.innerHTML='<div class="compare-header"><div class="compare-team-card"><span class="flag">'+getFlagImg(a)+'</span><span class="name">'+ta.name+'</span><div style="color:var(--text-muted);font-size:0.9rem;">'+ha.nickname+'</div></div><div class="compare-vs">VS</div><div class="compare-team-card"><span class="flag">'+getFlagImg(b)+'</span><span class="name">'+tb.name+'</span><div style="color:var(--text-muted);font-size:0.9rem;">'+hb.nickname+'</div></div></div><div class="compare-section-title">基本数据</div><table class="compare-table"><tr><td class="left-val '+wc(ta.ranking,tb.ranking,1)+'">'+ta.ranking+'</td><td class="attr-name">FIFA排名</td><td class="right-val '+wc(tb.ranking,ta.ranking,1)+'">'+tb.ranking+'</td></tr><tr><td class="left-val '+wc(ta.elo,tb.elo)+'">'+ta.elo+'</td><td class="attr-name">ELO评分</td><td class="right-val '+wc(tb.elo,ta.elo)+'">'+tb.elo+'</td></tr><tr><td class="left-val">'+ta.conf+'</td><td class="attr-name">所属联合会</td><td class="right-val">'+tb.conf+'</td></tr><tr><td class="left-val">'+ta.group+'</td><td class="attr-name">所在小组</td><td class="right-val">'+tb.group+'</td></tr></table><div class="compare-section-title">历史战绩</div><table class="compare-table"><tr><td class="left-val '+wc(ha.wcTitles,hb.wcTitles)+'">'+ha.wcTitles+'</td><td class="attr-name">世界杯冠军</td><td class="right-val '+wc(hb.wcTitles,ha.wcTitles)+'">'+hb.wcTitles+'</td></tr><tr><td class="left-val '+wc(ha.wcFinals,hb.wcFinals)+'">'+ha.wcFinals+'</td><td class="attr-name">进入决赛</td><td class="right-val '+wc(hb.wcFinals,ha.wcFinals)+'">'+hb.wcFinals+'</td></tr><tr><td class="left-val '+wc(ha.wcApps,hb.wcApps)+'">'+ha.wcApps+'</td><td class="attr-name">参赛次数</td><td class="right-val '+wc(hb.wcApps,ha.wcApps)+'">'+hb.wcApps+'</td></tr><tr><td class="left-val">'+ha.bestResult+'</td><td class="attr-name">最佳成绩</td><td class="right-val">'+hb.bestResult+'</td></tr><tr><td class="left-val">'+ha.topScorer+'</td><td class="attr-name">历史最佳射手</td><td class="right-val">'+hb.topScorer+'</td></tr></table><div class="compare-section-title">核心球员</div><div class="compare-players"><div class="compare-player-list"><h4>'+getFlagImg(a)+' '+ta.name+'</h4>'+pa.map((p,i)=>'<div class="compare-player-item"><span class="rank-badge">'+(i+1)+'</span><span>'+p+'</span></div>').join('')+'</div><div class="compare-player-list"><h4>'+getFlagImg(b)+' '+tb.name+'</h4>'+pb.map((p,i)=>'<div class="compare-player-item"><span class="rank-badge">'+(i+1)+'</span><span>'+p+'</span></div>').join('')+'</div></div>';
             r.classList.add('show');
         }
 
