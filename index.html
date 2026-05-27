@@ -2253,6 +2253,12 @@
 
         <!-- 赛程 -->
         <section class="tab-content" id="matches-section">
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(255,255,255,0.03);border-radius:10px;margin-bottom:16px;flex-wrap:wrap;">
+                <button id="live-btn" onclick="toggleLiveScores()" style="padding:8px 18px;border:1px solid rgba(255,255,255,0.2);border-radius:8px;background:rgba(255,255,255,0.08);color:#fff;cursor:pointer;font-size:0.9rem;">▶ 开启实时比分</button>
+                <button onclick="setApiKey()" style="padding:8px 14px;border:1px solid rgba(255,255,255,0.15);border-radius:8px;background:transparent;color:var(--text-muted);cursor:pointer;font-size:0.85rem;">⚙ 设置 API Key</button>
+                <button onclick="fetchLiveScores()" style="padding:8px 14px;border:1px solid rgba(255,255,255,0.15);border-radius:8px;background:transparent;color:var(--text-muted);cursor:pointer;font-size:0.85rem;">🔄 手动刷新</button>
+                <span id="live-status" style="color:var(--text-muted);font-size:0.85rem;margin-left:auto;">未连接</span>
+            </div>
             <div class="matches-container" id="matches-container"></div>
         </section>
 
@@ -2802,6 +2808,154 @@
         const matchResults = {};
         for (const [g, t] of Object.entries(groups)) {
             matchResults[g] = genGroupMatches(t);
+        }
+
+        // ============================================
+        // 实时比分 API (API-Football via RapidAPI)
+        // ============================================
+
+        const API_CONFIG = {
+            key: localStorage.getItem('api-football-key') || '',
+            base: 'https://v3.football.api-sports.io',
+            wcLeagueId: 1,    // FIFA World Cup
+            wcSeason: 2026,
+            refreshInterval: 60000, // 60秒刷新
+            timer: null,
+            running: false
+        };
+
+        // FIFA 3字母代码映射到 API-Football team id
+        const WC2026_TEAM_IDS = {};
+
+        function setApiKey() {
+            const key = prompt('请输入 API-Football API Key:\n(免费注册: https://rapidapi.com/api-sports/api/api-football)', API_CONFIG.key);
+            if (key && key.trim()) {
+                API_CONFIG.key = key.trim();
+                localStorage.setItem('api-football-key', API_CONFIG.key);
+                alert('API Key 已保存！点击"实时比分"开始同步。');
+            }
+        }
+
+        async function fetchApiFootball(endpoint, params) {
+            if (!API_CONFIG.key) {
+                setApiKey();
+                return null;
+            }
+            try {
+                const url = new URL(endpoint, API_CONFIG.base);
+                Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+                const resp = await fetch(url.toString(), {
+                    headers: {
+                        'x-apisports-key': API_CONFIG.key
+                    }
+                });
+                if (!resp.ok) throw new Error(`API ${resp.status}`);
+                return await resp.json();
+            } catch (e) {
+                console.error('API-Football error:', e);
+                return null;
+            }
+        }
+
+        async function fetchLiveScores() {
+            const statusEl = document.getElementById('live-status');
+            if (statusEl) statusEl.textContent = '正在同步...';
+
+            // 获取世界杯赛事列表
+            const data = await fetchApiFootball('/fixtures', {
+                league: API_CONFIG.wcLeagueId,
+                season: API_CONFIG.wcSeason,
+                status: 'NS,1H,HT,2H,ET,FT,PEN'
+            });
+
+            if (!data || !data.response) {
+                if (statusEl) statusEl.textContent = 'API 请求失败';
+                return;
+            }
+
+            let updated = 0;
+            const fixtures = data.response;
+
+            for (const fix of fixtures) {
+                const homeName = fix.teams.home.name;
+                const awayName = fix.teams.away.name;
+                const homeGoals = fix.goals.home;
+                const awayGoals = fix.goals.away;
+                const status = fix.fixture.status.short;
+
+                // 在 matchResults 中查找匹配的比赛
+                for (const [groupName, matches] of Object.entries(matchResults)) {
+                    for (const match of matches) {
+                        const homeTeam = teams[match.home];
+                        const awayTeam = teams[match.away];
+                        if (!homeTeam || !awayTeam) continue;
+
+                        // 匹配球队名称（模糊匹配）
+                        if (fuzzyMatch(homeTeam.name, homeName) && fuzzyMatch(awayTeam.name, awayName)) {
+                            if (status === 'NS') {
+                                // 未开始，保持为空
+                            } else if (homeGoals !== null && awayGoals !== null) {
+                                match.score = [homeGoals, awayGoals];
+                                match.status = status;
+                                updated++;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (updated > 0) {
+                renderGroups();
+                renderBracket();
+            }
+
+            if (statusEl) {
+                const now = new Date().toLocaleTimeString('zh-CN');
+                statusEl.textContent = `已同步 ${updated} 场 (${now})`;
+            }
+        }
+
+        function fuzzyMatch(cnName, enName) {
+            // 简单模糊匹配：检查英文名是否包含中文名的拼音首字母
+            // 或者用已知映射
+            const nameMap = {
+                '墨西哥': 'Mexico', '南非': 'South Africa', '韩国': 'South Korea', '捷克': 'Czech Republic',
+                '加拿大': 'Canada', '波黑': 'Bosnia', '卡塔尔': 'Qatar', '瑞士': 'Switzerland',
+                '巴西': 'Brazil', '摩洛哥': 'Morocco', '海地': 'Haiti', '苏格兰': 'Scotland',
+                '美国': 'United States', '巴拉圭': 'Paraguay', '澳大利亚': 'Australia', '土耳其': 'Turkey',
+                '德国': 'Germany', '库拉索': 'Curacao', '科特迪瓦': 'Ivory Coast', '厄瓜多尔': 'Ecuador',
+                '荷兰': 'Netherlands', '日本': 'Japan', '瑞典': 'Sweden', '突尼斯': 'Tunisia',
+                '比利时': 'Belgium', '埃及': 'Egypt', '伊朗': 'Iran', '新西兰': 'New Zealand',
+                '西班牙': 'Spain', '佛得角': 'Cape Verde', '沙特': 'Saudi Arabia', '乌拉圭': 'Uruguay',
+                '法国': 'France', '塞内加尔': 'Senegal', '伊拉克': 'Iraq', '挪威': 'Norway',
+                '阿根廷': 'Argentina', '阿尔及利亚': 'Algeria', '奥地利': 'Austria', '约旦': 'Jordan',
+                '葡萄牙': 'Portugal', '刚果民主共和国': 'DR Congo', '乌兹别克斯坦': 'Uzbekistan', '哥伦比亚': 'Colombia',
+                '英格兰': 'England', '克罗地亚': 'Croatia', '加纳': 'Ghana', '巴拿马': 'Panama'
+            };
+            const en = nameMap[cnName] || cnName;
+            return enName.toLowerCase().includes(en.toLowerCase()) || en.toLowerCase().includes(enName.toLowerCase());
+        }
+
+        function toggleLiveScores() {
+            const btn = document.getElementById('live-btn');
+            const statusEl = document.getElementById('live-status');
+
+            if (API_CONFIG.running) {
+                clearInterval(API_CONFIG.timer);
+                API_CONFIG.running = false;
+                if (btn) { btn.textContent = '▶ 开启实时比分'; btn.style.background = ''; }
+                if (statusEl) statusEl.textContent = '已停止';
+            } else {
+                if (!API_CONFIG.key) {
+                    setApiKey();
+                    return;
+                }
+                fetchLiveScores();
+                API_CONFIG.timer = setInterval(fetchLiveScores, API_CONFIG.refreshInterval);
+                API_CONFIG.running = true;
+                if (btn) { btn.textContent = '⏸ 停止同步'; btn.style.background = 'var(--primary)'; }
+            }
         }
 
         // ============================================
