@@ -63,3 +63,4 @@ world-cup-2026/
 ├── predictor.html          # 世界杯预测器
 └── README.md
 ```
+# World Cup 2026
