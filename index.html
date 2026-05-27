@@ -2689,30 +2689,30 @@
 
         // FIFA代码 → ISO代码映射（用于 flagcdn.com 国旗图片）
         const fifaToIso = {
-            'USA':'us','ECU':'ec','SEN':'sn','NED':'nl',
-            'ENG':'gb-eng','SCO':'gb-sct','TUN':'tn','PAN':'pa',
-            'MEX':'mx','MAR':'ma','NZL':'nz',
-            'FRA':'fr','AUS':'au','PER':'pe','CIV':'ci',
-            'ESP':'es','JPN':'jp','PAR':'py',
-            'BRA':'br','SUI':'ch','CMR':'cm','HAI':'ht',
-            'ARG':'ar','KSA':'sa','EGY':'eg',
-            'GER':'de','KOR':'kr','COL':'co',
-            'POR':'pt','SRB':'rs','GHA':'gh','UZB':'uz',
-            'NED2':'nl','ALG':'dz','CAN':'ca','CUW':'cw',
-            'BEL':'be','URU':'uy','CHN':'cn',
-            'CRO':'hr','IRN':'ir',
-            'AUT':'at',
-            'BIH':'ba',
-            'COD':'cd',
-            'CPV':'cv',
-            'CZE':'cz',
-            'IRQ':'iq',
-            'JOR':'jo',
-            'NOR':'no',
-            'QAT':'qa',
-            'RSA':'za',
-            'SWE':'se',
-            'TUR':'tr',
+            // A组
+            'MEX':'mx','RSA':'za','KOR':'kr','CZE':'cz',
+            // B组
+            'CAN':'ca','BIH':'ba','QAT':'qa','SUI':'ch',
+            // C组
+            'BRA':'br','MAR':'ma','HAI':'ht','SCO':'gb-sct',
+            // D组
+            'USA':'us','PAR':'py','AUS':'au','TUR':'tr',
+            // E组
+            'GER':'de','CUW':'cw','CIV':'ci','ECU':'ec',
+            // F组
+            'NED':'nl','JPN':'jp','SWE':'se','TUN':'tn',
+            // G组
+            'BEL':'be','EGY':'eg','IRN':'ir','NZL':'nz',
+            // H组
+            'ESP':'es','CPV':'cv','KSA':'sa','URU':'uy',
+            // I组
+            'FRA':'fr','SEN':'sn','IRQ':'iq','NOR':'no',
+            // J组
+            'ARG':'ar','ALG':'dz','AUT':'at','JOR':'jo',
+            // K组
+            'POR':'pt','COD':'cd','UZB':'uz','COL':'co',
+            // L组
+            'ENG':'gb-eng','CRO':'hr','GHA':'gh','PAN':'pa',
         };
 
         function getFlagImg(fifaCode, size) {
