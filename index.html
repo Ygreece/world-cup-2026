@@ -2109,13 +2109,13 @@
             top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.85);
             z-index: 10000;
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
             opacity: 0;
             transition: opacity 0.4s;
         }
-        .quiz-overlay.show { opacity: 1; }
+        .quiz-overlay.show { display: flex; opacity: 1; }
         .quiz-modal {
             width: 95vw;
             max-width: 800px;
@@ -2807,162 +2807,248 @@
             'TUR': ['恰尔汗奥卢', '于尔都姆', '耶尔德兹', '阿克蒂尔科卢'],
         };
 
-        // 小组赛比分 (初始为空，用户输入后实时更新)
-        function genGroupMatches(teamCodes) {
-            const matches = [];
-            for (let i = 0; i < teamCodes.length; i++) {
-                for (let j = i + 1; j < teamCodes.length; j++) {
-                    matches.push({ home: teamCodes[i], away: teamCodes[j], score: [null, null] });
-                }
-            }
-            return matches;
+        // 小组赛赛程 (含比赛时间，按时间排序)
+        const MATCH_SCHEDULE = {
+            'A': [
+                { home: 0, away: 1, date: '2026-06-11', time: '21:00' },
+                { home: 2, away: 3, date: '2026-06-11', time: '18:00' },
+                { home: 0, away: 2, date: '2026-06-15', time: '15:00' },
+                { home: 1, away: 3, date: '2026-06-15', time: '18:00' },
+                { home: 0, away: 3, date: '2026-06-19', time: '21:00' },
+                { home: 1, away: 2, date: '2026-06-19', time: '21:00' },
+            ],
+            'B': [
+                { home: 0, away: 1, date: '2026-06-12', time: '15:00' },
+                { home: 2, away: 3, date: '2026-06-12', time: '18:00' },
+                { home: 0, away: 2, date: '2026-06-16', time: '15:00' },
+                { home: 1, away: 3, date: '2026-06-16', time: '18:00' },
+                { home: 0, away: 3, date: '2026-06-20', time: '21:00' },
+                { home: 1, away: 2, date: '2026-06-20', time: '21:00' },
+            ],
+            'C': [
+                { home: 0, away: 1, date: '2026-06-12', time: '12:00' },
+                { home: 2, away: 3, date: '2026-06-12', time: '21:00' },
+                { home: 0, away: 2, date: '2026-06-16', time: '12:00' },
+                { home: 1, away: 3, date: '2026-06-16', time: '21:00' },
+                { home: 0, away: 3, date: '2026-06-20', time: '15:00' },
+                { home: 1, away: 2, date: '2026-06-20', time: '15:00' },
+            ],
+            'D': [
+                { home: 0, away: 1, date: '2026-06-12', time: '21:00' },
+                { home: 2, away: 3, date: '2026-06-13', time: '15:00' },
+                { home: 0, away: 2, date: '2026-06-17', time: '18:00' },
+                { home: 1, away: 3, date: '2026-06-17', time: '21:00' },
+                { home: 0, away: 3, date: '2026-06-21', time: '18:00' },
+                { home: 1, away: 2, date: '2026-06-21', time: '18:00' },
+            ],
+            'E': [
+                { home: 0, away: 1, date: '2026-06-13', time: '12:00' },
+                { home: 2, away: 3, date: '2026-06-13', time: '18:00' },
+                { home: 0, away: 2, date: '2026-06-17', time: '12:00' },
+                { home: 1, away: 3, date: '2026-06-17', time: '15:00' },
+                { home: 0, away: 3, date: '2026-06-21', time: '21:00' },
+                { home: 1, away: 2, date: '2026-06-21', time: '21:00' },
+            ],
+            'F': [
+                { home: 0, away: 1, date: '2026-06-13', time: '21:00' },
+                { home: 2, away: 3, date: '2026-06-14', time: '15:00' },
+                { home: 0, away: 2, date: '2026-06-18', time: '18:00' },
+                { home: 1, away: 3, date: '2026-06-18', time: '21:00' },
+                { home: 0, away: 3, date: '2026-06-22', time: '15:00' },
+                { home: 1, away: 2, date: '2026-06-22', time: '15:00' },
+            ],
+            'G': [
+                { home: 0, away: 1, date: '2026-06-14', time: '12:00' },
+                { home: 2, away: 3, date: '2026-06-14', time: '18:00' },
+                { home: 0, away: 2, date: '2026-06-18', time: '12:00' },
+                { home: 1, away: 3, date: '2026-06-18', time: '15:00' },
+                { home: 0, away: 3, date: '2026-06-22', time: '21:00' },
+                { home: 1, away: 2, date: '2026-06-22', time: '21:00' },
+            ],
+            'H': [
+                { home: 0, away: 1, date: '2026-06-14', time: '21:00' },
+                { home: 2, away: 3, date: '2026-06-15', time: '12:00' },
+                { home: 0, away: 2, date: '2026-06-19', time: '15:00' },
+                { home: 1, away: 3, date: '2026-06-19', time: '18:00' },
+                { home: 0, away: 3, date: '2026-06-23', time: '18:00' },
+                { home: 1, away: 2, date: '2026-06-23', time: '18:00' },
+            ],
+            'I': [
+                { home: 0, away: 1, date: '2026-06-15', time: '15:00' },
+                { home: 2, away: 3, date: '2026-06-15', time: '21:00' },
+                { home: 0, away: 2, date: '2026-06-19', time: '12:00' },
+                { home: 1, away: 3, date: '2026-06-19', time: '15:00' },
+                { home: 0, away: 3, date: '2026-06-23', time: '21:00' },
+                { home: 1, away: 2, date: '2026-06-23', time: '21:00' },
+            ],
+            'J': [
+                { home: 0, away: 1, date: '2026-06-16', time: '12:00' },
+                { home: 2, away: 3, date: '2026-06-16', time: '21:00' },
+                { home: 0, away: 2, date: '2026-06-20', time: '12:00' },
+                { home: 1, away: 3, date: '2026-06-20', time: '15:00' },
+                { home: 0, away: 3, date: '2026-06-24', time: '18:00' },
+                { home: 1, away: 2, date: '2026-06-24', time: '18:00' },
+            ],
+            'K': [
+                { home: 0, away: 1, date: '2026-06-16', time: '15:00' },
+                { home: 2, away: 3, date: '2026-06-17', time: '12:00' },
+                { home: 0, away: 2, date: '2026-06-20', time: '18:00' },
+                { home: 1, away: 3, date: '2026-06-20', time: '21:00' },
+                { home: 0, away: 3, date: '2026-06-24', time: '21:00' },
+                { home: 1, away: 2, date: '2026-06-24', time: '21:00' },
+            ],
+            'L': [
+                { home: 0, away: 1, date: '2026-06-17', time: '15:00' },
+                { home: 2, away: 3, date: '2026-06-17', time: '21:00' },
+                { home: 0, away: 2, date: '2026-06-21', time: '12:00' },
+                { home: 1, away: 3, date: '2026-06-21', time: '15:00' },
+                { home: 0, away: 3, date: '2026-06-25', time: '18:00' },
+                { home: 1, away: 2, date: '2026-06-25', time: '18:00' },
+            ],
+        };
+
+        function genGroupMatches(teamCodes, groupName) {
+            const schedule = MATCH_SCHEDULE[groupName] || [];
+            return schedule.map(s => ({
+                home: teamCodes[s.home],
+                away: teamCodes[s.away],
+                score: [null, null],
+                date: s.date,
+                time: s.time
+            })).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
         }
         const matchResults = {};
         for (const [g, t] of Object.entries(groups)) {
-            matchResults[g] = genGroupMatches(t);
+            matchResults[g] = genGroupMatches(t, g);
         }
 
         // ============================================
-        // 实时比分 API (API-Football via RapidAPI)
+        // 实时比分 API (SportAPI via RapidAPI)
         // ============================================
 
         const API_CONFIG = {
-            key: localStorage.getItem('api-football-key') || '',
-            base: 'https://v3.football.api-sports.io',
-            wcLeagueId: 1,    // FIFA World Cup
-            wcSeason: 2026,
-            refreshInterval: 60000, // 60秒刷新
+            key: localStorage.getItem('sport-api-key') || '50d2e5bbc9msh625026a0f257f6dp1cec12jsn054511a06458',
+            host: 'sportapi7.p.rapidapi.com',
+            refreshInterval: 60000,
             timer: null,
             running: false
         };
 
-        // FIFA 3字母代码映射到 API-Football team id
-        const WC2026_TEAM_IDS = {};
-
         function setApiKey() {
-            const key = prompt('请输入 API-Football API Key:\n(免费注册: https://rapidapi.com/api-sports/api/api-football)', API_CONFIG.key);
+            const key = prompt('请输入 RapidAPI Key:', API_CONFIG.key);
             if (key && key.trim()) {
                 API_CONFIG.key = key.trim();
-                localStorage.setItem('api-football-key', API_CONFIG.key);
-                alert('API Key 已保存！点击"实时比分"开始同步。');
+                localStorage.setItem('sport-api-key', API_CONFIG.key);
+                alert('API Key 已保存！');
             }
         }
 
-        async function fetchApiFootball(endpoint, params) {
-            if (!API_CONFIG.key) {
-                setApiKey();
-                return null;
-            }
+        async function fetchSportApi(path) {
             try {
-                const url = new URL(endpoint, API_CONFIG.base);
-                Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
-                const resp = await fetch(url.toString(), {
+                const resp = await fetch('https://' + API_CONFIG.host + path, {
                     headers: {
-                        'x-apisports-key': API_CONFIG.key
+                        'x-rapidapi-key': API_CONFIG.key,
+                        'x-rapidapi-host': API_CONFIG.host
                     }
                 });
-                if (!resp.ok) throw new Error(`API ${resp.status}`);
+                if (!resp.ok) throw new Error('API ' + resp.status);
                 return await resp.json();
             } catch (e) {
-                console.error('API-Football error:', e);
+                console.error('SportAPI error:', e);
                 return null;
             }
         }
+
+        // 世界杯2026赛事ID (SportAPI/Sofascore tournament id)
+        const WC_TOURNAMENT_ID = 17; // FIFA World Cup
 
         async function fetchLiveScores() {
             const statusEl = document.getElementById('live-status');
             if (statusEl) statusEl.textContent = '正在同步...';
 
-            // 获取世界杯赛事列表
-            const data = await fetchApiFootball('/fixtures', {
-                league: API_CONFIG.wcLeagueId,
-                season: API_CONFIG.wcSeason,
-                status: 'NS,1H,HT,2H,ET,FT,PEN'
-            });
+            try {
+                // 获取今天的赛事
+                const today = new Date().toISOString().split('T')[0];
+                const data = await fetchSportApi(`/api/v1/tournament/${WC_TOURNAMENT_ID}/scheduled-events/${today}`);
 
-            if (!data || !data.response) {
-                if (statusEl) statusEl.textContent = 'API 请求失败';
-                return;
+                if (!data || !data.events) {
+                    // 尝试获取赛季所有赛事
+                    const seasonData = await fetchSportApi(`/api/v1/tournament/${WC_TOURNAMENT_ID}/season/52183/events`);
+                    if (!seasonData || !seasonData.events) {
+                        if (statusEl) statusEl.textContent = '世界杯尚未开赛或API请求失败';
+                        return;
+                    }
+                    processEvents(seasonData.events, statusEl);
+                    return;
+                }
+                processEvents(data.events, statusEl);
+            } catch (e) {
+                if (statusEl) statusEl.textContent = '同步失败: ' + e.message;
             }
+        }
 
+        function processEvents(events, statusEl) {
             let updated = 0;
-            const fixtures = data.response;
+            for (const evt of events) {
+                const homeName = evt.homeTeam?.name || '';
+                const awayName = evt.awayTeam?.name || '';
+                const homeScore = evt.homeScore?.current;
+                const awayScore = evt.awayScore?.current;
+                const status = evt.status?.type || '';
 
-            for (const fix of fixtures) {
-                const homeName = fix.teams.home.name;
-                const awayName = fix.teams.away.name;
-                const homeGoals = fix.goals.home;
-                const awayGoals = fix.goals.away;
-                const status = fix.fixture.status.short;
-
-                // 在 matchResults 中查找匹配的比赛
                 for (const [groupName, matches] of Object.entries(matchResults)) {
                     for (const match of matches) {
-                        const homeTeam = teams[match.home];
-                        const awayTeam = teams[match.away];
-                        if (!homeTeam || !awayTeam) continue;
-
-                        // 匹配球队名称（模糊匹配）
-                        if (fuzzyMatch(homeTeam.name, homeName) && fuzzyMatch(awayTeam.name, awayName)) {
-                            if (status === 'NS') {
-                                // 未开始，保持为空
-                            } else if (homeGoals !== null && awayGoals !== null) {
-                                match.score = [homeGoals, awayGoals];
-                                match.status = status;
-                                updated++;
+                        const ht = teams[match.home];
+                        const at = teams[match.away];
+                        if (!ht || !at) continue;
+                        if (fuzzyMatch(ht.name, homeName) && fuzzyMatch(at.name, awayName)) {
+                            if (status === 'finished' || status === 'inprogress') {
+                                if (homeScore !== undefined && awayScore !== undefined) {
+                                    match.score = [homeScore, awayScore];
+                                    updated++;
+                                }
                             }
                             break;
                         }
                     }
                 }
             }
-
-            if (updated > 0) {
-                renderGroups();
-                renderBracket();
-            }
-
+            if (updated > 0) { renderGroups(); renderBracket(); }
             if (statusEl) {
                 const now = new Date().toLocaleTimeString('zh-CN');
                 statusEl.textContent = `已同步 ${updated} 场 (${now})`;
             }
         }
 
+        const NAME_MAP = {
+            '墨西哥': 'Mexico', '南非': 'South Africa', '韩国': 'South Korea', '捷克': 'Czech Republic',
+            '加拿大': 'Canada', '波黑': 'Bosnia and Herzegovina', '卡塔尔': 'Qatar', '瑞士': 'Switzerland',
+            '巴西': 'Brazil', '摩洛哥': 'Morocco', '海地': 'Haiti', '苏格兰': 'Scotland',
+            '美国': 'United States', '巴拉圭': 'Paraguay', '澳大利亚': 'Australia', '土耳其': 'Turkey',
+            '德国': 'Germany', '库拉索': 'Curacao', '科特迪瓦': 'Ivory Coast', '厄瓜多尔': 'Ecuador',
+            '荷兰': 'Netherlands', '日本': 'Japan', '瑞典': 'Sweden', '突尼斯': 'Tunisia',
+            '比利时': 'Belgium', '埃及': 'Egypt', '伊朗': 'Iran', '新西兰': 'New Zealand',
+            '西班牙': 'Spain', '佛得角': 'Cape Verde', '沙特': 'Saudi Arabia', '乌拉圭': 'Uruguay',
+            '法国': 'France', '塞内加尔': 'Senegal', '伊拉克': 'Iraq', '挪威': 'Norway',
+            '阿根廷': 'Argentina', '阿尔及利亚': 'Algeria', '奥地利': 'Austria', '约旦': 'Jordan',
+            '葡萄牙': 'Portugal', '刚果民主共和国': 'DR Congo', '乌兹别克斯坦': 'Uzbekistan', '哥伦比亚': 'Colombia',
+            '英格兰': 'England', '克罗地亚': 'Croatia', '加纳': 'Ghana', '巴拿马': 'Panama'
+        };
+
         function fuzzyMatch(cnName, enName) {
-            // 简单模糊匹配：检查英文名是否包含中文名的拼音首字母
-            // 或者用已知映射
-            const nameMap = {
-                '墨西哥': 'Mexico', '南非': 'South Africa', '韩国': 'South Korea', '捷克': 'Czech Republic',
-                '加拿大': 'Canada', '波黑': 'Bosnia', '卡塔尔': 'Qatar', '瑞士': 'Switzerland',
-                '巴西': 'Brazil', '摩洛哥': 'Morocco', '海地': 'Haiti', '苏格兰': 'Scotland',
-                '美国': 'United States', '巴拉圭': 'Paraguay', '澳大利亚': 'Australia', '土耳其': 'Turkey',
-                '德国': 'Germany', '库拉索': 'Curacao', '科特迪瓦': 'Ivory Coast', '厄瓜多尔': 'Ecuador',
-                '荷兰': 'Netherlands', '日本': 'Japan', '瑞典': 'Sweden', '突尼斯': 'Tunisia',
-                '比利时': 'Belgium', '埃及': 'Egypt', '伊朗': 'Iran', '新西兰': 'New Zealand',
-                '西班牙': 'Spain', '佛得角': 'Cape Verde', '沙特': 'Saudi Arabia', '乌拉圭': 'Uruguay',
-                '法国': 'France', '塞内加尔': 'Senegal', '伊拉克': 'Iraq', '挪威': 'Norway',
-                '阿根廷': 'Argentina', '阿尔及利亚': 'Algeria', '奥地利': 'Austria', '约旦': 'Jordan',
-                '葡萄牙': 'Portugal', '刚果民主共和国': 'DR Congo', '乌兹别克斯坦': 'Uzbekistan', '哥伦比亚': 'Colombia',
-                '英格兰': 'England', '克罗地亚': 'Croatia', '加纳': 'Ghana', '巴拿马': 'Panama'
-            };
-            const en = nameMap[cnName] || cnName;
+            const en = NAME_MAP[cnName] || cnName;
             return enName.toLowerCase().includes(en.toLowerCase()) || en.toLowerCase().includes(enName.toLowerCase());
         }
 
         function toggleLiveScores() {
             const btn = document.getElementById('live-btn');
             const statusEl = document.getElementById('live-status');
-
             if (API_CONFIG.running) {
                 clearInterval(API_CONFIG.timer);
                 API_CONFIG.running = false;
                 if (btn) { btn.textContent = '▶ 开启实时比分'; btn.style.background = ''; }
                 if (statusEl) statusEl.textContent = '已停止';
             } else {
-                if (!API_CONFIG.key) {
-                    setApiKey();
-                    return;
-                }
                 fetchLiveScores();
                 API_CONFIG.timer = setInterval(fetchLiveScores, API_CONFIG.refreshInterval);
                 API_CONFIG.running = true;
@@ -3092,9 +3178,9 @@
                             const s = stats[code];
                             return `
                                 <div class="team-rank ${i < 2 ? 'top' : ''}" style="font-size:0.8rem;">${i + 1}</div>
-                                <div class="team-row" onclick="showTeamModal('${code}')" style="cursor:pointer;display:flex;align-items:center;gap:6px;padding:4px 0;">
-                                    <span class="team-flag">${getFlagImg(code)}</span>
-                                    <span class="team-name">${team.name}</span>
+                                <div class="team-row" onclick="showTeamModal('${code}')" style="cursor:pointer;display:flex;align-items:center;gap:6px;padding:4px 0;white-space:nowrap;overflow:hidden;">
+                                    <span class="team-flag" style="flex-shrink:0;">${getFlagImg(code)}</span>
+                                    <span class="team-name" style="overflow:hidden;text-overflow:ellipsis;">${team.name}</span>
                                 </div>
                                 <span style="text-align:center;color:var(--text-muted)">${s.mp}</span>
                                 <span style="text-align:center;color:#4aaa6f">${s.w||'-'}</span>
@@ -3118,39 +3204,53 @@
             const container = document.getElementById('matches-container');
             container.innerHTML = '';
 
+            // 收集所有比赛并按日期时间排序
+            const allMatches = [];
             for (const [groupName, matches] of Object.entries(matchResults)) {
-                const groupDiv = document.createElement('div');
-                groupDiv.style.cssText = 'margin-bottom:1.5rem;';
-                groupDiv.innerHTML = `<div style="font-weight:bold;color:var(--gold);margin-bottom:8px;font-size:1.1rem;">🏆 小组 ${groupName}</div>`;
-                const matchList = document.createElement('div');
-                matchList.style.cssText = 'display:flex;flex-direction:column;gap:6px;';
                 matches.forEach((match, mi) => {
-                    const homeTeam = teams[match.home];
-                    const awayTeam = teams[match.away];
-                    const card = document.createElement('div');
-                    card.className = 'match-card';
-                    card.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 15px;';
-                    const s0 = match.score[0] === null ? '' : match.score[0];
-                    const s1 = match.score[1] === null ? '' : match.score[1];
-                    card.innerHTML = `
-                        <div style="flex:1;text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:8px;">
-                            <span style="font-size:0.9rem">${homeTeam.name}</span>
-                            <span>${getFlagImg(match.home)}</span>
-                        </div>
-                        <div style="display:flex;align-items:center;gap:6px;">
-                            <input type="number" min="0" max="20" value="${s0}" placeholder="-" style="width:40px;height:32px;text-align:center;font-weight:bold;font-size:1rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:var(--gold);" onchange="updateMatchScore('${groupName}',${mi},0,+this.value)">
-                            <span style="color:var(--text-muted);font-weight:bold">-</span>
-                            <input type="number" min="0" max="20" value="${s1}" placeholder="-" style="width:40px;height:32px;text-align:center;font-weight:bold;font-size:1rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:var(--gold);" onchange="updateMatchScore('${groupName}',${mi},1,+this.value)">
-                        </div>
-                        <div style="flex:1;display:flex;align-items:center;gap:8px;">
-                            <span>${getFlagImg(match.away)}</span>
-                            <span style="font-size:0.9rem">${awayTeam.name}</span>
-                        </div>
-                    `;
-                    matchList.appendChild(card);
+                    allMatches.push({ groupName, match, mi });
                 });
-                groupDiv.appendChild(matchList);
-                container.appendChild(groupDiv);
+            }
+            allMatches.sort((a, b) => (a.match.date + a.match.time).localeCompare(b.match.date + b.match.time));
+
+            let lastDate = '';
+            for (const { groupName, match, mi } of allMatches) {
+                // 日期分隔
+                if (match.date !== lastDate) {
+                    lastDate = match.date;
+                    const dateHeader = document.createElement('div');
+                    dateHeader.style.cssText = 'color:var(--gold);font-weight:bold;font-size:1rem;padding:12px 0 6px;border-bottom:1px solid var(--border);margin-bottom:8px;';
+                    const d = new Date(match.date + 'T00:00:00');
+                    const weekdays = ['周日','周一','周二','周三','周四','周五','周六'];
+                    dateHeader.textContent = `${match.date} ${weekdays[d.getDay()]}`;
+                    container.appendChild(dateHeader);
+                }
+
+                const homeTeam = teams[match.home];
+                const awayTeam = teams[match.away];
+                const card = document.createElement('div');
+                card.className = 'match-card';
+                card.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 15px;';
+                const s0 = match.score[0] === null ? '' : match.score[0];
+                const s1 = match.score[1] === null ? '' : match.score[1];
+                card.innerHTML = `
+                    <div style="width:50px;text-align:center;color:var(--text-muted);font-size:0.8rem;">${match.time}</div>
+                    <div style="width:28px;text-align:center;font-size:0.7rem;color:var(--text-muted);background:rgba(255,255,255,0.05);padding:2px 4px;border-radius:4px;">${groupName}组</div>
+                    <div style="flex:1;text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:8px;">
+                        <span style="font-size:0.9rem;white-space:nowrap;">${homeTeam.name}</span>
+                        <span style="flex-shrink:0;">${getFlagImg(match.home, 24)}</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:4px;">
+                        <input type="number" min="0" max="20" value="${s0}" placeholder="-" style="width:36px;height:30px;text-align:center;font-weight:bold;font-size:0.95rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:var(--gold);" onchange="updateMatchScore('${groupName}',${mi},0,+this.value)">
+                        <span style="color:var(--text-muted);font-weight:bold;font-size:0.8rem;">-</span>
+                        <input type="number" min="0" max="20" value="${s1}" placeholder="-" style="width:36px;height:30px;text-align:center;font-weight:bold;font-size:0.95rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:var(--gold);" onchange="updateMatchScore('${groupName}',${mi},1,+this.value)">
+                    </div>
+                    <div style="flex:1;display:flex;align-items:center;gap:8px;">
+                        <span style="flex-shrink:0;">${getFlagImg(match.away, 24)}</span>
+                        <span style="font-size:0.9rem;white-space:nowrap;">${awayTeam.name}</span>
+                    </div>
+                `;
+                container.appendChild(card);
             }
         }
 
