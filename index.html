@@ -3088,9 +3088,9 @@
             const awayGoals = Math.round(avgGoals * awayExpected + (Math.random() - 0.5));
 
             // 显示结果
-            document.getElementById('result-home-flag').innerHTML = getFlagImg(match.home);
+            document.getElementById('result-home-flag').innerHTML = getFlagImg(homeCode);
             document.getElementById('result-home-name').textContent = homeTeam.name;
-            document.getElementById('result-away-flag').innerHTML = getFlagImg(match.away);
+            document.getElementById('result-away-flag').innerHTML = getFlagImg(awayCode);
             document.getElementById('result-away-name').textContent = awayTeam.name;
             document.getElementById('result-score').textContent = `${Math.max(0, homeGoals)} - ${Math.max(0, awayGoals)}`;
 
@@ -3442,9 +3442,9 @@
             document.getElementById('live-score-area').style.display = 'flex';
             document.getElementById('match-animation-area').classList.add('show');
             document.getElementById('commentary-section').classList.add('show');
-            document.getElementById('live-home-flag').innerHTML = getFlagImg(match.home);
+            document.getElementById('live-home-flag').innerHTML = getFlagImg(homeCode);
             document.getElementById('live-home-name').textContent = homeTeam.name;
-            document.getElementById('live-away-flag').innerHTML = getFlagImg(match.away);
+            document.getElementById('live-away-flag').innerHTML = getFlagImg(awayCode);
             document.getElementById('live-away-name').textContent = awayTeam.name;
             document.getElementById('live-home-goals').textContent = '0';
             document.getElementById('live-away-goals').textContent = '0';
@@ -3507,14 +3507,14 @@
                             addCommentary(90, '\u{1F3C6}', '最终比分：' + homeTeam.name + ' ' + cHG + ' - ' + cAG + ' ' + awayTeam.name, 'end');
                             document.getElementById('commentary-badge').textContent = '已结束';
                             document.getElementById('commentary-badge').style.background = 'var(--text-muted)';
-                            document.getElementById('result-home-flag').innerHTML = getFlagImg(match.home);
+                            document.getElementById('result-home-flag').innerHTML = getFlagImg(homeCode);
                             document.getElementById('result-home-name').textContent = homeTeam.name;
-                            document.getElementById('result-away-flag').innerHTML = getFlagImg(match.away);
+                            document.getElementById('result-away-flag').innerHTML = getFlagImg(awayCode);
                             document.getElementById('result-away-name').textContent = awayTeam.name;
                             document.getElementById('result-score').textContent = cHG + ' - ' + cAG;
                             var sd = document.getElementById('goal-scorers');
                             sd.innerHTML = '<h4>⚽ 进球</h4>';
-                            goalMinutes.forEach(function(g) { var tc = g.team === 'home' ? match.home : match.away; sd.innerHTML += '<div class="scorer"><span class="minute">' + g.minute + "'</span><span>" + g.scorer + '</span><span>' + getFlagImg(tc) + '</span></div>'; });
+                            goalMinutes.forEach(function(g) { var tc = g.team === 'home' ? homeCode : awayCode; sd.innerHTML += '<div class="scorer"><span class="minute">' + g.minute + "'</span><span>" + g.scorer + '</span><span>' + getFlagImg(tc) + '</span></div>'; });
                             document.getElementById('match-result').classList.add('show');
                             cancelAnimationFrame(aF); drawMatchCanvas();
                             document.getElementById('simulate-btn').textContent = '开始比赛';
