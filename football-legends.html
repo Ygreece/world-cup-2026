@@ -206,9 +206,9 @@
             <h1>⚽ Football Legends</h1>
             <p>足球传奇 - 2D物理足球对战</p>
             <div class="difficulty-select">
-                <button class="diff-btn" onclick="setDifficulty('easy')">简单</button>
-                <button class="diff-btn selected" onclick="setDifficulty('normal')">普通</button>
-                <button class="diff-btn" onclick="setDifficulty('hard')">困难</button>
+                <button class="diff-btn" onclick="setDifficulty('easy', this)">简单</button>
+                <button class="diff-btn selected" onclick="setDifficulty('normal', this)">普通</button>
+                <button class="diff-btn" onclick="setDifficulty('hard', this)">困难</button>
             </div>
             <button class="btn" onclick="startGame()">开始比赛</button>
         </div>
@@ -402,10 +402,10 @@
             keys[e.code] = false;
         });
 
-        function setDifficulty(level) {
+        function setDifficulty(level, btn) {
             difficulty = difficulties[level];
             document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('selected'));
-            event.target.classList.add('selected');
+            btn.classList.add('selected');
         }
 
         function startGame() {

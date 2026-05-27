@@ -82,10 +82,10 @@ body{background:#0a1628;color:#fff;font-family:'Segoe UI',sans-serif;min-height:
 </div>
 
 <div class="controls">
-  <button class="btn btn-secondary btn-size" onclick="setGrid(4,3)">4×3</button>
-  <button class="btn btn-secondary btn-size active" onclick="setGrid(4,4)">4×4</button>
-  <button class="btn btn-secondary btn-size" onclick="setGrid(6,4)">6×4</button>
-  <button class="btn btn-secondary btn-size" onclick="setGrid(6,6)">6×6</button>
+  <button class="btn btn-secondary btn-size" onclick="setGrid(4,3, this)">4×3</button>
+  <button class="btn btn-secondary btn-size active" onclick="setGrid(4,4, this)">4×4</button>
+  <button class="btn btn-secondary btn-size" onclick="setGrid(6,4, this)">6×4</button>
+  <button class="btn btn-secondary btn-size" onclick="setGrid(6,6, this)">6×6</button>
   <button class="btn btn-primary" onclick="newGame()">新游戏</button>
 </div>
 <div class="best-time" id="bestTime"></div>
@@ -145,10 +145,10 @@ function showBest(){
   el.textContent=bestTimes[key]?`最佳成绩 (${key}): ${fmtTime(bestTimes[key])}`:'';
 }
 
-function setGrid(c,r){
+function setGrid(c,r,btn){
   cols=c;rows=r;
   document.querySelectorAll('.btn-size').forEach(b=>b.classList.remove('active'));
-  event.target.classList.add('active');
+  btn.classList.add('active');
   newGame();
 }
 
