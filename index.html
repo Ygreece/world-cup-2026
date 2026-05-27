@@ -3011,9 +3011,12 @@
         };
 
         function getFlagImg(fifaCode, size) {
+            // 优先使用 emoji 国旗（无需网络加载，始终可用）
+            if (teams[fifaCode] && teams[fifaCode].flag) return teams[fifaCode].flag;
+            // 备选：CDN 图片
             size = size || 40;
             var iso = fifaToIso[fifaCode];
-            if (!iso) return teams[fifaCode] ? teams[fifaCode].flag : '';
+            if (!iso) return fifaCode;
             return '<img src="https://flagcdn.com/w' + size + '/' + iso + '.png" alt="' + fifaCode + '" loading="lazy" onerror="this.style.display=\'none\';this.parentNode.insertBefore(document.createTextNode(this.alt),this)">';
         }
 
@@ -3878,7 +3881,7 @@
                     <div style="width:28px;text-align:center;font-size:0.7rem;color:var(--text-muted);background:rgba(255,255,255,0.05);padding:2px 4px;border-radius:4px;">${groupName}组</div>
                     <div style="flex:1;text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:8px;">
                         <span style="font-size:0.9rem;white-space:nowrap;">${homeTeam.name}</span>
-                        <span style="flex-shrink:0;">${getFlagImg(match.home, 24)}</span>
+                        <span style="flex-shrink:0;">${getFlagImg(match.home, 40)}</span>
                     </div>
                     <div style="display:flex;align-items:center;gap:4px;">
                         <input type="number" min="0" max="20" value="${s0}" placeholder="-" style="width:36px;height:30px;text-align:center;font-weight:bold;font-size:0.95rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:var(--gold);" onchange="event.stopPropagation();updateMatchScore('${groupName}',${mi},0,+this.value)">
@@ -3886,7 +3889,7 @@
                         <input type="number" min="0" max="20" value="${s1}" placeholder="-" style="width:36px;height:30px;text-align:center;font-weight:bold;font-size:0.95rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:var(--gold);" onchange="event.stopPropagation();updateMatchScore('${groupName}',${mi},1,+this.value)">
                     </div>
                     <div style="flex:1;display:flex;align-items:center;gap:8px;">
-                        <span style="flex-shrink:0;">${getFlagImg(match.away, 24)}</span>
+                        <span style="flex-shrink:0;">${getFlagImg(match.away, 40)}</span>
                         <span style="font-size:0.9rem;white-space:nowrap;">${awayTeam.name}</span>
                     </div>
                     <div style="min-width:50px;display:flex;align-items:center;justify-content:center;">
