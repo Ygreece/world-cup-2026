@@ -312,9 +312,9 @@ function renderBracket() {
   html += `</div>`;
 
   // 后续轮次占位
-  ['8强','半决赛','决赛'].forEach((name, ri) => {
+  ['8强','半决赛','三四名','决赛'].forEach((name, ri) => {
     html += `<div class="bracket-round"><div class="round-title">🏆 ${name}</div>`;
-    const count = [8,4,2][ri];
+    const count = [8,4,2,2][ri];
     for (let i = 0; i < count; i += 2) {
       const key = `r${ri}_${i}`;
       const sel = predictions.knockout[key];

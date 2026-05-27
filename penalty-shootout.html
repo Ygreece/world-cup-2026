@@ -589,6 +589,7 @@ function backToMenu() {
   canvas.removeEventListener('click', onCanvasClick);
   canvas.removeEventListener('mousemove', onCanvasMove);
   window.removeEventListener('keydown', onKeyDown);
+  window.removeEventListener('resize', resize);
 }
 
 function restartGame() {
