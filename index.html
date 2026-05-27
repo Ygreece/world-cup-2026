@@ -3604,7 +3604,7 @@
             }
             // 同步导航栏高亮
             document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-            const navMap = {home:'首页',groups:'分组',matches:'赛程',bracket:'对阵图',simulate:'模拟器',history:'历史回顾',compare:'球队对比',tournament:'锦标赛',schedule:'赛程生成',besteleven:'最佳阵容'};
+            const navMap = {home:'首页',groups:'分组',matches:'赛程',bracket:'对阵图',simulate:'模拟器',history:'历史回顾',compare:'球队对比',tournament:'锦标赛',schedule:'赛程生成',besteleven:'最佳阵容',stats:'数据榜'};
             document.querySelectorAll('.nav-links a').forEach(a => {
                 if (a.textContent.trim().includes(navMap[tab] || '')) a.classList.add('active');
             });
@@ -5155,18 +5155,32 @@
         function simMatchElo(homeCode, awayCode, isKnockout) {
             const h = teams[homeCode] || { elo: 1600 };
             const a = teams[awayCode] || { elo: 1600 };
-            const homeAdv = 100;
+            const homeAdv = 80;
             const hElo = h.elo + homeAdv;
             const aElo = a.elo;
             const hExp = 1 / (1 + Math.pow(10, (aElo - hElo) / 400));
             const aExp = 1 - hExp;
-            const avg = 2.5;
-            let hg = Math.max(0, Math.round(avg * hExp + (Math.random() - 0.5)));
-            let ag = Math.max(0, Math.round(avg * aExp + (Math.random() - 0.5)));
+            // Poisson-like distribution for more realistic & varied results
+            const lambdaH = 1.8 * hExp + 0.3;
+            const lambdaA = 1.8 * aExp + 0.3;
+            let hg = poissonRandom(lambdaH);
+            let ag = poissonRandom(lambdaA);
             if (isKnockout && hg === ag) {
-                if (Math.random() > 0.5) hg += 1; else ag += 1;
+                // Extra time: 50/50 with slight randomness
+                if (Math.random() > 0.5) hg += (Math.random() > 0.7 ? 1 : 0);
+                else ag += (Math.random() > 0.7 ? 1 : 0);
+                // Penalties if still tied
+                if (hg === ag) {
+                    if (Math.random() > 0.5) hg++; else ag++;
+                }
             }
             return [hg, ag];
+        }
+
+        function poissonRandom(lambda) {
+            let L = Math.exp(-lambda), k = 0, p = 1;
+            do { k++; p *= Math.random(); } while (p > L);
+            return k - 1;
         }
 
         async function startTournament() {
