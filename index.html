@@ -2160,6 +2160,228 @@
             border-radius: 20px;
             z-index: 10001;
         }
+
+        /* 比赛详情弹窗 */
+        .match-detail-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 9998;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        .match-detail-overlay.show { display: flex; }
+        .match-detail-modal {
+            background: linear-gradient(135deg, #0d1f3c, #162d50);
+            border: 1px solid rgba(212,175,55,0.2);
+            border-radius: 16px;
+            width: 95vw;
+            max-width: 550px;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        .match-detail-header {
+            text-align: center;
+            padding: 24px 20px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .match-detail-score {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: #ffd700;
+            margin: 8px 0;
+            letter-spacing: 4px;
+        }
+        .match-detail-teams {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        .match-detail-team {
+            text-align: center;
+            flex: 1;
+        }
+        .match-detail-team img {
+            width: 3em;
+            height: 2em;
+            border-radius: 3px;
+            margin-bottom: 4px;
+        }
+        .match-detail-team-name {
+            font-size: 0.9rem;
+            color: #ccd;
+            font-weight: 600;
+        }
+        .match-detail-status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        .status-live { background: #e63950; color: #fff; animation: pulse 1.5s infinite; }
+        .status-finished { background: rgba(255,255,255,0.15); color: #aac; }
+        .status-upcoming { background: rgba(255,215,0,0.15); color: #ffd700; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+        .match-detail-body { padding: 16px 20px; }
+        .incident-section { margin-bottom: 16px; }
+        .incident-section-title {
+            font-size: 0.8rem;
+            color: #88aacc;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .incident-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 0;
+            font-size: 0.85rem;
+        }
+        .incident-minute {
+            min-width: 36px;
+            color: #ffd700;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+        .incident-icon { font-size: 1rem; min-width: 20px; text-align: center; }
+        .incident-player { color: #dde; flex: 1; }
+        .incident-assist { color: #88aacc; font-size: 0.8rem; }
+        .incident-empty {
+            text-align: center;
+            color: #556;
+            padding: 30px 0;
+            font-size: 0.9rem;
+        }
+        .match-detail-close {
+            position: absolute;
+            top: 12px; right: 16px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .match-detail-close:hover { background: rgba(255,68,68,0.3); }
+
+        /* 数据榜 */
+        .stats-section { max-width: 900px; margin: 0 auto; }
+        .stats-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .stats-tab {
+            padding: 10px 22px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #aac;
+            font-size: 0.95rem;
+        }
+        .stats-tab.active {
+            border-color: #ffd700;
+            background: rgba(255,215,0,0.1);
+            color: #fff;
+        }
+        .stats-tab:hover { border-color: #3a6a9f; }
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .stats-table th {
+            text-align: left;
+            padding: 10px 12px;
+            font-size: 0.75rem;
+            color: #88aacc;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .stats-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            font-size: 0.9rem;
+        }
+        .stats-table tr:hover { background: rgba(255,255,255,0.03); }
+        .stats-rank {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+        .rank-1 { background: linear-gradient(135deg,#ffd700,#ffaa00); color: #000; }
+        .rank-2 { background: linear-gradient(135deg,#c0c0c0,#a0a0a0); color: #000; }
+        .rank-3 { background: linear-gradient(135deg,#cd7f32,#a0652a); color: #fff; }
+        .rank-other { background: rgba(255,255,255,0.08); color: #88aacc; }
+        .stats-player-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .stats-player-flag {
+            width: 2em;
+            height: 1.3em;
+            border-radius: 2px;
+            object-fit: cover;
+        }
+        .stats-player-name { font-weight: 600; }
+        .stats-player-team { color: #88aacc; font-size: 0.8rem; }
+        .stats-value {
+            font-weight: 700;
+            color: #ffd700;
+            font-size: 1.1rem;
+        }
+        .stats-loading {
+            text-align: center;
+            padding: 60px 0;
+            color: #556;
+        }
+        .stats-loading .spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: #ffd700;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 10px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* 赛程中的比赛卡片可点击 */
+        .match-card-clickable {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .match-card-clickable:hover {
+            background: rgba(255,215,0,0.05) !important;
+            border-color: rgba(255,215,0,0.15) !important;
+        }
     </style>
 </head>
 <body>
@@ -2184,6 +2406,7 @@
                 <li><a href="#" onclick="showTab('tournament', this)">锦标赛</a></li>
                 <li><a href="#" onclick="showTab('schedule', this)">赛程生成</a></li>
                 <li><a href="#" onclick="showTab('besteleven', this)">最佳阵容</a></li>
+                <li><a href="#" onclick="showTab('stats', this)">📊 数据榜</a></li>
             </ul>
         </div>
     </nav>
@@ -2244,6 +2467,7 @@
             <button class="tab-btn" onclick="showTab('tournament', this)">🏆 锦标赛</button>
             <button class="tab-btn" onclick="showTab('schedule', this)">📋 赛程生成</button>
             <button class="tab-btn" onclick="showTab('besteleven', this)">⭐ 最佳阵容</button>
+            <button class="tab-btn" onclick="showTab('stats', this)">📊 数据榜</button>
         </div>
 
         <!-- 小组赛 -->
@@ -2347,32 +2571,27 @@
 
         <!-- 统计 -->
         <section class="tab-content" id="stats-section">
-            <div class="simulator">
-                <h2 class="simulator-title">📊 历史统计</h2>
-                <div class="modal-stats">
-                    <div class="stat-item">
-                        <div class="stat-value">23</div>
-                        <div class="stat-label">举办届数</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">48</div>
-                        <div class="stat-label">参赛队伍</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">104</div>
-                        <div class="stat-label">比赛场次</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">16</div>
-                        <div class="stat-label">举办城市</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">5</div>
-                        <div class="stat-label">巴西夺冠次数</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">4</div>
-                        <div class="stat-label">德国/意大利夺冠</div>
+            <div class="stats-section">
+                <h2 style="text-align:center;color:#ffd700;font-size:1.6rem;margin-bottom:20px;">📊 2026 世界杯数据榜</h2>
+                <div class="stats-tabs">
+                    <div class="stats-tab active" onclick="switchStatsTab('scorers', this)">⚽ 射手王</div>
+                    <div class="stats-tab" onclick="switchStatsTab('assists', this)">🅰️ 助攻王</div>
+                    <div class="stats-tab" onclick="switchStatsTab('overview', this)">📈 历史统计</div>
+                </div>
+                <div id="stats-scorers" class="stats-panel">
+                    <div id="scorers-table-wrap"></div>
+                </div>
+                <div id="stats-assists" class="stats-panel" style="display:none">
+                    <div id="assists-table-wrap"></div>
+                </div>
+                <div id="stats-overview" class="stats-panel" style="display:none">
+                    <div class="modal-stats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:15px;margin-top:10px;">
+                        <div class="stat-item"><div class="stat-value">23</div><div class="stat-label">举办届数</div></div>
+                        <div class="stat-item"><div class="stat-value">48</div><div class="stat-label">参赛队伍</div></div>
+                        <div class="stat-item"><div class="stat-value">104</div><div class="stat-label">比赛场次</div></div>
+                        <div class="stat-item"><div class="stat-value">16</div><div class="stat-label">举办城市</div></div>
+                        <div class="stat-item"><div class="stat-value">5</div><div class="stat-label">巴西夺冠次数</div></div>
+                        <div class="stat-item"><div class="stat-value">4</div><div class="stat-label">德国/意大利夺冠</div></div>
                     </div>
                 </div>
             </div>
@@ -3056,6 +3275,275 @@
             }
         }
 
+        // =============================================
+        // 比赛详情弹窗
+        // =============================================
+        const WC_SEASON_ID = 58210;
+
+        function closeMatchDetail() {
+            const overlay = document.getElementById('match-detail-overlay');
+            if (overlay) { overlay.classList.remove('show'); }
+        }
+
+        async function openMatchDetail(eventId, homeName, awayName, homeScore, awayScore, statusType, startTime) {
+            const overlay = document.getElementById('match-detail-overlay');
+            const content = document.getElementById('match-detail-content');
+            if (!overlay || !content) return;
+
+            const fH = FLAG_MAP[homeName] || '🏳️';
+            const fA = FLAG_MAP[awayName] || '🏳️';
+
+            const statusMap = { finished: '已结束', inprogress: '进行中', notstarted: '未开始' };
+            const statusClass = statusType === 'inprogress' ? 'status-live' : statusType === 'finished' ? 'status-finished' : 'status-upcoming';
+            const statusText = statusMap[statusType] || statusType;
+            const scoreText = (homeScore !== null && awayScore !== null) ? `${homeScore} : ${awayScore}` : 'vs';
+            const dateStr = startTime ? new Date(startTime).toLocaleString('zh-CN', {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+
+            content.innerHTML = `
+                <div class="match-detail-header">
+                    <div class="match-detail-teams">
+                        <div class="match-detail-team">
+                            <div style="font-size:2em">${fH}</div>
+                            <div class="match-detail-team-name">${homeName}</div>
+                        </div>
+                        <div>
+                            <div class="match-detail-score">${scoreText}</div>
+                            <div class="match-detail-status ${statusClass}">${statusText}</div>
+                            ${dateStr ? `<div style="color:#88aacc;font-size:0.8rem;margin-top:4px">${dateStr}</div>` : ''}
+                        </div>
+                        <div class="match-detail-team">
+                            <div style="font-size:2em">${fA}</div>
+                            <div class="match-detail-team-name">${awayName}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="match-detail-body" id="match-incidents-body">
+                    <div class="stats-loading"><div class="spinner"></div><div>加载比赛详情...</div></div>
+                </div>
+            `;
+            overlay.classList.add('show');
+
+            // 获取比赛事件（进球、助攻、红黄牌）
+            if (statusType === 'finished' || statusType === 'inprogress') {
+                await loadMatchIncidents(eventId);
+            } else {
+                document.getElementById('match-incidents-body').innerHTML =
+                    '<div class="incident-empty">比赛尚未开始，请比赛日再查看详细数据 ⚽</div>';
+            }
+        }
+
+        async function loadMatchIncidents(eventId) {
+            const body = document.getElementById('match-incidents-body');
+            if (!body) return;
+
+            const data = await fetchSportApi(`/api/v1/event/${eventId}/incidents`);
+            if (!data || !data.incidents || data.incidents.length === 0) {
+                body.innerHTML = '<div class="incident-empty">暂无比赛事件数据</div>';
+                return;
+            }
+
+            const goals = data.incidents.filter(i => i.type === 'goal');
+            const cards = data.incidents.filter(i => i.type === 'card');
+            const subs = data.incidents.filter(i => i.type === 'substitution');
+
+            let html = '';
+
+            if (goals.length > 0) {
+                html += '<div class="incident-section"><div class="incident-section-title">⚽ 进球</div>';
+                goals.forEach(g => {
+                    const player = g.player?.name || '未知';
+                    const assist = g.assist1?.name || null;
+                    const minute = g.time || g.incidentTime || '?';
+                    const isOwnGoal = g.ownGoal;
+                    const isPenalty = g.penalty;
+                    let icon = '⚽';
+                    if (isOwnGoal) icon = '🔴⚽';
+                    if (isPenalty) icon = '🥅';
+                    html += `<div class="incident-row">
+                        <div class="incident-minute">${minute}'</div>
+                        <div class="incident-icon">${icon}</div>
+                        <div class="incident-player">${player}</div>
+                        ${assist ? `<div class="incident-assist">助攻: ${assist}</div>` : ''}
+                    </div>`;
+                });
+                html += '</div>';
+            }
+
+            if (cards.length > 0) {
+                html += '<div class="incident-section"><div class="incident-section-title">🟨 红黄牌</div>';
+                cards.forEach(c => {
+                    const player = c.player?.name || '未知';
+                    const minute = c.time || c.incidentTime || '?';
+                    const isRed = c.cardType === 'red' || c.redCard;
+                    const icon = isRed ? '🟥' : '🟨';
+                    html += `<div class="incident-row">
+                        <div class="incident-minute">${minute}'</div>
+                        <div class="incident-icon">${icon}</div>
+                        <div class="incident-player">${player}</div>
+                    </div>`;
+                });
+                html += '</div>';
+            }
+
+            if (subs.length > 0) {
+                html += '<div class="incident-section"><div class="incident-section-title">🔄 换人</div>';
+                subs.forEach(s => {
+                    const playerIn = s.playerIn?.name || '未知';
+                    const playerOut = s.player?.name || '未知';
+                    const minute = s.time || s.incidentTime || '?';
+                    html += `<div class="incident-row">
+                        <div class="incident-minute">${minute}'</div>
+                        <div class="incident-icon">🔄</div>
+                        <div class="incident-player">↑ ${playerIn} &nbsp;↓ ${playerOut}</div>
+                    </div>`;
+                });
+                html += '</div>';
+            }
+
+            if (html === '') {
+                html = '<div class="incident-empty">暂无进球/助攻/红黄牌数据</div>';
+            }
+
+            body.innerHTML = html;
+        }
+
+        // =============================================
+        // 射手王 & 助攻王排行榜
+        // =============================================
+        let cachedScorers = null;
+        let cachedAssists = null;
+
+        function switchStatsTab(tab, el) {
+            document.querySelectorAll('.stats-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.stats-panel').forEach(p => p.style.display = 'none');
+            if (el) el.classList.add('active');
+            const panel = document.getElementById('stats-' + tab);
+            if (panel) panel.style.display = '';
+
+            if (tab === 'scorers' && !cachedScorers) loadTopScorers();
+            if (tab === 'assists' && !cachedAssists) loadTopAssists();
+        }
+
+        async function loadTopScorers() {
+            const wrap = document.getElementById('scorers-table-wrap');
+            if (!wrap) return;
+            wrap.innerHTML = '<div class="stats-loading"><div class="spinner"></div><div>正在加载射手榜...</div></div>';
+
+            // 从所有已完赛的比赛中收集进球数据
+            const scorerMap = {};
+            const dates = [];
+            for (let d = 11; d <= 25; d++) dates.push('2026-06-' + String(d).padStart(2, '0'));
+            for (let d = 1; d <= 19; d++) dates.push('2026-07-' + String(d).padStart(2, '0'));
+
+            for (const date of dates) {
+                const data = await fetchSportApi(`/api/v1/sport/football/scheduled-events/${date}`);
+                if (!data || !data.events) continue;
+                for (const evt of data.events) {
+                    if (evt.tournament?.uniqueTournament?.id !== 16 && evt.tournament?.id !== 16) continue;
+                    if (evt.status?.type !== 'finished') continue;
+
+                    const incData = await fetchSportApi(`/api/v1/event/${evt.id}/incidents`);
+                    if (!incData || !incData.incidents) continue;
+                    for (const inc of incData.incidents) {
+                        if (inc.type !== 'goal' || inc.ownGoal) continue;
+                        const name = inc.player?.name;
+                        const team = inc.player?.team?.name || evt.homeTeam?.name || '';
+                        if (!name) continue;
+                        if (!scorerMap[name]) scorerMap[name] = { name, team, goals: 0 };
+                        scorerMap[name].goals++;
+                    }
+                }
+            }
+
+            const sorted = Object.values(scorerMap).sort((a, b) => b.goals - a.goals);
+            cachedScorers = sorted;
+            renderScorersTable(sorted, wrap);
+        }
+
+        function renderScorersTable(list, wrap) {
+            if (list.length === 0) {
+                wrap.innerHTML = '<div class="incident-empty">暂无进球数据。世界杯开赛后数据将自动更新 ⚽</div>';
+                return;
+            }
+            let html = '<table class="stats-table"><thead><tr><th>排名</th><th>球员</th><th>进球</th></tr></thead><tbody>';
+            list.slice(0, 30).forEach((p, i) => {
+                const rankClass = i < 3 ? 'rank-' + (i + 1) : 'rank-other';
+                const iso = nameToIso(p.team);
+                const flagHtml = iso ? `<img class="stats-player-flag" src="https://flagcdn.com/w40/${iso}.png" onerror="this.style.display='none'">` : '';
+                html += `<tr>
+                    <td><span class="stats-rank ${rankClass}">${i + 1}</span></td>
+                    <td><div class="stats-player-cell">${flagHtml}<div><div class="stats-player-name">${p.name}</div><div class="stats-player-team">${p.team}</div></div></div></td>
+                    <td><span class="stats-value">${p.goals}</span></td>
+                </tr>`;
+            });
+            html += '</tbody></table>';
+            wrap.innerHTML = html;
+        }
+
+        async function loadTopAssists() {
+            const wrap = document.getElementById('assists-table-wrap');
+            if (!wrap) return;
+            wrap.innerHTML = '<div class="stats-loading"><div class="spinner"></div><div>正在加载助攻榜...</div></div>';
+
+            const assistMap = {};
+            const dates = [];
+            for (let d = 11; d <= 25; d++) dates.push('2026-06-' + String(d).padStart(2, '0'));
+            for (let d = 1; d <= 19; d++) dates.push('2026-07-' + String(d).padStart(2, '0'));
+
+            for (const date of dates) {
+                const data = await fetchSportApi(`/api/v1/sport/football/scheduled-events/${date}`);
+                if (!data || !data.events) continue;
+                for (const evt of data.events) {
+                    if (evt.tournament?.uniqueTournament?.id !== 16 && evt.tournament?.id !== 16) continue;
+                    if (evt.status?.type !== 'finished') continue;
+
+                    const incData = await fetchSportApi(`/api/v1/event/${evt.id}/incidents`);
+                    if (!incData || !incData.incidents) continue;
+                    for (const inc of incData.incidents) {
+                        if (inc.type !== 'goal' || !inc.assist1) continue;
+                        const name = inc.assist1.name;
+                        const team = inc.assist1.team?.name || evt.homeTeam?.name || '';
+                        if (!name) continue;
+                        if (!assistMap[name]) assistMap[name] = { name, team, assists: 0 };
+                        assistMap[name].assists++;
+                    }
+                }
+            }
+
+            const sorted = Object.values(assistMap).sort((a, b) => b.assists - a.assists);
+            cachedAssists = sorted;
+            renderAssistsTable(sorted, wrap);
+        }
+
+        function renderAssistsTable(list, wrap) {
+            if (list.length === 0) {
+                wrap.innerHTML = '<div class="incident-empty">暂无助攻数据。世界杯开赛后数据将自动更新 🅰️</div>';
+                return;
+            }
+            let html = '<table class="stats-table"><thead><tr><th>排名</th><th>球员</th><th>助攻</th></tr></thead><tbody>';
+            list.slice(0, 30).forEach((p, i) => {
+                const rankClass = i < 3 ? 'rank-' + (i + 1) : 'rank-other';
+                const iso = nameToIso(p.team);
+                const flagHtml = iso ? `<img class="stats-player-flag" src="https://flagcdn.com/w40/${iso}.png" onerror="this.style.display='none'">` : '';
+                html += `<tr>
+                    <td><span class="stats-rank ${rankClass}">${i + 1}</span></td>
+                    <td><div class="stats-player-cell">${flagHtml}<div><div class="stats-player-name">${p.name}</div><div class="stats-player-team">${p.team}</div></div></div></td>
+                    <td><span class="stats-value">${p.assists}</span></td>
+                </tr>`;
+            });
+            html += '</tbody></table>';
+            wrap.innerHTML = html;
+        }
+
+        // 从 API 队名反查 ISO code
+        const REVERSE_NAME_MAP = {};
+        Object.entries(NAME_MAP).forEach(([cn, en]) => { REVERSE_NAME_MAP[en.toLowerCase()] = cn; });
+
+        function nameToIso(apiName) {
+            const cn = REVERSE_NAME_MAP[apiName.toLowerCase()] || apiName;
+            return fifaToIso[cn] || null;
+        }
+
         // ============================================
         // 倒计时
         // ============================================
@@ -3229,10 +3717,14 @@
                 const homeTeam = teams[match.home];
                 const awayTeam = teams[match.away];
                 const card = document.createElement('div');
-                card.className = 'match-card';
+                card.className = 'match-card match-card-clickable';
                 card.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 15px;';
                 const s0 = match.score[0] === null ? '' : match.score[0];
                 const s1 = match.score[1] === null ? '' : match.score[1];
+                const scoreDisplay = (match.score[0] !== null && match.score[1] !== null)
+                    ? `<span style="color:var(--gold);font-weight:bold;font-size:1rem;min-width:60px;text-align:center;">${match.score[0]} - ${match.score[1]}</span>`
+                    : `<span style="color:var(--text-muted);font-size:0.8rem;min-width:60px;text-align:center;">vs</span>`;
+                const homeCode = match.home, awayCode = match.away;
                 card.innerHTML = `
                     <div style="width:50px;text-align:center;color:var(--text-muted);font-size:0.8rem;">${match.time}</div>
                     <div style="width:28px;text-align:center;font-size:0.7rem;color:var(--text-muted);background:rgba(255,255,255,0.05);padding:2px 4px;border-radius:4px;">${groupName}组</div>
@@ -3241,16 +3733,59 @@
                         <span style="flex-shrink:0;">${getFlagImg(match.home, 24)}</span>
                     </div>
                     <div style="display:flex;align-items:center;gap:4px;">
-                        <input type="number" min="0" max="20" value="${s0}" placeholder="-" style="width:36px;height:30px;text-align:center;font-weight:bold;font-size:0.95rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:var(--gold);" onchange="updateMatchScore('${groupName}',${mi},0,+this.value)">
+                        <input type="number" min="0" max="20" value="${s0}" placeholder="-" style="width:36px;height:30px;text-align:center;font-weight:bold;font-size:0.95rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:var(--gold);" onchange="event.stopPropagation();updateMatchScore('${groupName}',${mi},0,+this.value)">
                         <span style="color:var(--text-muted);font-weight:bold;font-size:0.8rem;">-</span>
-                        <input type="number" min="0" max="20" value="${s1}" placeholder="-" style="width:36px;height:30px;text-align:center;font-weight:bold;font-size:0.95rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:var(--gold);" onchange="updateMatchScore('${groupName}',${mi},1,+this.value)">
+                        <input type="number" min="0" max="20" value="${s1}" placeholder="-" style="width:36px;height:30px;text-align:center;font-weight:bold;font-size:0.95rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:var(--gold);" onchange="event.stopPropagation();updateMatchScore('${groupName}',${mi},1,+this.value)">
                     </div>
                     <div style="flex:1;display:flex;align-items:center;gap:8px;">
                         <span style="flex-shrink:0;">${getFlagImg(match.away, 24)}</span>
                         <span style="font-size:0.9rem;white-space:nowrap;">${awayTeam.name}</span>
                     </div>
+                    <div style="min-width:50px;display:flex;align-items:center;justify-content:center;">
+                        <span style="font-size:0.7rem;color:var(--text-muted);background:rgba(255,215,0,0.08);padding:3px 8px;border-radius:6px;cursor:pointer;" onclick="event.stopPropagation();showMatchDetailByTeams('${homeCode}','${awayCode}','${match.date}')">📋 详情</span>
+                    </div>
                 `;
+                card.onclick = function(e) {
+                    if (e.target.tagName === 'INPUT') return;
+                    showMatchDetailByTeams(homeCode, awayCode, match.date);
+                };
                 container.appendChild(card);
+            }
+        }
+
+        // 通过球队名查找 API 事件 ID 并打开详情
+        async function showMatchDetailByTeams(homeCode, awayCode, matchDate) {
+            const homeTeam = teams[homeCode];
+            const awayTeam = teams[awayCode];
+            if (!homeTeam || !awayTeam) return;
+
+            const homeName = homeTeam.name;
+            const awayName = awayTeam.name;
+            const enHome = NAME_MAP[homeName] || homeName;
+            const enAway = NAME_MAP[awayName] || awayName;
+
+            // 先显示弹窗（加载中状态）
+            openMatchDetail(0, homeName, awayName, null, null, 'notstarted', matchDate ? new Date(matchDate) : null);
+
+            // 从 API 查找匹配的赛事
+            if (matchDate) {
+                const data = await fetchSportApi(`/api/v1/sport/football/scheduled-events/${matchDate}`);
+                if (data && data.events) {
+                    for (const evt of data.events) {
+                        const evtHome = (evt.homeTeam?.name || '').toLowerCase();
+                        const evtAway = (evt.awayTeam?.name || '').toLowerCase();
+                        if ((evtHome.includes(enHome.toLowerCase()) || enHome.toLowerCase().includes(evtHome)) &&
+                            (evtAway.includes(enAway.toLowerCase()) || enAway.toLowerCase().includes(evtAway))) {
+                            const hs = evt.homeScore?.current ?? null;
+                            const as = evt.awayScore?.current ?? null;
+                            const st = evt.status?.type || 'notstarted';
+                            const ts = evt.startTimestamp ? evt.startTimestamp : null;
+                            // 重新渲染弹窗（带真实数据）
+                            openMatchDetail(evt.id, homeName, awayName, hs, as, st, ts);
+                            return;
+                        }
+                    }
+                }
             }
         }
 
@@ -5398,6 +5933,14 @@
             localStorage.setItem('wc-quiz-done', '1');
         }
     </script>
+
+    <!-- 比赛详情弹窗 -->
+    <div class="match-detail-overlay" id="match-detail-overlay">
+        <div class="match-detail-modal">
+            <button class="match-detail-close" onclick="closeMatchDetail()">×</button>
+            <div id="match-detail-content"></div>
+        </div>
+    </div>
 
     <!-- 世界杯知识扫盲摸底测试弹窗 -->
     <div id="quiz-overlay" class="quiz-overlay">
